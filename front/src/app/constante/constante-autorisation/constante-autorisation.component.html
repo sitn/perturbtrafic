@@ -1,0 +1,167 @@
+<div class="k-form">
+  <fieldset>
+    <legend>Autorisations accordées</legend>
+    <div class="new-contact">
+      <button kendoButton [iconClass]="'fa fa-plus'" (click)="openCreationDialog()">Ajouter un contact</button>
+    </div>
+
+    <kendo-grid [data]="autorisationsDonneesContacts">
+      <kendo-grid-messages noRecords="Aucune autorisation">
+      </kendo-grid-messages>
+      <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
+
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Lecture'" [width]="'110'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="k-form-field" style="margin-left: 30px">
+            <input type="checkbox" class="k-checkbox" [attr.checked]="dataItem.autorisation_lecture? 'checked' : null"
+              disabled />
+            <label class="k-checkbox-label"></label>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Edition'" [width]="'110'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="k-form-field" style="margin-left: 30px">
+            <input type="checkbox" class="k-checkbox"
+              [attr.checked]="dataItem.autorisation_modification? 'checked' : null" disabled />
+            <label class="k-checkbox-label"></label>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Suppression'" [width]="'110'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="k-form-field" style="margin-left: 30px">
+            <input type="checkbox" class="k-checkbox"
+              [attr.checked]="dataItem.autorisation_suppression? 'checked' : null" disabled />
+            <label class="k-checkbox-label"></label>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Action'" [width]="'80'">
+        <!-- [filterable]="col.filterable"> -->
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="actions-cell-container">
+            <!-- <i class="fa fa-eye"></i>-->
+            <i class="fas fa-edit" (click)="openEditionDialog(dataItem)"></i>
+            <i class="far fa-trash-alt delete" (click)="openDeleteDialog(dataItem)"></i>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+  </fieldset>
+
+  <fieldset>
+    <legend>Autorisations reçues</legend>
+    <kendo-grid [data]="autorisationsRecuesContacts">
+      <kendo-grid-messages noRecords="Aucune autorisation">
+      </kendo-grid-messages>
+      <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
+
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Lecture'" [width]="'110'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="k-form-field" style="margin-left: 30px">
+            <input type="checkbox" class="k-checkbox" [attr.checked]="dataItem.autorisation_lecture? 'checked' : null"
+              disabled />
+            <label class="k-checkbox-label"></label>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Edition'" [width]="'110'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="k-form-field" style="margin-left: 30px">
+            <input type="checkbox" class="k-checkbox"
+              [attr.checked]="dataItem.autorisation_modification? 'checked' : null" disabled />
+            <label class="k-checkbox-label"></label>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Suppression'" [width]="'110'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="k-form-field" style="margin-left: 30px">
+            <input type="checkbox" class="k-checkbox"
+              [attr.checked]="dataItem.autorisation_suppression? 'checked' : null" disabled />
+            <label class="k-checkbox-label"></label>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+  </fieldset>
+
+</div>
+
+<kendo-dialog title="{{currentAutorisationContact.nom}} {{currentAutorisationContact.prenom}}"
+  *ngIf="editContactAutorisationOpened" [minWidth]="450" [width]="600" (close)="closeEditionDialog()">
+  <div class="k-form-field">
+    <input type="checkbox" id="lecture" class="k-checkbox"
+      [(ngModel)]="currentAutorisationContact.autorisation_lecture" />
+    <label class="k-checkbox-label" for="lecture">Lecture</label>
+  </div>
+  <div class="k-form-field">
+    <input type="checkbox" id="modification" class="k-checkbox"
+      [(ngModel)]="currentAutorisationContact.autorisation_modification" />
+    <label class="k-checkbox-label" for="modification">Modification</label>
+  </div>
+  <div class="k-form-field">
+    <input type="checkbox" class="k-checkbox" id="suppression"
+      [(ngModel)]="currentAutorisationContact.autorisation_suppression" />
+    <label class="k-checkbox-label" for="suppression">Suppression</label>
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeEditionDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="updateAutorisationContact()">Enregistrer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>
+
+<kendo-dialog title="Ajouter un contact pour autorisation" *ngIf="addContactAutorisationOpened" [minWidth]="450" [width]="600"
+  (close)="closeCreationDialog()">
+  <div class="k-form-field autorisation-line">
+    <span>Contact</span>
+    <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
+      [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true width="'250px'"
+      [(ngModel)]="currentAutorisationContact.id_contact">
+    </kendo-combobox>
+  </div>
+  <div class="k-form-field autorisation-line">
+    <label for="lecture">Lecture</label>
+    <input type="checkbox" id="lecture" class="k-checkbox"
+      [(ngModel)]="currentAutorisationContact.autorisation_lecture" />
+    <label class="k-checkbox-label" for="lecture"></label>
+  </div>
+  <div class="k-form-field autorisation-line">
+    <label for="modification">Modification</label>
+    <input type="checkbox" id="modification" class="k-checkbox"
+      [(ngModel)]="currentAutorisationContact.autorisation_modification" />
+    <label class="k-checkbox-label" for="modification"></label>
+  </div>
+  <div class="k-form-field autorisation-line">
+    <label for="suppression">Suppression</label>
+    <input type="checkbox" class="k-checkbox" id="suppression"
+      [(ngModel)]="currentAutorisationContact.autorisation_suppression" />
+    <label class="k-checkbox-label" for="suppression"></label>
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeCreationDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="addAutorisationContact()">Enregistrer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>
+
+
+<kendo-dialog title="Supprimer l'autorisation ?" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  (close)="closeDeleteDialog()">
+  Confirmer la suppression de l'autorisation ?
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeDeleteDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="deleteAutorisationContact()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

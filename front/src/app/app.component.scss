@@ -1,0 +1,14 @@
+@import "~@progress/kendo-theme-default/scss/all";
+
+
+
+@media (max-width:1100px) {
+    header {
+        height: 80px;
+    }
+}
+
+main {
+    padding-top: 40px;
+    height: calc(100% - 40px);
+}

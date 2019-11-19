@@ -1,0 +1,69 @@
+<form class="k-form-inline" [formGroup]="evenementFormService.evenementForm">
+  <div class="form-content">
+    <type-evenement></type-evenement>
+    <informations-evenement [hidden]="(!evenementFormService.typeEvenement?.value)">
+      {{evenementFormService.typeEvenement?.value}}
+    </informations-evenement>
+    <carte-evenement [hidden]="!(evenementFormService.typeEvenement?.value != null)"></carte-evenement>
+    <attributs-chantier-evenement *ngIf="evenementFormService.typeEvenement?.value===2"></attributs-chantier-evenement>
+    <attributs-manifestation-evenement *ngIf="evenementFormService.typeEvenement?.value===4">
+    </attributs-manifestation-evenement>
+    <attributs-fouille-evenement *ngIf="evenementFormService.typeEvenement?.value===3"></attributs-fouille-evenement>
+    <attributs-autre-evenement *ngIf="evenementFormService.typeEvenement?.value===1"></attributs-autre-evenement>
+
+    <div #conflictSection>
+      <conflits-evenement [hidden]="!(evenementFormService.typeEvenement?.value)"></conflits-evenement>
+    </div>
+    <remarque-evenement [hidden]="!(evenementFormService.typeEvenement?.value)"></remarque-evenement>
+
+  </div>
+  <div class="footer">
+    <div class="buttons-container">
+      <button kendoButton [iconClass]="'fa fa-ban fa-fw'" [routerLink]="'/evenements'">Annuler</button>
+      <button *ngIf="evenementFormService.mode==='READ_ONLY'" kendoButton [iconClass]="'fa fa-print fa-fw'"
+        (click)="printFolder()">Export Dossier PDF</button>
+      <button *ngIf="evenementFormService.mode==='READ_ONLY'" kendoButton [iconClass]="'fa fa-print fa-fw'"
+        (click)="printEvenement()">Export PDF</button>
+      <button *ngIf="evenementFormService.mode!='READ_ONLY'" kendoButton [primary]="true"
+        [iconClass]="'fa fa-save fa-fw'" (click)="onSaveEvent()">Enregistrer</button>
+    </div>
+  </div>
+</form>
+
+<contact-edition-dialog>
+</contact-edition-dialog>
+
+<organisme-edition-dialog>
+</organisme-edition-dialog>
+
+<saisie-reperage [reperages]="evenementFormService.reperages">
+</saisie-reperage>
+
+<kendo-dialog title="Evenement enregistré" *ngIf="conflictPerturbationDialogOpened" [minWidth]="450" [width]="600">
+  <ng-container *ngIf="conflictsLength > 0">
+    Attention, l'évenement a été enregistré correctement mais celui-ci entre en conflits avec des perturbations
+    existantes
+  </ng-container>
+
+  <ng-container *ngIf="conflictsLength==0">
+    L'évenement a été enregistré correctement.
+    <!-- <br>
+    Il n'y a pas de conflits en cours pour cet événement. -->
+  </ng-container>
+
+  <kendo-dialog-actions>
+    <button *ngIf="conflictsLength > 0" kendoButton [iconClass]="'far fa-eye fa-fw'"
+      (click)="showConflictsSection(conflictSection)">Voir</button>
+    <button kendoButton [iconClass]="'fas fa-check fa-fw'" [primary]="true"
+      (click)="routeToEvenementsListe()">OK</button>
+  </kendo-dialog-actions>
+</kendo-dialog>
+
+<kendo-dialog title="Création d'une perturbation" *ngIf="newPerturbationDialogOpened" [minWidth]="450" [width]="600">
+  L'évenement a été enregistré correctement. Voulez vous créer une perturbation pour cet événement ?
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="routeToEvenementsListe()">Non</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="routeToPerturbationFormulaire()">Oui</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

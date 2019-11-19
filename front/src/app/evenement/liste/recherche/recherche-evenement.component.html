@@ -1,0 +1,125 @@
+<form class="k-form-inline" [formGroup]="form">
+  <div class="form-content">
+    <fieldset>
+      <legend>Recherche</legend>
+      <div style="display: flex; width: 100%">
+        <div class="left-part">
+          <label class="k-form-field">
+            <span>N° Dossier</span>
+            <input class="k-textbox" formControlName="numeroDossier" />
+          </label>
+          <label class="k-form-field">
+            <span>Type d'événement</span>
+            <kendo-dropdownlist [data]="typeEvenementListe" [textField]="'description'" [valueField]="'id'"
+              [valuePrimitive]=true formControlName="type">
+            </kendo-dropdownlist>
+          </label>
+          <label class="k-form-field">
+            <span>Prévision</span>
+            <input type="radio" formControlName="prevision" value="unknown" id="unknown" class="k-radio">
+            <label class="k-radio-label" for="unknown">Ignorer</label>
+            <input type="radio" formControlName="prevision" value="yes" id="yes" class="k-radio">
+            <label class="k-radio-label" for="yes">Oui</label>
+            <input type="radio" formControlName="prevision" value="no" id="no" class="k-radio">
+            <label class="k-radio-label" for="no">Non</label>
+          </label>
+          <label class="k-form-field">
+            <span>Libellé</span>
+            <input class="k-textbox" formControlName="libelle" />
+          </label>
+          <label class="k-form-field">
+            <span>Ajouté par</span>
+            <kendo-combobox [data]="filteredAjoutePar" [filterable]="true" (filterChange)="filterAjoutePars($event)"
+              [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=false formControlName="ajoutePar">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field" formGroupName="dates">
+            <span>Dès le</span>
+            <kendo-datepicker #startDate [format]="'dd.MM.yyyy'" formControlName="dateDebut" [max]="endDate?.value">
+            </kendo-datepicker>
+            <!-- <div class="dates-between">
+              <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateDebut"></kendo-datepicker>
+              <span>et le</span>
+              <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateFin"></kendo-datepicker>
+            </div> -->
+          </label>
+          <label class="k-form-field" formGroupName="dates">
+            <span>Jusqu'au</span>
+            <kendo-datepicker #endDate [format]="'dd.MM.yyyy'" formControlName="dateFin" [min]="startDate?.value">
+            </kendo-datepicker>
+          </label>
+          <label class="k-form-field">
+            <span>Division</span>
+            <!-- <input class="k-textbox" formControlName="division" /> -->
+            <kendo-combobox [data]="divisions" [textField]="'name'" [valueField]="'id'" [valuePrimitive]=true
+              formControlName="division" [allowCustom]="true">
+            </kendo-combobox>
+          </label>
+        </div>
+        <div class="right-part">
+          <label class="k-form-field">
+            <span>Requérant</span>
+            <kendo-combobox [data]="filteredRequerants" [filterable]="true" (filterChange)="filterRequerants($event)"
+              [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=true formControlName="requerant">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>Responsable</span>
+            <kendo-combobox [data]="filteredResponsables" [filterable]="true"
+              (filterChange)="filterResponsables($event)" [textField]="'nomComplet'" [valueField]="'id'"
+              [valuePrimitive]=true formControlName="responsable">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>Axe de maintenance</span>
+            <kendo-combobox [data]="filteredAxeMaintenances" [filterable]="true"
+              (filterChange)="filterAxeMaintenances($event)" [textField]="'nom_complet'" [valueField]="'nom_complet'"
+              [valuePrimitive]=false formControlName="axeMaintenance">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>PR de début</span>
+            <kendo-combobox [data]="filteredPrDebuts" [filterable]="true" (filterChange)="filterPrDebuts($event)"
+              [textField]="'secteur_nom'" [valueField]="'secteur_nom'" [valuePrimitive]=false formControlName="prDebut">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>PR de fin</span>
+            <kendo-combobox [data]="filteredPrFins" [filterable]="true" (filterChange)="filterPrFins($event)"
+              [textField]="'secteur_nom'" [valueField]="'secteur_nom'" [valuePrimitive]=false formControlName="prFin">
+            </kendo-combobox>
+          </label>
+
+          <label class="k-form-field">
+            <span>Comptage touché</span>
+            <input type="radio" formControlName="compteurTouche" value="unknown" id="comptage_unknown" class="k-radio">
+            <label class="k-radio-label" for="comptage_unknown">Ignorer</label>
+            <input type="radio" formControlName="compteurTouche" value="yes" id="comptage_yes" class="k-radio">
+            <label class="k-radio-label" for="comptage_yes">Oui</label>
+            <input type="radio" formControlName="compteurTouche" value="no" id="comptage_no" class="k-radio">
+            <label class="k-radio-label" for="comptage_no">Non</label>
+          </label>
+
+          <label class="k-form-field">
+            <span>SRB touché</span>
+            <input type="radio" formControlName="srbTouche" value="unknown" id="srb_unknown" class="k-radio">
+            <label class="k-radio-label" for="srb_unknown">Ignorer</label>
+            <input type="radio" formControlName="srbTouche" value="yes" id="srb_yes" class="k-radio">
+            <label class="k-radio-label" for="srb_yes">Oui</label>
+            <input type="radio" formControlName="srbTouche" value="no" id="srb_no" class="k-radio">
+            <label class="k-radio-label" for="srb_no">Non</label>
+          </label>
+        </div>
+      </div>
+      <div style="width: 100%">
+        <div class="buttons-container">
+          <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="onReset()" [disabled]="form.pristine"
+            type="button">Réinitialiser</button>
+          <button kendoButton [primary]="true" [iconClass]="'fa fa-search fa-fw'" [disabled]="form.invalid"
+            (click)="searchEvenement()">Rechercher</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </div>
+</form>

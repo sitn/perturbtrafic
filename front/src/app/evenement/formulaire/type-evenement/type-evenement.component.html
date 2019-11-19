@@ -1,0 +1,13 @@
+<fieldset [formGroup]="evenementFormService.evenementForm">
+  <legend>Choix du type d'événement</legend>
+  <div formGroupName="type" style="display: flex">
+    <div class="left-part">
+      <label class="k-form-field">
+        <span>Type d'événement <b>*</b></span>
+        <kendo-dropdownlist [data]="typeEvenementListe" [textField]="'description'" [valueField]="'id'"
+          [valuePrimitive]=true (selectionChange)="onTypeChange($event)" formControlName="type">
+        </kendo-dropdownlist>
+      </label>
+    </div>
+  </div>
+</fieldset>

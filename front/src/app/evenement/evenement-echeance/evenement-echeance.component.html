@@ -1,0 +1,17 @@
+<kendo-dialog title="Évènements en prévision, arrivant à échéance" *ngIf="opened" [minWidth]="450" [width]="800" (close)="close()">
+  Liste des évènements en prévision, arrivant à échéance
+  <kendo-grid [data]="endedEvenements">
+    <kendo-grid-column *ngFor="let col of cols" [field]="col.field" [title]="col.header" [format]="col.format" [width]="col.width">
+      <!-- [filterable]="col.filterable"> -->
+      <ng-template *ngIf="col.type=='action'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <div class="actions-cell-container">
+          <i class="fa fa-edit" (click)="editEvenement(dataItem)" style="cursor: pointer"></i>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="close()">Fermer</button>
+  </kendo-dialog-actions>
+
+</kendo-dialog>

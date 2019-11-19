@@ -1,0 +1,57 @@
+<fieldset [formGroup]="perturbationFormService.perturbationForm">
+  <legend>Attributs d'occupation</legend>
+  <div style="display: flex; width: 100%" formGroupName="occupation">
+    <div class="left-part">
+      <label class="k-form-field">
+        <span>Type d'occupation</span>
+        <kendo-multiselect [data]="typesOccupations" 
+          formControlName="typeOccupation" [allowCustom]=true >
+        </kendo-multiselect>
+      </label>
+      <label class="k-form-field">
+        <span>Type de régulation</span>
+        <!-- <input class="k-textbox" formControlName="typeRegulation" /> -->
+        <kendo-combobox [data]="typesRegulations" [textField]="'name'" [valueField]="'id'" [valuePrimitive]=true
+          formControlName="typeRegulation" [allowCustom]=true>
+        </kendo-combobox>
+      </label>
+      <label class="k-form-field">
+        <span>Responsable régulation</span>
+        <kendo-combobox [data]="filteredResponsableOccupation" [filterable]="true"
+          (filterChange)="filterResponsableOccupation($event)" [textField]="'nomComplet'" [valueField]="'id'"
+          [valuePrimitive]=true formControlName="responsable">
+        </kendo-combobox>
+        <span class="new-contact" *ngIf="perturbationFormService.mode!='READ_ONLY'">
+          <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+        </span>
+      </label>
+      <label class="k-form-field">
+        <span>Voies condamnées</span>
+        <!-- <input class="k-textbox" formControlName="voiesCondamnees" /> -->
+        <kendo-combobox [data]="voiesCondamnees" [textField]="'name'" [valueField]="'id'" [valuePrimitive]=true
+          formControlName="voiesCondamnees" [allowCustom]=true>
+        </kendo-combobox>
+      </label>
+    </div>
+    <div class="right-part">
+      <label class="k-form-field">
+        <span>Gabarit largeur</span>
+        <input class="k-textbox" formControlName="largeurGabarit" />
+      </label>
+      <label class="k-form-field">
+        <span>Gabarit hauteur</span>
+        <input class="k-textbox" formControlName="hauteurGabarit" />
+      </label>
+      <label class="k-form-field">
+        <span>Heure de pointe <b>*</b></span>
+        <input type="checkbox" id="heure-de-pointe-checkbox" class="k-checkbox" formControlName="heurePointe">
+        <label class="k-checkbox-label" for="heure-de-pointe-checkbox"></label>
+      </label>
+      <label class="k-form-field">
+        <span>Week-end <b>*</b></span>
+        <input type="checkbox" id="weekend-checkbox" class="k-checkbox" formControlName="weekend">
+        <label class="k-checkbox-label" for="weekend-checkbox"></label>
+      </label>
+    </div>
+  </div>
+</fieldset>

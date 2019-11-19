@@ -1,0 +1,24 @@
+<fieldset [formGroup]="perturbationFormService.perturbationForm">
+  <ng-container formGroupName="fermeture">
+    <legend>Attributs fermeture</legend>
+    <div style="display: flex; width: 100%">
+
+      <div class="left-part">
+        <label class="k-form-field">
+          <span>Responsable</span>
+          <kendo-combobox [data]="filteredResponsableFermeture" [filterable]="true" (filterChange)="filterResponsableFermeture($event)"
+            [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true formControlName="responsable">
+          </kendo-combobox>
+          <span class="new-contact" *ngIf="perturbationFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+          </span>
+        </label>
+        <label class="k-form-field">
+          <span>Déviation</span>
+        </label>
+      </div>
+    </div>
+    <kendo-editor formControlName="deviation"></kendo-editor>
+  </ng-container>
+
+</fieldset>

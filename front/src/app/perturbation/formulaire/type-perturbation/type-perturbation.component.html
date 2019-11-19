@@ -1,0 +1,13 @@
+<fieldset [formGroup]="perturbationFormService.perturbationForm">
+  <legend>Choix du type de perturbation</legend>
+  <div style="display: flex">
+    <div class="left-part">
+      <label class="k-form-field">
+        <span>Type de perturbation <b>*</b></span>
+        <kendo-dropdownlist [data]="typePerturbationListe" [textField]="'description'" [valueField]="'id'"
+          [valuePrimitive]=true formControlName="type">
+        </kendo-dropdownlist>
+      </label>
+    </div>
+  </div>
+</fieldset>

@@ -1,0 +1,46 @@
+<div class="new-contact">
+  <button kendoButton [iconClass]="'fa fa-user-plus'" (click)="newContact()"> Nouveau contact</button>
+</div>
+<kendo-grid [data]="filteredContacts" [sortable]="{
+  allowUnsort: true,
+  mode: 'single'
+  }" [sort]="state.sort" (dataStateChange)="processData($event)">
+  <kendo-grid-column [field]="'nom'" [title]="'Nom'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'prenom'" [title]="'Prenom'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'courriel'" [title]="'Courriel'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'telephone'" [title]="'Telephone'">
+
+  </kendo-grid-column>
+  <kendo-grid-column>
+    <!-- [filterable]="col.filterable"> -->
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="actions-cell-container">
+        <i class="fa fa-eye" (click)="showContact(dataItem)"></i>
+        <i class="fas fa-edit" (click)="editContact(dataItem)"></i>
+        <i class="far fa-trash-alt delete" (click)="onDeleteContactClick(dataItem)"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+<contact-edition-dialog>
+</contact-edition-dialog>
+
+
+<kendo-dialog title="Supprimer le contact" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  [height]="200" (close)="cancelDeleteContact()">
+  Confirmer la suppression du contact ?
+  <div *ngIf="errorRemovingContact" style="color: red; margin-top: 20px">
+    Impossible de supprimer ce contact, il est relié à un évènement ou une perturbation existante
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="cancelDeleteContact()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true" (click)="deleteContact()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

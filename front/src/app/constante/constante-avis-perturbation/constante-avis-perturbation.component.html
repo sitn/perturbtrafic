@@ -1,0 +1,96 @@
+<div class="new-contact">
+  <button kendoButton [iconClass]="'fa fa-plus'" (click)="openCreationDialog()">Ajouter un contact</button>
+</div>
+
+<kendo-grid [data]="preavisContacts">
+  <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [title]="'Occupation'" [width]="'120'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="k-form-field" style="margin-left: 30px">
+        <input type="checkbox" class="k-checkbox" [attr.checked]="dataItem.envoi_auto_occupation? 'checked' : null"
+          disabled />
+        <label class="k-checkbox-label"></label>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column [title]="'Fermeture'" [width]="'120'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="k-form-field" style="margin-left: 30px">
+        <input type="checkbox" class="k-checkbox" [attr.checked]="dataItem.envoi_auto_fermeture? 'checked' : null"
+          disabled />
+        <label class="k-checkbox-label"></label>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column [title]="'Action'" [width]="'80'">
+    <!-- [filterable]="col.filterable"> -->
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="actions-cell-container">
+        <!-- <i class="fa fa-eye"></i>-->
+        <i class="fas fa-edit" (click)="openEditionDialog(dataItem)"></i>
+        <i class="far fa-trash-alt delete" (click)="openDeleteDialog(dataItem)"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+<kendo-dialog title="{{currentPreavisContact.nom}} {{currentPreavisContact.prenom}}" *ngIf="editContactPreavisOpened"
+  [minWidth]="450" [width]="600" (close)="closeEditionDialog()">
+  <div class="k-form-field">
+    <input type="checkbox" id="occupation" class="k-checkbox"
+      [(ngModel)]="currentPreavisContact.envoi_auto_occupation" />
+    <label class="k-checkbox-label" for="occupation">Occupation</label>
+  </div>
+  <div class="k-form-field">
+    <input type="checkbox" class="k-checkbox" id="fermeture" [(ngModel)]="currentPreavisContact.envoi_auto_fermeture" />
+    <label class="k-checkbox-label" for="fermeture">Fermeture</label>
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeEditionDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="updatePreavisContact()">Enregistrer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>
+
+<kendo-dialog title="Ajouter un contact pour avis" *ngIf="addContactPreavisOpened" [minWidth]="450" [width]="600"
+  (close)="closeCreationDialog()">
+  <div class="k-form-field preavis-line">
+    <span>Contact</span>
+    <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
+      [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true width="'250px'"
+      [(ngModel)]="currentPreavisContact.id_contact">
+    </kendo-combobox>
+  </div>
+  <div class="k-form-field preavis-line">
+    <label for="occupation">Occupation</label>
+    <input type="checkbox" id="occupation" class="k-checkbox"
+      [(ngModel)]="currentPreavisContact.envoi_auto_occupation" />
+    <label class="k-checkbox-label" for="occupation"></label>
+  </div>
+  <div class="k-form-field preavis-line">
+    <label for="fermeture">Fermeture</label>
+    <input type="checkbox" class="k-checkbox" id="fermeture" [(ngModel)]="currentPreavisContact.envoi_auto_fermeture" />
+    <label class="k-checkbox-label" for="fermeture"></label>
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeCreationDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="addPreavisContact()">Enregistrer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>
+
+
+<kendo-dialog title="Supprimer l'avis ?" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  (close)="closeDeleteDialog()">
+  Confirmer la suppression de l'avis ?
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeDeleteDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="deletePreavisContact()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

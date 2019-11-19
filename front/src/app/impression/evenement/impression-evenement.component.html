@@ -1,0 +1,200 @@
+<div class="page-template">
+
+  <div class='page-break'>
+    <!--        <img src="{{perturbationImpression.canvas}}" width="100%" height="100%"> -->
+    <div class="header-image">
+      <img style="height: 30px" src="/assets/logos/{{perturbationImpression.nom_entite}}.jpg"
+        alt="perturbationImpression.nom_entite">
+      <span style="margin-left: 10px">{{perturbationImpression.nom_entite}}</span>
+      <span style="text-align: right;flex-grow: 1">Généré le : {{todayDate | date: 'dd-MM-yyyy'}}</span>
+    </div>
+    <div class="header-title">
+      <ng-container *ngIf="perturbationImpression.type===1 && perturbationImpression.urgence">Perturbation du
+        trafic
+        -
+        Fermeture d'urgence
+      </ng-container>
+      <ng-container *ngIf="perturbationImpression.type===1 && !perturbationImpression.urgence">Perturbation du
+        trafic -
+        Fermeture
+      </ng-container>
+      <ng-container *ngIf="perturbationImpression.type===2 && perturbationImpression.urgence">Perturbation du
+        trafic
+        -
+        Occupation d'urgence
+      </ng-container>
+      <ng-container *ngIf="perturbationImpression.type===2 && !perturbationImpression.urgence">Perturbation du
+        trafic -
+        Occupation
+      </ng-container>
+    </div>
+
+    <div class="items">
+      <div class="attribute-line">
+        <label>Etat de la demande</label>
+        <span>{{perturbationImpression.etat_description}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Urgence</label>
+        <span>{{perturbationImpression.urgence | ouiNonPipe}}</span>
+      </div>
+      <ng-container *ngIf="perturbationImpression.type===1">
+        <div class="attribute-line">
+          <label>Concerne</label>
+          <span>{{perturbationImpression.type_description_evenement}} :
+            {{perturbationImpression.libelle_evenement}}
+            ({{perturbationImpression.numero_dossier}})</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="perturbationImpression.type===2">
+        <div class="attribute-line">
+          <label>Cause de l'occupation</label>
+          <span>{{perturbationImpression.type_description_evenement}} :
+            {{perturbationImpression.libelle_evenement}}
+            ({{perturbationImpression.numero_dossier}})</span>
+        </div>
+      </ng-container>
+      <div class="attribute-line">
+        <label>Description</label>
+        <span>{{perturbationImpression.description}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Localisation</label>
+        <span>{{perturbationImpression.localisation}}</span>
+      </div>
+      <!-- <div class="attribute-line">
+        <label>Decision</label>
+        <span>{{perturbation.decision}}</span>
+      </div> -->
+      <div class="attribute-line">
+        <label>Date de début</label>
+        <span>{{perturbationImpression.date_debut | date : 'dd.MM.yyyy'}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Heure de début</label>
+        <span>{{perturbationImpression.heure_debut}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Date de fin</label>
+        <span>{{perturbationImpression.date_fin | date : 'dd.MM.yyyy'}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Heure de fin</label>
+        <span>{{perturbationImpression.heure_fin}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Uniquement durant la tranche horaire</label>
+        <span>{{perturbationImpression.tranche_horaire | ouiNonPipe}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Responsable du trafic</label>
+        <span>{{perturbationImpression.nom_responsable_trafic}} ,
+          {{perturbationImpression.prenom_responsable_trafic}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Responsable du trafic, téléphone</label>
+        <span>{{perturbationImpression.telephone_responsable_trafic}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Responsable, mobile</label>
+        <span>{{perturbationImpression.mobile_responsable_trafic}}</span>
+      </div>
+      <div class="attribute-line">
+        <label>Responsable, courriel</label>
+        <span>{{perturbationImpression.courriel_responsable_trafic}}</span>
+      </div>
+      <!-- <ng-container *ngIf="perturbationImpression.type===1">
+        <div class="attribute-line">
+          <label>Déviation proposée</label>
+          <span></span>
+        </div>
+      </ng-container> -->
+      <ng-container *ngIf="perturbationImpression.type===2">
+        <div class="attribute-line">
+          <label>Occupation</label>
+          <span>{{perturbationImpression.type_occupation}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Voie(s) condamnée(s)</label>
+          <span>{{perturbationImpression.voies_condamnees}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Type de régulation</label>
+          <span>{{perturbationImpression.type_regulation}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Gabarit, hauteur</label>
+          <span>{{perturbationImpression.hauteur_gabarit}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Gabarit, largeur</label>
+          <span>{{perturbationImpression.largeur_gabarit}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Occupation durant les heures de pointe ? </label>
+          <span>{{perturbationImpression.heure_pointe | ouiNonPipe}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Occupation durant le week-end ? </label>
+          <span>{{perturbationImpression.week_end | ouiNonPipe}}</span>
+        </div>
+      </ng-container>
+      <div class="attribute-line">
+        <label>Remarque</label>
+        <span [innerHTML]="perturbationImpression.remarque"></span>
+      </div>
+      <div *ngIf="perturbationImpression.type===1" class="attribute-line">
+        <label>Déviation</label>
+        <span [innerHTML]="perturbationImpression.deviation"></span>
+      </div>
+    </div>
+
+    <ng-container *ngIf="perturbationImpression.reperages">
+      <div class="header-title" style="margin: 30px 0">
+        Repérage
+      </div>
+      <div class="reperage-line header">
+        <span>Axe</span>
+        <span>Début,PR</span>
+        <span>Deb.dist.[m]</span>
+        <span>Fin,PR</span>
+        <span>Fin.dist.[m]</span>
+      </div>
+      <div class="reperage-line" *ngFor="let rep of perturbationImpression.reperages">
+        <span>{{rep.proprietaire}}:{{rep.axe}}:{{rep.sens}}</span>
+        <span>{{rep.pr_debut}}</span>
+        <span>{{rep.pr_debut_distance}}</span>
+        <span>{{rep.pr_fin}}</span>
+        <span>{{rep.pr_fin_distance}}</span>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="perturbationImpression.preavis_contacts">
+      <div class="header-title" style="margin: 20px 0">
+        Contacts avisés
+      </div>
+      <div class="preavis-line header">
+        <span>Contact</span>
+        <span>Date Info</span>
+      </div>
+      <div class="preavis-line" *ngFor="let cont of perturbationImpression.preavis_contacts">
+        <span>{{cont.nom}} {{cont.prenom}}</span>
+        <span>{{cont.date_envoi}}</span>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class='page-break' style='height: 100%;'>
+    <!-- <div style='height: 100%;'> -->
+    <div class="header-title">
+      Carte de situation
+    </div>
+    <div style="position: absolute; left: -10000px; top: 0;">
+      <div [attr.id]="'printMap_'+perturbationImpression.id" class="map"> </div>
+    </div>
+
+    <div>
+      <img src="{{perturbationImpression.canvas}}" width="100%" height="100%">
+    </div>
+  </div>
+</div>

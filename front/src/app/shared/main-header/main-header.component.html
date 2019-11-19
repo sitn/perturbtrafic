@@ -1,0 +1,48 @@
+<div class="header">
+    <div class="logo-content">
+        <a href="/" title="République et canton de Neuchâtel">
+            <img src="https://www.ne.ch/SiteCollectionImages/Layout/logone.png" alt="Etat de Neuchâtel">
+        </a>
+    </div>
+    <span class="version">
+        {{version}}
+    </span>
+    <div class="menu-div" *ngIf="currentUser">
+        <div class="menu-content">
+            <kendo-menu [items]="items" (select)="onMenuSelect($event)">
+            </kendo-menu>
+        </div>
+    </div>
+    <div class="user-info-container" *ngIf="currentUser">
+        <div class="user-info">
+            <i class="fas fa-user-circle" style="font-size: 25px; line-height: 40px"></i>
+            <span class="user-name"> 
+                {{currentUser?.prenom}} {{currentUser?.nom}}
+            </span>
+            <span *ngIf="currentUser?.currentEntity" class="entity">
+                ({{currentUser.currentEntity.nom}})
+            </span>
+        </div>
+        <div #anchor>
+            <i class="fas fa-sort-down" style="font-size: 14px; line-height: 35px" (click)="toggle()"></i>
+        </div>
+        <kendo-popup [anchor]="anchor" (anchorViewportLeave)="show = false" [anchorAlign]="anchorAlign"
+            [popupAlign]="popupAlign" [margin]="popupMargin" *ngIf="show">
+            <div class='popup-content'>
+                <!-- User-defined content -->
+                <span *ngFor="let entity of currentUser.entites" class="user-entity" (click)="updateUserEntity(entity)">
+                    <span>
+                        <i *ngIf="entity === currentUser.currentEntity" class="fas fa-check"></i>
+                    </span>
+                    <span>
+                        {{entity.nom}}
+                    </span>
+                </span>
+                <span class="logout-section" (click)="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </span>
+            </div>
+        </kendo-popup>
+    </div>
+</div>

@@ -1,0 +1,143 @@
+<div class="k-form">
+  <fieldset>
+    <legend>Résultats</legend>
+    <kendo-grid #grid="kendoGrid" [data]="filteredResultats" [sortable]="{
+      allowUnsort: true,
+      mode: 'single'
+      }" [sort]="state.sort" [group]="state.group" [filter]="state.filter" (sortChange)="sortChange($event)"
+      (excelExport)="onExcelExport()" [groupable]="true" (dataStateChange)="dataStateChange($event)">
+      <!-- [filterable]="true" -->
+      <ng-template kendoGridToolbarTemplate>
+        <button kendoButton (click)="onExcelExport()" icon="file-excel">Export Excel</button>
+        <button kendoButton (click)="exportToPDF(grid)" icon="file-pdf">Export PDF</button>
+        <span class="results-number">{{totalRecords}} résultats</span>
+      </ng-template>
+      <kendo-grid-messages groupPanelEmpty="Déplacer une colonne ici pour grouper par cette colonne"
+        noRecords="Aucun résultats">
+      </kendo-grid-messages>
+      <ng-container *ngFor="let col of cols">
+        <kendo-grid-column *ngIf="col.show" [field]="col.field" [title]="col.header" [format]="col.format"
+          [groupable]="col.groupable" [sortable]="col.groupable">
+          <!-- [filterable]="col.filterable"> -->
+          <ng-template *ngIf="col.type=='action'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <div class="actions-cell-container">
+              <i class="fa fa-eye" (click)="showEvenement(dataItem)"></i>
+              <i *ngIf="dataItem.modificationAutorisee" class="fas fa-edit" (click)="editEvenement(dataItem)"></i>
+              <i *ngIf="dataItem.suppressionAutorisee" class="far fa-trash-alt delete"
+                (click)="onDeleteEvenementClick(dataItem)"></i>
+            </div>
+          </ng-template>
+          <ng-template *ngIf="col.type=='boolean'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.prevision">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.prevision">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column *ngIf="col.typeEvenement" title="col.header">
+          <ng-template kendoGridGroupHeaderTemplate let-value="value">
+            {{value}}
+          </ng-template>
+        </kendo-grid-column>
+      </ng-container>
+
+      <kendo-grid-pdf fileName="evenements.pdf" paperSize="A4" [allPages]="true" [repeatHeaders]="true" [scale]="0.5">
+        <kendo-grid-pdf-margin top="2cm" left="0.5cm" right="0.5cm" bottom="2cm"></kendo-grid-pdf-margin>
+        <ng-template kendoGridPDFTemplate let-pageNum="pageNum" let-totalPages="totalPages">
+          <div class="page-template">
+            <div class="header-image">
+              <img style="height: 30px" src="/assets/icons/logone.png" alt="Etat de Neuchâtel">
+            </div>
+            <div class="header-title">
+              Liste des événements
+            </div>
+            <div class="footer">
+              Page {{ pageNum }} of {{ totalPages }}
+            </div>
+          </div>
+        </ng-template>
+        <kendo-grid-column field="numeroDossier" title="N° Dossier" width="100">
+        </kendo-grid-column>
+        <kendo-grid-column field="typeEvenement" title="Type" width="100">
+        </kendo-grid-column>
+        <kendo-grid-column field="prevision" title="Prév." width="55">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.prevision">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.prevision">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="libelle" title="Libellé" width="180">
+        </kendo-grid-column>
+        <kendo-grid-column field="description" title="Description" width="180">
+        </kendo-grid-column>
+        <kendo-grid-column field="debut" title="Date de début" width="105" [format]="'dd.MM.yyyy'">
+        </kendo-grid-column>
+        <kendo-grid-column field="fin" title="Date de fin" width="105" [format]="'dd.MM.yyyy'">
+        </kendo-grid-column>
+        <kendo-grid-column field="division" title="Sect./Div" width="75">
+        </kendo-grid-column>
+        <kendo-grid-column field="localisationImpression" title="Localisation">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.localisationImpressionReperage">
+              <div *ngFor="let loc of dataItem.localisationImpressionReperage">
+                {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+              </div>
+            </ng-container>
+            <ng-container *ngIf="dataItem.localisationImpression">
+              {{dataItem.localisationImpression}}
+            </ng-container>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid-pdf>
+    </kendo-grid>
+
+    <kendo-excelexport #exportExcel fileName="evenements.xlsx" [data]="filteredResultats">
+      <kendo-excelexport-column field="numeroDossier" title="N° Dossier">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="typeEvenement" title="Type évé">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="prevision" title="Prévision">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <ng-container *ngIf="dataItem.prevision">Oui</ng-container>
+          <ng-container *ngIf="!dataItem.prevision">Non</ng-container>
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="libelle" title="Libellé">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="debut" title="Date de début">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="fin" title="Date de fin">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="description" title="Description">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="division" title="Secteur / Division">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="localisationImpressionExcel" title="Localisation">
+      </kendo-excelexport-column>
+      <!-- <kendo-excelexport-column field="localisationImpressionReperage" title="Localisation">
+         <ng-template kendoGridCellTemplate let-dataItem >
+          {{dataItem.localisationImpressionReperage[0].axe}}
+           
+           <div *ngFor="let loc of dataItem.localisationImpressionReperage">
+              {{dataItem[0].axe}}
+            {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+          </div>
+          <ng-container *ngIf="dataItem.localisationImpressionReperage">
+            reperage
+          </ng-container>
+          <ng-container *ngIf="dataItem.localisationImpression">
+            {{dataItem.localisationImpression}}
+          </ng-container> 
+         </ng-template> 
+      </kendo-excelexport-column> -->
+    </kendo-excelexport>
+
+  </fieldset>
+</div>
+
+<kendo-dialog title="Supprimer l'événement" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  (close)="cancelDeleteEvenement()">
+  Confirmer la suppression de l'événement {{currentEvenement.numeroDossier}} et des perturbations associées ?
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="cancelDeleteEvenement()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true" (click)="deleteEvenement()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

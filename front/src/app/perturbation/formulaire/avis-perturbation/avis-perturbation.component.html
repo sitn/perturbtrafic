@@ -1,0 +1,12 @@
+<fieldset>
+  <legend>Avis</legend>
+  <div style="display: flex; width: 100%">
+    <div style="width: 100%">
+      <label *ngFor="let contact of potentialPreavisList" class="k-form-field">
+        <span>{{contact.nom}} {{contact.prenom}}</span>
+        <input type="checkbox" id="{{contact.id}}-checkbox" class="k-checkbox" [(ngModel)]="contact.checked" [disabled]="perturbationFormService.mode=='READ_ONLY'">
+        <label class="k-checkbox-label" for="{{contact.id}}-checkbox"></label>
+      </label>
+    </div>
+  </div>
+</fieldset>

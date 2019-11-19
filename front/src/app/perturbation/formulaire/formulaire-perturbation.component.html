@@ -1,0 +1,38 @@
+<form class="k-form-inline" [formGroup]="perturbationFormService.perturbationForm">
+  <div class="form-content">
+    <perturbation-type-evenement></perturbation-type-evenement>
+    <type-perturbation></type-perturbation>
+    <informations-perturbation
+      *ngIf="perturbationFormService.typePerturbation?.value && perturbationFormService.evenement?.value">
+    </informations-perturbation>
+    <attributs-fermeture-perturbation
+      *ngIf="perturbationFormService.typePerturbation?.value===1 && perturbationFormService.evenement?.value">
+    </attributs-fermeture-perturbation>
+    <attributs-occupation-perturbation
+      *ngIf="perturbationFormService.typePerturbation?.value===2 && perturbationFormService.evenement?.value">
+    </attributs-occupation-perturbation>
+    <carte-perturbation
+      [hidden]="!(perturbationFormService.typePerturbation?.value && perturbationFormService.evenement?.value)">
+    </carte-perturbation>
+    <avis-perturbation #preavisComponent [perturbationPreavis]="perturbationFormService.avisContacts"
+      [hidden]="!(perturbationFormService.typePerturbation?.value && perturbationFormService.evenement?.value)">
+    </avis-perturbation>
+    <remarque-perturbation
+      *ngIf="perturbationFormService.typePerturbation?.value && perturbationFormService.evenement?.value">
+    </remarque-perturbation>
+  </div>
+  <div class="footer">
+    <div class="buttons-container">
+      <button kendoButton [iconClass]="'fa fa-ban fa-fw'" [routerLink]="'/perturbations'">Annuler</button>
+      <button *ngIf="perturbationFormService.mode==='READ_ONLY'" kendoButton [iconClass]="'fa fa-print fa-fw'"
+        (click)="printPerturbation()">Export PDF</button>
+      <button *ngIf="perturbationFormService.mode!='READ_ONLY'" kendoButton [primary]="true"
+        [iconClass]="'fa fa-save fa-fw'" (click)="onSaveEvent()">Enregistrer</button>
+    </div>
+  </div>
+</form>
+
+<contact-edition-dialog></contact-edition-dialog>
+
+<saisie-reperage [reperages]="perturbationFormService.reperages">
+</saisie-reperage>

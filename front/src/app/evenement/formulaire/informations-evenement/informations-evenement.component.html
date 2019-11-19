@@ -1,0 +1,190 @@
+<fieldset [formGroup]="evenementFormService.evenementForm">
+  <legend>Informations sur l'événement</legend>
+  <div style="display: flex; width: 100%">
+    <div class="left-part">
+      <label class="k-form-field">
+        <span>Prévision</span>
+        <input type="checkbox" id="prevision-checkbox" class="k-checkbox" formControlName="prevision">
+        <label class="k-checkbox-label" for="prevision-checkbox"></label>
+      </label>
+      <label class="k-form-field">
+        <span>N° Dossier</span>
+        <input class="k-textbox" formControlName="numeroDossier"
+          placeholder="Numéro généré automatiquement lors de la création" />
+      </label>
+      <label class="k-form-field">
+        <span>Division</span>
+        <!-- <input #divisionInput class="k-textbox" [(ngModel)]="evenement.division" required validationMessage="required" formControlName='division'/> -->
+        <!-- <input #divisionInput class="k-textbox" formControlName="division" /> -->
+        <kendo-combobox [data]="divisions" [textField]="'name'" [valueField]="'id'" [valuePrimitive]=true
+          formControlName="division" [allowCustom]="true">
+        </kendo-combobox>
+        <!-- <span *ngIf="'divisionInput.touched'">Libellé</span> -->
+      </label>
+      <label class="k-form-field">
+        <span>Libellé <b>*</b></span>
+        <input class="k-textbox" formControlName="libelle" />
+        <!-- <div [hidden]="evenementFormService.libelle.valid || evenementFormService.libelle.pristine" class="alert">
+          <i class="fa fa-exclamation" title="required"></i>
+        </div> -->
+      </label>
+      <label class="k-form-field">
+        <span>Description</span>
+        <textarea class="k-textarea" formControlName="description">
+        </textarea>
+      </label>
+      <label class="k-form-field">
+        <span>Créé par </span>
+        <input class="k-textbox" formControlName="utilisateurAjout" />
+      </label>
+      <label class="k-form-field">
+        <span>Créé le</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateAjout">
+        </kendo-datepicker>
+      </label>
+      <label class="k-form-field">
+        <span>Modifié par</span>
+        <input class="k-textbox" formControlName="utilisateurModification" />
+      </label>
+      <label class="k-form-field">
+        <span>Modifié le</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateModification">
+        </kendo-datepicker>
+      </label>
+      <fieldset formGroupName="requerant">
+        <legend>Requérant</legend>
+        <!-- <span style="font-weight: bold">Maitre d'ouvrage</span>
+                <div class="card"> -->
+        <label class="k-form-field">
+          <span>Requérant</span>
+          <kendo-combobox [data]="filteredRequerants" [filterable]="true" (filterChange)="filterRequerants($event)"
+            [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=false formControlName="organisme">
+          </kendo-combobox>
+          <span class="new-organisme" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewOrganisme()"></i>
+          </span>
+        </label>
+        <ng-container formGroupName="contactInfos">
+          <label class="k-form-field">
+            <span>Nom / Raison sociale</span>
+            <input class="k-textbox" formControlName="nom" />
+          </label>
+          <label class="k-form-field">
+            <span>Rue et numéro</span>
+            <input class="k-textbox" formControlName="adresse" />
+          </label>
+          <label class="k-form-field">
+            <span>NPA et localité</span>
+            <!-- <input class="k-textbox" formControlName="localite" /> -->
+            <kendo-combobox [data]="filteredRequerantLocalites" [textField]="'npa_nom'" [valueField]="'npa_nom'"
+              [filterable]="true" (filterChange)="filterRequerantLocalites($event)" [valuePrimitive]=true
+              [allowCustom]="true" formControlName="localite">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" formControlName="telephone" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de fax</span>
+            <input class="k-textbox" formControlName="fax" />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" formControlName="courriel" type="email" email />
+          </label>
+        </ng-container>
+      </fieldset>
+    </div>
+    <div class="right-part">
+      <div class="k-form-field">
+        <span>Date de début <b>*</b></span>
+        <div class="date-with-hour-inputs" formGroupName="dates">
+          <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateDebut"
+            [max]="evenementFormService?.dateFin?.value">
+          </kendo-datepicker>
+          <span>Heure de début <b>*</b></span>
+          <kendo-maskedtextbox [mask]="timeMask" formControlName="heureDebut" style="width: 55px"
+            [includeLiterals]=true></kendo-maskedtextbox>
+        </div>
+      </div>
+      <div class="k-form-field">
+        <span>Date de fin <b>*</b></span>
+        <div class="date-with-hour-inputs" formGroupName="dates">
+          <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateFin"
+            [min]="evenementFormService?.dateDebut?.value">
+          </kendo-datepicker>
+          <!-- <div [hidden]="evenementFormService.dates.valid || evenementFormService.dates.pristine" class="alert">
+            <i class="fa fa-exclamation" title="required"></i>
+          </div> -->
+          <span>Heure de fin <b>*</b></span>
+          <kendo-maskedtextbox [mask]="timeMask" formControlName="heureFin" style="width: 55px" [includeLiterals]=true>
+          </kendo-maskedtextbox>
+        </div>
+      </div>
+      <label class="k-form-field">
+        <span>Localisation</span>
+        <input class="k-textbox" formControlName="localisation" />
+      </label>
+      <label class="k-form-field">
+        <span>Date de demande</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateDemande"></kendo-datepicker>
+      </label>
+      <label class="k-form-field">
+        <span>Date d'octroi</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateOctroi"></kendo-datepicker>
+      </label>
+      <label class="k-form-field">
+        <span>SRB touché</span>
+        <input type="checkbox" id="srb-checkbox" class="k-checkbox" formControlName="srbTouche">
+        <label class="k-checkbox-label" for="srb-checkbox"></label>
+      </label>
+      <label class="k-form-field">
+        <span>Responsable <b>*</b></span>
+        <kendo-combobox [data]="filteredResponsables" [filterable]="true" (filterChange)="filterResponsables($event)"
+          [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true formControlName="responsable">
+        </kendo-combobox>
+      </label>
+      <label class="k-form-field">
+        <span style="height: 80px"></span>
+      </label>
+      <fieldset formGroupName="contact">
+        <legend>Personne de contact</legend>
+        <!-- <span style="font-weight: bold">Maitre d'ouvrage</span>
+                <div class="card"> -->
+        <label class="k-form-field">
+          <span>Contact</span>
+          <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
+            [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=false formControlName="contact">
+          </kendo-combobox>
+        </label>
+        <ng-container formGroupName="contactInfos">
+          <label class="k-form-field">
+            <span>Nom</span>
+            <input class="k-textbox" formControlName="nom" />
+          </label>
+          <label class="k-form-field">
+            <span>Prénom</span>
+            <input class="k-textbox" formControlName="prenom" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de mobile</span>
+            <input class="k-textbox" formControlName="mobile" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" formControlName="telephone" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de fax</span>
+            <input class="k-textbox" formControlName="fax" />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" formControlName="courriel" type="email" email />
+          </label>
+        </ng-container>
+      </fieldset>
+    </div>
+  </div>
+</fieldset>

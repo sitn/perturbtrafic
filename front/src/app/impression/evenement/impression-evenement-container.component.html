@@ -1,0 +1,132 @@
+<button kendoButton (click)="printEvenement(pdf)" icon="file-pdf" class="print-button">Export PDF</button>
+
+<div class="print-container">
+  <kendo-pdf-export #pdf paperSize="A4" margin="2cm" forcePageBreak=".page-break">
+    <!-- <impression-evenement [evenementImpression]="evenementImpression" *ngIf="evenementFormService.mode==='READ_ONLY'">
+    
+      </impression-evenement> -->
+
+    <div class="page-template">
+      <div class="header-image">
+        <img style="height: 30px" src="/assets/logos/{{evenementImpression.nom_entite}}.jpg"
+          alt="evenementImpression.nom_entite">
+        <span style="margin-left: 10px">{{evenementImpression.nom_entite}}</span>
+        <span style="text-align: right;flex-grow: 1">Généré le : {{todayDate | date: 'dd-MM-yyyy'}}</span>
+      </div>
+      <div class="header-title">
+        <ng-container *ngIf="evenementImpression?.type===1">Détail de l'entrave</ng-container>
+        <ng-container *ngIf="evenementImpression?.type===2">Détail du chantier</ng-container>
+        <ng-container *ngIf="evenementImpression?.type===3">Détail de la fouille</ng-container>
+        <ng-container *ngIf="evenementImpression?.type===4">Détail de la manifestation</ng-container>
+      </div>
+
+      <div class="items">
+        <div class="attribute-line">
+          <label>N° de dossier</label>
+          <span>{{evenementImpression?.numero_dossier}}</span>
+        </div>
+        <!-- <div class="attribute-line">
+          <label>Type</label>
+          <span></span>
+        </div> -->
+        <div class="attribute-line">
+          <label>Prévision</label>
+          <span>{{evenementImpression?.prevision | ouiNonPipe}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Division</label>
+          <span>{{evenementImpression?.division}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Libellé</label>
+          <span>{{evenementImpression?.libelle}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Date de début</label>
+          <span>{{evenementImpression?.date_debut | date : 'dd.MM.yyyy'}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Heure de début</label>
+          <span>{{evenementImpression?.heure_debut}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Date de fin</label>
+          <span>{{evenementImpression?.date_fin | date : 'dd.MM.yyyy'}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Heure de fin</label>
+          <span>{{evenementImpression?.heure_fin}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Requérant</label>
+          <span>{{evenementImpression?.nom_requerant}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Responsable</label>
+          <span>{{evenementImpression?.nom_responsable}} {{evenementImpression?.prenom_responsable}} </span>
+        </div>
+        <div class="attribute-line">
+          <label>Responsable, mobile</label>
+          <span>{{evenementImpression?.mobile_responsable}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Localisation</label>
+          <span>{{evenementImpression?.localisation}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Maître de l'ouvrage</label>
+          <span>{{evenementImpression?.nom_maitre_ouvrage}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Direction locale</label>
+          <span>{{evenementImpression?.nom_direction_locale}} {{evenementImpression?.prenom_direction_locale}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Direction locale, mobile</label>
+          <span>{{evenementImpression?.mobile_direction_locale}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Entrepreneur</label>
+          <span>{{evenementImpression?.nom_entrepreneur}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Resp. des travaux</label>
+          <span>{{evenementImpression?.nom_responsable_travaux}}
+            {{evenementImpression?.prenom_responsable_travaux}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Resp. des travaux, mobile</label>
+          <span>{{evenementImpression?.mobile_responsable_travaux}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Date de la facture</label>
+          <span>{{evenementImpression?.date_facture}}</span>
+        </div>
+        <div class="attribute-line">
+          <label>Date de demande</label>
+          <span>{{evenementImpression?.date_demande | date : 'dd.MM.yyyy'}}</span>
+        </div>
+      </div>
+      <div class='page-break'>
+        <div class="header-title">
+          Carte de situation
+        </div>
+        <div style="position: absolute; left: -10000px; top: 0;">
+          <div id="evenementPrintMap" class="map"> </div>
+        </div>
+        <div>
+          <img src="{{evenementImpression?.canvas}}" width="100%" height="100%">
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="perturbationsImpressions && perturbationsImpressions.length > 0">
+      <ng-container *ngFor="let perturbationImpression of perturbationsImpressions">
+        <impression-evenement [perturbationImpression]=perturbationImpression
+          (perturbationRendered)="onPerturbationMapRendered()">
+
+        </impression-evenement>
+      </ng-container>
+    </ng-container>
+  </kendo-pdf-export>
+</div>

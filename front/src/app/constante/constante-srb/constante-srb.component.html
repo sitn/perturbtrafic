@@ -1,0 +1,34 @@
+<div class="new-contact">
+  <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
+    [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true (selectionChange)="setCurrentContact($event)">
+  </kendo-combobox>
+  <button kendoButton (click)="addPreavisContact()" style="margin-left: 10px">Ajouter le contact</button>
+</div>
+
+<kendo-grid [data]="avisPrTouchesList">
+  <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [title]="'Action'" [width]="'80'">
+    <!-- [filterable]="col.filterable"> -->
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="actions-cell-container">
+        <i class="far fa-trash-alt delete" (click)="openDeleteDialog(dataItem)"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+
+<kendo-dialog title="Supprimer le contact SRB?" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  (close)="closeDeleteDialog()">
+  Confirmer la suppression du contact SRB ?
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeDeleteDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="deletePreavisContact()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

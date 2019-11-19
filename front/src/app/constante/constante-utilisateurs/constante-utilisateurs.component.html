@@ -1,0 +1,75 @@
+<div class="header-buttons">
+  <button kendoButton [iconClass]="'fa fa-user-plus'" (click)="checkNewUsers()"> Rechercher les nouveaux
+    utilisateurs</button>
+</div>
+
+<kendo-grid [data]="users" [sortable]="{
+  allowUnsort: true,
+  mode: 'single'
+  }">
+  <kendo-grid-column [field]="'nom'" [title]="'Nom'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'prenom'" [title]="'Prénom'">
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'id_organisme'" [title]="'Organisme'">
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'telephone'" [title]="'Telephone'">
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'mobile'" [title]="'Mobile'">
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'courriel'" [title]="'Courriel'">
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'entites'" [title]="'Entités'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div *ngFor="let ent of dataItem.entites">
+        {{ent}}
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+<kendo-dialog title="Nouveaux utilisateurs" *ngIf="newUsersOpened" [minWidth]="700" [width]="1100" [height]="600"
+  (close)="closeNewUsersDialog()">
+  <div class="new-user-grid-dialog">
+    <kendo-grid [data]="newUsers" [sortable]="{
+      allowUnsort: true,
+      mode: 'single'}">
+      <kendo-grid-column [field]="'sn'" [title]="'Nom'" [width]="'90'">
+
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'givenName'" [title]="'Prénom'" [width]="'90'">
+      </kendo-grid-column>
+      <kendo-grid-column [title]="'Organisme'" [width]="'200'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <kendo-combobox [data]="organismes" [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=true
+            [(ngModel)]="dataItem.id_organisme" style="width: 100%">
+          </kendo-combobox>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'telephoneNumber'" [title]="'Telephone'" [width]="'80'">
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'mobile'" [title]="'Mobile'" [width]="'80'">
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'mail'" [title]="'Courriel'" [width]="'120'">
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'roles'" [title]="'Rôles'">
+      </kendo-grid-column>
+      <kendo-grid-column [field]="'entites'" [title]="'Entités'">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div *ngFor="let ent of dataItem.entites" style="padding-right: 10px;">
+            {{ent.name}}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+    <div *ngIf="missingOrganisme" class="error-message">
+      Un ou plusieurs utilisateurs n'ont pas d'organisme renseigné
+    </div>
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="closeNewUsersDialog()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="registerNewUsers()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

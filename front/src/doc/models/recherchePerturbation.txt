@@ -1,0 +1,35 @@
+IRecherchePerturbation {
+    type: string;
+    axeMaintenance: string;
+    etat: string;
+    valide: string;
+    prDebut: string;
+    prFin: string;
+    urgence: boolean;
+    description: string;
+    numeroDossier: string;
+    typeEvenement: string;
+    dateDebut: Date;
+    dateFin: Date;
+    comptage: boolean;
+    ajoutePar: string;
+}
+
+Exemple :
+
+{
+    "type": "occupation",
+    "axeMaintenance": "S4",
+    "etat": "acceptée",
+    "valide": null,
+    "prDebut": null,
+    "prFin": null,
+    "urgence": null,
+    "description": null,
+    "numeroDossier": null,
+    "typeEvenement": 2,
+    "dateDebut": null,
+    "dateFin": "2019-02-13T23:00:00.000Z",
+    "comptage": null,
+    "ajoutePar": "SGI"
+}

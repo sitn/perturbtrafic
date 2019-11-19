@@ -1,0 +1,312 @@
+<div class="k-form">
+  <fieldset>
+    <legend>Résultats</legend>
+    <kendo-grid [data]="filteredResultats" [sortable]="{
+      allowUnsort: true,
+      mode: 'single'
+      }" [sort]="state.sort" [group]="state.group" [groupable]="true" (dataStateChange)="processData($event)">
+      <!-- scrollable="virtual" [rowHeight]="36" [height]="450" [skip]="state.skip" [pageSize]="pageSize" (pageChange)="pageChange($event)" [navigable]="true" -->
+      <!-- [rowClass]="rowClass"> -->
+      <ng-template kendoGridToolbarTemplate>
+        <button kendoButton (click)="exportExcel()" icon="file-excel">Export Excel</button>
+        <button kendoButton (click)="exportGrids()" icon="file-pdf">Export PDF</button>
+        <span class="results-number">{{totalResults}} résultats</span>
+      </ng-template>
+      <kendo-grid-messages groupPanelEmpty="Déplacer une colonne ici pour grouper par cette colonne"
+        noRecords="Aucun résultats">
+      </kendo-grid-messages>
+      <ng-container *ngFor="let col of cols">
+        <kendo-grid-column [field]="col.field" [title]="col.header" [format]="col.format" [groupable]="col.groupable"
+          [sortable]="col.groupable">
+          <ng-template *ngIf="col.type=='action'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <div class="actions-cell-container">
+              <i class="fa fa-eye" (click)="showPerturbation(dataItem)"></i>
+              <i *ngIf="dataItem.modificationAutorisee" class="fa fa-edit" (click)="editPerturbation(dataItem)"></i>
+              <i *ngIf="userService.canAddPerturbation()" class="fa fa-clone"
+                (click)="duplicatePerturbation(dataItem)"></i>
+              <i *ngIf="dataItem.suppressionAutorisee" class="far fa-trash-alt delete"
+                (click)="onDeletePerturbationClick(dataItem)"></i>
+            </div>
+          </ng-template>
+          <ng-template *ngIf="col.type=='boolean'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.prevision">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.prevision">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <!-- <kendo-grid-column *ngIf="col.field=='type'" [title]="col.header">
+          <ng-template kendoGridGroupHeaderTemplate let-value="value">
+            {{value}}
+          </ng-template>
+        </kendo-grid-column> -->
+      </ng-container>
+    </kendo-grid>
+
+    <kendo-excelexport #occupationExcel [data]="occupationResultats">
+      <kendo-excelexport-column field="type" title="Type Perturbation" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="debut" title="Début" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="heureDebut" title="Heure de Début" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="fin" title="Fin" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="heureFin" title="Heure de Fin" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="typeEvenement" title="Type événement" [width]="200">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="numeroDossier" title="N° Dossier" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="trancheHoraire" title="TH" [width]="60">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="descriptionEvenement" title="Evenement" [width]="350">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="description" title="Description" [width]="500">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="etat" title="Etat" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="localisationImpressionExcel" title="Localisation">
+      </kendo-excelexport-column>
+    </kendo-excelexport>
+
+    <kendo-excelexport #fermetureExcel [data]="fermetureResultats">
+      <kendo-excelexport-column field="type" title="Type Perturbation" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="debut" title="Début" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="heureDebut" title="Heure de Début" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="fin" title="Fin" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="heureFin" title="Heure de Fin" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="typeEvenement" title="Type événement" [width]="200">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="numeroDossier" title="N° Dossier" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="trancheHoraire" title="TH" [width]="60">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="descriptionEvenement" title="Evenement" [width]="350">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="description" title="Description" [width]="500">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="etat" title="Etat" [width]="150">
+      </kendo-excelexport-column>
+      <kendo-excelexport-column field="localisationImpressionExcel" title="Localisation">
+      </kendo-excelexport-column>
+    </kendo-excelexport>
+
+    <kendo-grid #occupationGrid [data]="occupationResultats" style="display:none">
+      <kendo-grid-pdf paperSize="A4" [allPages]="true" [repeatHeaders]="false" [scale]="0.5">
+        <kendo-grid-pdf-margin top="2cm" left="0.5cm" right="0.5cm" bottom="2cm"></kendo-grid-pdf-margin>
+        <ng-template kendoGridPDFTemplate let-pageNum="pageNum" let-totalPages="totalPages">
+          <div class="page-template">
+            <div class="header-image">
+              <img style="height: 30px" src="/assets/icons/logone.png" alt="Etat de Neuchâtel">
+            </div>
+            <div class="header-title">
+              Liste des Occupations
+            </div>
+            <div class="footer">
+              Page {{ pageNum }} of {{ totalPages }}
+            </div>
+          </div>
+        </ng-template>
+        <!-- <kendo-grid-column field="localisationImpression" title="Axe" width="100">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <div *ngFor="let loc of dataItem.localisationImpression">
+              {{loc.axe}}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column-group title="Début" [width]="110">
+
+          <kendo-grid-column field="localisationImpression" title="PR" width="50">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_debut}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_debut_distance}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid-column-group>
+        <kendo-grid-column-group title="Fin" [width]="110">
+          <kendo-grid-column field="localisationImpression" title="PR" width="50">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_fin}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_fin_distance}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid-column-group> -->
+        <kendo-grid-column [field]="'urgence'" title="Urgence" width="80">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.urgence">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.urgence">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="debut" title="Début, date et heure">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            {{dataItem.debut | date : 'dd.MM.yyyy'}} {{dataItem.heureDebut}}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="fin" title="Fin, date et heure">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            {{dataItem.fin | date : 'dd.MM.yyyy'}} {{dataItem.heureFin}}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="trancheHoraire" title="TH" width="50">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.trancheHoraire">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.trancheHoraire">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="deviation" title="Déviation" width="100">
+        </kendo-grid-column>
+        <kendo-grid-column field="descriptionEvenement" title="Evénement">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <span>{{dataItem.descriptionEvenement}}
+              ({{dataItem.numeroDossier}})</span>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="localisationImpression" title="Localisation" width="220">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.localisationImpressionReperage">
+              <div *ngFor="let loc of dataItem.localisationImpressionReperage">
+                {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+              </div>
+            </ng-container>
+            <ng-container *ngIf="dataItem.localisationImpression">
+              {{dataItem.localisationImpression}}
+            </ng-container>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid-pdf>
+    </kendo-grid>
+
+    <kendo-grid #fermetureGrid [data]="fermetureResultats" style="display:none">
+      <kendo-grid-pdf paperSize="A4" [allPages]="true" [repeatHeaders]="false" [scale]="0.5">
+        <kendo-grid-pdf-margin top="2cm" left="0.5cm" right="0.5cm" bottom="2cm"></kendo-grid-pdf-margin>
+        <ng-template kendoGridPDFTemplate let-pageNum="pageNum" let-totalPages="totalPages">
+          <div class="page-template">
+            <div class="header-image">
+              <img style="height: 30px" src="/assets/icons/logone.png" alt="Etat de Neuchâtel">
+            </div>
+            <div class="header-title">
+              Liste des Fermetures
+            </div>
+            <div class="footer">
+              Page {{ pageNum }} of {{ totalPages }}
+            </div>
+          </div>
+        </ng-template>
+        <!-- <kendo-grid-column field="localisationImpression" title="Axe" width="100">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <div *ngFor="let loc of dataItem.localisationImpression">
+              {{loc.axe}}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+         <kendo-grid-column-group title="Début" [width]="110">
+
+          <kendo-grid-column field="localisationImpression" title="PR" width="50">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_debut}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_debut_distance}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid-column-group>
+        <kendo-grid-column-group title="Fin" [width]="110">
+          <kendo-grid-column field="localisationImpression" title="PR" width="50">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_fin}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div *ngFor="let loc of dataItem.localisationImpression">
+                {{loc.pr_fin_distance}}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid-column-group> -->
+        <kendo-grid-column field="urgence" title="Urgence" width="80">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.urgence">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.urgence">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="debut" title="Début, date et heure">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            {{dataItem.debut | date : 'dd.MM.yyyy'}} {{dataItem.heureDebut}}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="fin" title="Fin, date et heure">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            {{dataItem.fin | date : 'dd.MM.yyyy'}} {{dataItem.heureFin}}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="trancheHoraire" title="TH" width="50">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.trancheHoraire">Oui</ng-container>
+            <ng-container *ngIf="!dataItem.trancheHoraire">Non</ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="deviation" title="Déviation">
+        </kendo-grid-column>
+        <kendo-grid-column field="descriptionEvenement" title="Evénement">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <span>{{dataItem.descriptionEvenement}}
+              ({{dataItem.numeroDossier}})</span>
+          </ng-template>
+        </kendo-grid-column>
+
+
+        <kendo-grid-column field="localisationImpression" title="Localisation" width="220">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="dataItem.localisationImpressionReperage">
+              <div *ngFor="let loc of dataItem.localisationImpressionReperage">
+                {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+              </div>
+            </ng-container>
+            <ng-container *ngIf="dataItem.localisationImpression">
+              {{dataItem.localisationImpression}}
+            </ng-container>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid-pdf>
+    </kendo-grid>
+  </fieldset>
+</div>
+
+<kendo-dialog title="Supprimer la perturbation" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  (close)="cancelDeletePerturbation()">
+  Confirmer la suppression de la perturbation pour le dossier {{currentPerturbation.numeroDossier}} ?
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="cancelDeletePerturbation()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="deletePerturbation()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

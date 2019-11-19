@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+}
+
+.ui-table-caption {
+    display: flex;
+    .ui-helper-clearfix {
+        margin-left: 10px;
+    }
+}
+
+.card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: .25rem;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+//Override Kendo styles : 
+.k-form-inline .k-form-field span {
+    text-align: left !important;
+}
+
+.k-form-inline fieldset {
+    margin-top: 10px !important;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+textarea:disabled,
+.k-textbox:disabled,
+.k-textbox[disabled] {
+    background-color: #f7f7f7;
+}

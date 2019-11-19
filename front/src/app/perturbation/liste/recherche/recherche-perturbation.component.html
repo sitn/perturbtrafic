@@ -1,0 +1,106 @@
+<form class="k-form-inline" [formGroup]="recherchePerturbationForm">
+  <div class="form-content">
+    <fieldset>
+      <legend>Recherche</legend>
+      <div style="display: flex; width: 100%">
+        <div class="left-part">
+          <label class="k-form-field">
+            <span>Type de perturbation</span>
+            <kendo-dropdownlist [data]="typePerturbationListe" [textField]="'description'" [valueField]="'id'"
+              [valuePrimitive]=true formControlName="type">
+            </kendo-dropdownlist>
+          </label>
+          <label class="k-form-field">
+            <span>Etat de la perturbation</span>
+            <kendo-dropdownlist [data]="etatPerturbationListe" [textField]="'description'" [valueField]="'id'"
+              [valuePrimitive]=true formControlName="etat">
+            </kendo-dropdownlist>
+          </label>
+          <!-- <label class="k-form-field">
+            <span>Valide</span>
+            <kendo-dropdownlist [data]="etats" [textField]="'name'" [valueField]="'code'" formControlName="valide"
+              [valuePrimitive]=true>
+            </kendo-dropdownlist>
+          </label> -->
+          <label class="k-form-field">
+            <span>Ajouté par</span>
+            <kendo-combobox [data]="filteredAjoutePar" [filterable]="true" (filterChange)="filterAjoutePars($event)"
+              [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=false formControlName="ajoutePar">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>N° Dossier</span>
+            <input class="k-textbox" formControlName="numeroDossier" />
+          </label>
+          <label class="k-form-field">
+            <span>Description</span>
+            <input class="k-textbox" formControlName="description" />
+          </label>
+          <div class="k-form-field">
+            <span>Dès le </span>
+            <div class="dates-between-container" formGroupName="dates">
+              <kendo-datepicker  #startDate [format]="'dd.MM.yyyy'" formControlName="dateDebut" [max]="endDate?.value"></kendo-datepicker>
+              <!-- <div [hidden]="dates.valid || dates.pristine" class="alert">
+                <i class="fa fa-exclamation" title="required"></i>
+              </div> -->
+              <span>Jusqu'au</span>
+              <kendo-datepicker #endDate [format]="'dd.MM.yyyy'" formControlName="dateFin"  [min]="startDate?.value"></kendo-datepicker>
+            </div>
+          </div>
+        </div>
+        <div class="right-part">
+          <label class="k-form-field">
+            <span>Type d'événement</span>
+            <kendo-dropdownlist [data]="typeEvenementListe" [textField]="'description'" [valueField]="'id'"
+              formControlName="typeEvenement" [valuePrimitive]=true>
+            </kendo-dropdownlist>
+          </label>
+          <label class="k-form-field">
+            <span>Axe de maintenance</span>
+            <kendo-combobox [data]="filteredAxeMaintenances" [filterable]="true" [textField]="'nom_complet'" [valueField]="'nom_complet'"
+              (filterChange)="filterAxeMaintenances($event)" [valuePrimitive]=false formControlName="axeMaintenance">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>PR de début</span>
+            <kendo-combobox [data]="filteredPrDebuts" [filterable]="true" (filterChange)="filterPrDebuts($event)"
+              [textField]="'secteur_nom'" [valueField]="'secteur_nom'" [valuePrimitive]=false formControlName="prDebut">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>PR de fin</span>
+            <kendo-combobox [data]="filteredPrFins" [filterable]="true" (filterChange)="filterPrFins($event)"
+              [textField]="'secteur_nom'" [valueField]="'secteur_nom'" [valuePrimitive]=false formControlName="prFin">
+            </kendo-combobox>
+          </label>
+          <label class="k-form-field">
+            <span>Comptage touché</span>
+            <input type="radio" formControlName="compteurTouche" value="unknown" id="comptage_unknown" class="k-radio">
+            <label class="k-radio-label" for="comptage_unknown">Ignorer</label>
+            <input type="radio" formControlName="compteurTouche" value="yes" id="comptage_yes" class="k-radio">
+            <label class="k-radio-label" for="comptage_yes">Oui</label>
+            <input type="radio" formControlName="compteurTouche" value="no" id="comptage_no" class="k-radio">
+            <label class="k-radio-label" for="comptage_no">Non</label>
+          </label>
+          <label class="k-form-field">
+            <span>Urgence</span>
+            <input type="radio" formControlName="urgence" value="unknown" id="urgence_unknown" class="k-radio">
+            <label class="k-radio-label" for="urgence_unknown">Ignorer</label>
+            <input type="radio" formControlName="urgence" value="yes" id="urgence_yes" class="k-radio">
+            <label class="k-radio-label" for="urgence_yes">Oui</label>
+            <input type="radio" formControlName="urgence" value="no" id="urgence_no" class="k-radio">
+            <label class="k-radio-label" for="urgence_no">Non</label>
+          </label>
+        </div>
+      </div>
+      <div style="width: 100%">
+        <div class="buttons-container">
+          <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="onReset()" [disabled]="recherchePerturbationForm.pristine"
+            type="button">Réinitialiser</button>
+          <button kendoButton [primary]="true" [iconClass]="'fa fa-search fa-fw'" (click)="onSearchPerturbation()"
+            [disabled]="recherchePerturbationForm.invalid">Rechercher</button>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</form>

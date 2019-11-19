@@ -1,0 +1,6 @@
+[console_scripts]
+initialize_test_db = test.scripts.initialize_db:main
+
+[paste.app_factory]
+main = test:main
+

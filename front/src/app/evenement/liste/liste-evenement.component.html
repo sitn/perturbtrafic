@@ -1,0 +1,10 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12">
+        <recherche-evenement (searchChange)="onSearchChange($event)"></recherche-evenement>
+    </div>
+    <div class="ui-g-12">
+        <resultats-evenement [resultats]="resultats"></resultats-evenement>
+    </div>
+</div>
+
+<evenement-echeance *ngIf="showPopup"></evenement-echeance>

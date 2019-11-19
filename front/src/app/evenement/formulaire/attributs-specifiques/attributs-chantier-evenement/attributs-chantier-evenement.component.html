@@ -1,0 +1,250 @@
+<fieldset [formGroup]="evenementFormService.evenementForm">
+  <ng-container formGroupName="chantier">
+    <legend>Attributs spécifiques chantier</legend>
+    <div style="display: flex; width: 100%">
+      <div class="left-part">
+        <label class="k-form-field">
+          <span>Maitre d'ouvrage</span>
+          <kendo-combobox [data]="filteredMaitreOuvrage" [filterable]="true"
+            (filterChange)="filterMaitreOuvrages($event)" [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=true
+            formControlName="maitreOuvrage">
+          </kendo-combobox>
+          <span class="new-organisme" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewOrganisme()"></i>
+          </span>
+        </label>
+        <ng-container>
+          <label class="k-form-field">
+            <span>Nom / Raison sociale</span>
+            <input class="k-textbox" [value]="selectedMaitreOuvrage?.nom" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Rue et numéro</span>
+            <input class="k-textbox" [value]="selectedMaitreOuvrage?.adresse" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>NPA et localité</span>
+            <input class="k-textbox" [value]="selectedMaitreOuvrage?.localite" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" [value]="selectedMaitreOuvrage?.telephone" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de fax</span>
+            <input class="k-textbox" [value]="selectedMaitreOuvrage?.fax" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" [value]="selectedMaitreOuvrage?.courriel" [disabled]=true />
+          </label>
+        </ng-container>
+        <label class="k-form-field">
+          <span>Direction locale</span>
+          <kendo-combobox [data]="filteredDirectionLocale" [filterable]="true"
+            (filterChange)="filterDirectionLocale($event)" [textField]="'nomComplet'" [valueField]="'id'"
+            [valuePrimitive]=true formControlName="directionLocale">
+          </kendo-combobox>
+          <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+          </span>
+        </label>
+        <ng-container>
+          <label class="k-form-field">
+            <span>Nom</span>
+            <input class="k-textbox" [value]="selectedDirectionLocale?.nom" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Prénom</span>
+            <input class="k-textbox" [value]="selectedDirectionLocale?.prenom" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de mobile</span>
+            <input class="k-textbox" [value]="selectedDirectionLocale?.mobile" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" [value]="selectedDirectionLocale?.telephone" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" [value]="selectedDirectionLocale?.courriel" [disabled]=true />
+          </label>
+        </ng-container>
+        <label class="k-form-field">
+          <span>N° Projet</span>
+          <input class="k-textbox" formControlName="projet" />
+        </label>
+        <label class="k-form-field">
+          <span>Catégories</span>
+          <kendo-multiselect [data]="categoriesChantier" [textField]="'description'" [valueField]="'id'"
+            [valuePrimitive]=true formControlName="categorie">
+          </kendo-multiselect>
+        </label>
+        <label class="k-form-field">
+          <span>Longueur étape</span>
+          <kendo-numerictextbox [spinners]="false" formControlName="longueurEtape"></kendo-numerictextbox>
+        </label>
+        <label class="k-form-field">
+          <span>Surface</span>
+          <kendo-numerictextbox [spinners]="false" formControlName="surface"></kendo-numerictextbox>
+        </label>
+        <label class="k-form-field">
+          <span>Centrale d'enrobage</span>
+          <kendo-combobox [data]="filteredCentraleEnrobage" [filterable]="true"
+            (filterChange)="filterCentraleEnrobage($event)" [textField]="'nom'" [valueField]="'id'"
+            [valuePrimitive]=true formControlName="centraleEnrobage">
+          </kendo-combobox>
+          <span class="new-organisme" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewOrganisme()"></i>
+          </span>
+        </label>
+        <label class="k-form-field">
+          <span>Support, épaisseur</span>
+          <input class="k-textbox" formControlName="epaisseurSupport" />
+        </label>
+        <label class="k-form-field">
+          <span>Support, qualité</span>
+          <input class="k-textbox" formControlName="qualiteSupport" />
+        </label>
+        <label class="k-form-field">
+          <span>Encollage, qualité</span>
+          <input class="k-textbox" formControlName="qualiteEncollage" />
+        </label>
+        <label class="k-form-field">
+          <span>Boucle d'induction</span>
+          <input type="checkbox" id="induction-checkbox" class="k-checkbox" formControlName="boucleInduction">
+          <label class="k-checkbox-label" for="induction-checkbox"></label>
+        </label>
+        <label class="k-form-field">
+          <span>Accotement à faucher <b>*</b></span>
+          <input type="checkbox" id="accotement-checkbox" class="k-checkbox" formControlName="faucherAccotement">
+          <label class="k-checkbox-label" for="accotement-checkbox"></label>
+        </label>
+        <label class="k-form-field">
+          <span>Colmater fissures <b>*</b></span>
+          <input type="checkbox" id="fissures-checkbox" class="k-checkbox" formControlName="colmaterFissure">
+          <label class="k-checkbox-label" for="fissures-checkbox"></label>
+        </label>
+        <label class="k-form-field">
+          <span>Repérage effectif</span>
+          <input type="checkbox" id="reperage-checkbox" class="k-checkbox" formControlName="reperageEffectif">
+          <label class="k-checkbox-label" for="reperage-checkbox"></label>
+        </label>
+      </div>
+      <div class="right-part">
+        <label class="k-form-field">
+          <span>Entrepreneur</span>
+          <kendo-combobox [data]="filteredEntrepreneur" [filterable]="true" (filterChange)="filterEntrepreneur($event)"
+            [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=true formControlName="entrepreneur">
+          </kendo-combobox>
+          <span class="new-organisme" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewOrganisme()"></i>
+          </span>
+        </label>
+        <ng-container>
+          <label class="k-form-field">
+            <span>Nom / Raison sociale</span>
+            <input class="k-textbox" [value]="selectedEntrepreneur?.nom" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Rue et numéro</span>
+            <input class="k-textbox" [value]="selectedEntrepreneur?.adresse" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>NPA et localité</span>
+            <input class="k-textbox" [value]="selectedEntrepreneur?.localite" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" [value]="selectedEntrepreneur?.telephone" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de fax</span>
+            <input class="k-textbox" [value]="selectedEntrepreneur?.fax" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" [value]="selectedEntrepreneur?.courriel" [disabled]=true />
+          </label>
+        </ng-container>
+        <label class="k-form-field">
+          <span>Responsable des travaux</span>
+          <kendo-combobox [data]="filteredResponsableTravaux" [filterable]="true"
+            (filterChange)="filterResponsableTravaux($event)" [textField]="'nomComplet'" [valueField]="'id'"
+            [valuePrimitive]=true formControlName="responsableTravaux">
+          </kendo-combobox>
+          <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+          </span>
+        </label>
+        <ng-container>
+          <label class="k-form-field">
+            <span>Nom</span>
+            <input class="k-textbox" [value]="selectedResponsableTravaux?.nom" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Prénom</span>
+            <input class="k-textbox" [value]="selectedResponsableTravaux?.prenom" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de mobile</span>
+            <input class="k-textbox" [value]="selectedResponsableTravaux?.mobile" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" [value]="selectedResponsableTravaux?.telephone" [disabled]=true />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" [value]="selectedResponsableTravaux?.courriel" [disabled]=true />
+          </label>
+        </ng-container>
+
+        <label class="k-form-field">
+          <span>Séance lieu</span>
+          <input class="k-textbox" formControlName="lieuSeance" />
+        </label>
+        <label class="k-form-field">
+          <span>Séance jour</span>
+          <input class="k-textbox" formControlName="jourSeance" />
+        </label>
+        <label class="k-form-field">
+          <span>Heure séance</span>
+          <input class="k-textbox" formControlName="heureSeance" />
+        </label>
+        <label class="k-form-field">
+          <span>Caisson, épaisseur</span>
+          <input class="k-textbox" formControlName="epaisseurCaisson" />
+        </label>
+        <label class="k-form-field">
+          <span>Caisson, qualité</span>
+          <input class="k-textbox" formControlName="qualiteCaisson" />
+        </label>
+        <label class="k-form-field">
+          <span>Roulement, épaisseur</span>
+          <input class="k-textbox" formControlName="epaisseurRevetement" />
+        </label>
+        <label class="k-form-field">
+          <span>Roulement, qualité</span>
+          <input class="k-textbox" formControlName="qualiteRevetement" />
+        </label>
+        <label class="k-form-field">
+          <span>Curer les dépotoirs <b>*</b></span>
+          <input type="checkbox" id="depotoir-checkbox" class="k-checkbox" formControlName="curerDepotoirs">
+          <label class="k-checkbox-label" for="depotoir-checkbox"></label>
+        </label>
+        <label class="k-form-field">
+          <span>Ret. + nettoyer bords <b>*</b></span>
+          <input type="checkbox" id="bords-checkbox" class="k-checkbox" formControlName="nettoyerBords">
+          <label class="k-checkbox-label" for="bords-checkbox"></label>
+        </label>
+        <label class="k-form-field">
+          <span>PR touchés (peinture) <b>*</b></span>
+          <input type="checkbox" id="pr-checkbox" class="k-checkbox" formControlName="prTouches">
+          <label class="k-checkbox-label" for="pr-checkbox"></label>
+        </label>
+      </div>
+    </div>
+  </ng-container>
+</fieldset>

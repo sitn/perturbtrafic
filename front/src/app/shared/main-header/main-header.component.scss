@@ -1,0 +1,147 @@
+@import "~@progress/kendo-theme-default/scss/all";
+
+
+.header {
+    height: 40px;
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    background-color: #1E6259;
+    display: flex;
+    flex-direction: row;
+}
+
+.version {
+    width: 100px;
+    text-align: center;
+    line-height: 40px;
+}
+
+.popup-content {
+    background-color: #1E6259;
+    width: 150px;
+    color: $accent;
+    min-height: 60px;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    // position: relative;
+
+    .user-entity {
+        height: 25px;
+        width: 100%;
+    }
+
+    span:hover {
+        cursor: pointer;
+        color: lighten($accent, 10%);
+    }
+
+    .logout-section {
+        align-self: flex-end;
+        // position: absolute;
+        // bottom: 0;
+        height: 25px;
+        width: 100%;
+        // display: inline-block;
+        border-top: solid 1px;
+
+        i {
+            margin-left: 5px;
+            line-height: 25px;
+        }
+    }
+}
+
+.user-info-container {
+    width: 350px;
+    max-width: 350px;
+    min-width: 350px;
+    display: flex;
+    height: 40px;
+
+
+    i {
+        color: $accent;
+    }
+
+    .user-info {
+        width: 320px;
+        max-height: 40px;
+        font-size: 14px;
+        display: flex;
+        color: $accent;
+        align-items: center;
+        justify-content: flex-end;
+        margin-right: 10px;
+
+        .user-name{
+            margin-right: 10px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        span {
+            display: inline-block;
+        }
+
+        .entity {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        i {
+            margin: 0 10px;
+            line-height: 25px;
+        }
+    }
+
+    .user-entity {
+        display: inline-grid;
+        grid-template-columns: 25px 1fr;
+
+        i {
+            margin-left: 5px;
+        }
+    }
+}
+
+
+.menu-div {
+    // position: fixed; 
+    // top: 0;
+    height: 40px;
+    width: 100%;
+    // left: 120px;
+    width: calc(100% - 320px);
+
+    .menu-content {
+        display: flex;
+        justify-content: center;
+        height: 100%;
+
+        ul {
+            height: 100%;
+
+            li {
+                color: white;
+            }
+        }
+
+        .k-header {
+            height: 100%;
+        }
+    }
+}
+
+.logo-content {
+    width: 120px;
+    height: 40px;
+
+    img {
+        height: 30px;
+        margin: 5px 10px;
+    }
+}

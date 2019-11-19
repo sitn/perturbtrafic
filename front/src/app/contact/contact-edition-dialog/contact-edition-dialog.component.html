@@ -1,0 +1,39 @@
+<kendo-dialog title="Nouveau contact" *ngIf="opened" [minWidth]="450" [width]="600" (close)="close()">
+  <form class="k-form-inline" [formGroup]="contactEditionFormGroup">
+    <div style="width: 100%">
+      <label class="k-form-field">
+        <span>Nom</span>
+        <input class="k-textbox" formControlName="nom" autofocus />
+      </label>
+      <label class="k-form-field">
+        <span>Prénom</span>
+        <input class="k-textbox" formControlName="prenom" />
+      </label>
+      <label class="k-form-field">
+        <span>Mobile</span>
+        <input class="k-textbox" formControlName="mobile" />
+      </label>
+      <label class="k-form-field">
+        <span>Téléphone</span>
+        <input class="k-textbox" formControlName="telephone" />
+      </label>
+      <label class="k-form-field">
+        <span>Courriel</span>
+        <input type="email" class="k-textbox" formControlName="courriel" email />
+      </label>
+      <label class="k-form-field">
+        <span>Organisme</span>
+        <kendo-combobox [data]="filteredOrganismes" [filterable]="true" (filterChange)="filterOrganismes($event)"
+          [textField]="'nom'" [valueField]="'id'" [valuePrimitive]="true" formControlName="id_organisme">
+        </kendo-combobox>
+      </label>
+    </div>
+    <div *ngIf="errorMessage" style="color: red; margin-top: 20px">{{errorMessage}}</div>
+  </form>
+  <kendo-dialog-actions>
+    <button *ngIf="mode!='READ'" kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="close()">Annuler</button>
+    <button *ngIf="mode!='READ'" kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="saveContact()">Enregistrer</button>
+  </kendo-dialog-actions>
+
+</kendo-dialog>

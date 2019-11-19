@@ -1,0 +1,27 @@
+<div class='login-container'>
+  <div class="card login-card">
+    <form class="k-form-inline">
+      <fieldset>
+        <legend>Bienvenue</legend>
+        <div style="width: 100%">
+          <label class="k-form-field">
+            <span>Login</span>
+            <input [(ngModel)]="user" class="k-textbox" autofocus [ngModelOptions]="{standalone: true}"/>
+          </label>
+          <label class="k-form-field">
+            <span>Mot de passe</span>
+            <input [(ngModel)]="password" type="password" class="k-textbox" [ngModelOptions]="{standalone: true}" />
+          </label>
+        </div>
+      </fieldset>
+      <div class="login-error">
+        <ng-container *ngIf="showError">
+          Login ou mdp incorrect
+        </ng-container>
+      </div>
+      <div class="text-right">
+        <button type="button" class="k-button k-primary" style="float: right;" (click)="login()" >Connexion</button>
+      </div>
+    </form>
+  </div>
+</div>

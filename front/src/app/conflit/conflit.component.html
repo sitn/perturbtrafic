@@ -1,0 +1,50 @@
+<kendo-grid [data]="conflictList">
+  <kendo-grid-messages noRecords="Aucun conflit">
+  </kendo-grid-messages>
+  <kendo-grid-column [field]="'evenementNumeroDossier'" [title]="'Evénement'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="cell">
+        <span><b>{{dataItem.evenementNumeroDossier}}</b> - {{dataItem.libelle}}</span>
+        <i class="fa fa-eye" (click)="showEvenement(dataItem.evenementId)" title="Visualiser l'événement"></i>
+        <i class="fas fa-edit" (click)="editEvenement(dataItem.evenementId)"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'perturbationId'" [title]="'Libellé Perturbation'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="cell">
+        <span>{{dataItem.description}}</span>
+        <i class="fa fa-eye" (click)="showPerturbation(dataItem.perturbationId)" title="Visualiser la perturbation"></i>
+        <i class="fas fa-edit" (click)="editPerturbation(dataItem.perturbationId)" title="Editer la perturbation"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'evenementConflitNumeroDossier'" [title]="'Evénement en conflit'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="cell">
+        <span><b>{{dataItem.evenementConflitNumeroDossier}}</b> - {{dataItem.libelleConflit}}</span>
+        <i class="fa fa-eye" (click)="showEvenement(dataItem.evenementConflitId)" title="Visualiser l'événement"></i>
+        <i class="fas fa-edit" (click)="editEvenement(dataItem.evenementConflitId)" title="Editer l'événement"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'perturbationConflitId'" [title]="'Libellé Perturbation en conflit'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="cell">
+        <span>{{dataItem.descriptionConflit}}</span>
+        <i class="fa fa-eye" (click)="showPerturbation(dataItem.perturbationConflitId)"
+          title="Visualiser la perturbation"></i>
+        <i class="fas fa-edit" (click)="editPerturbation(dataItem.perturbationConflitId)"
+          title="Editer la perturbation"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column [title]="'Guichet'" [width]="'90'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div style="width: 25px; margin: auto">
+        <i class="fas fa-globe-europe" (click)="showSITNConflits(dataItem.evenementNumeroDossier, dataItem.evenementConflitNumeroDossier)"
+          title="Voir dans le guichet"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>

@@ -1,0 +1,37 @@
+<kendo-tabstrip (tabSelect)="onTabSelect($event)" [tabPosition]="'left'" [height]="'100%'">
+  <kendo-tabstrip-tab [title]="'Gestion des organismes'" [selected]="true" *ngIf="userService.canManageOrganisme()">
+    <ng-template kendoTabContent>
+      <constante-organisme></constante-organisme>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Gestion des contacts'" *ngIf="userService.canManageContact()">
+    <ng-template kendoTabContent>
+      <constante-contact></constante-contact>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Perturbation, avis'" *ngIf="userService.canManagePreavis()">
+    <ng-template kendoTabContent>
+      <constante-avis-perturbation></constante-avis-perturbation>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Fermeture, avis d\'urgence'" *ngIf="userService.canManageAvisUrgence()">
+    <ng-template kendoTabContent>
+      <constante-fermeture-urgence></constante-fermeture-urgence>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Contacts SRB'" *ngIf="userService.canManageSrb()">
+    <ng-template kendoTabContent>
+      <constante-srb></constante-srb>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Autorisations'" *ngIf="userService.canManageDelegation()">
+    <ng-template kendoTabContent>
+      <constante-autorisation></constante-autorisation>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Utilisateurs'" *ngIf="userService.canManageUtilisateurs()">
+    <ng-template kendoTabContent>
+      <constante-utilisateurs></constante-utilisateurs>
+    </ng-template>
+  </kendo-tabstrip-tab>
+</kendo-tabstrip>

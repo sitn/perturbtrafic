@@ -1,0 +1,22 @@
+<fieldset [formGroup]="perturbationFormService.perturbationForm">
+  <legend>Choix de l'événement</legend>
+  <div formGroupName="evenement" style="display: flex">
+    <div class="left-part">
+      <!-- <label class="k-form-field">
+        <span>Type d'événement</span>
+        <kendo-dropdownlist [data]="typeEvenementListe" [textField]="'description'" [valueField]="'id'"
+          [valuePrimitive]="true" formControlName="type">
+        </kendo-dropdownlist>
+      </label> -->
+      <label class="k-form-field">
+        <span>Evénement <b>*</b></span>
+        <kendo-combobox [filterable]="true" [data]="filteredEvenementsListe" [textField]="'label'"
+          [valueField]="'id_evenement'" [valuePrimitive]="true" formControlName="evenement"
+          (filterChange)="filterEvenement($event)">
+        </kendo-combobox>
+        <div class="evenement-link">
+          <i class="fas fa-external-link-alt" (click)="openEvenement()"></i>
+        </div>
+      </label>
+    </div>
+  </div>

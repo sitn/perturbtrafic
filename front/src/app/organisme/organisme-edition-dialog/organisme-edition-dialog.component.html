@@ -1,0 +1,39 @@
+<kendo-dialog title="Nouvel organisme" *ngIf="opened" [minWidth]="450" [width]="600" (close)="close()">
+  <form class="k-form-inline" [formGroup]="organismeEditionFormGroup">
+    <div style="width: 100%">
+      <label class="k-form-field">
+        <span>Nom</span>
+        <input class="k-textbox" formControlName="nom" autofocus />
+      </label>
+      <label class="k-form-field">
+        <span>Adresse</span>
+        <input class="k-textbox" formControlName="adresse" />
+      </label>
+      <label class="k-form-field">
+        <span>Localité</span>
+        <kendo-combobox [data]="filteredLocalites" [textField]="'npa_nom'" [valueField]="'npa_nom'" [filterable]="true"
+          (filterChange)="filterLocalites($event)" [valuePrimitive]=true [allowCustom]="true"
+          formControlName="localite">
+        </kendo-combobox>
+      </label>
+      <label class="k-form-field">
+        <span>Téléphone</span>
+        <input class="k-textbox" formControlName="telephone" type="tel" />
+      </label>
+      <label class="k-form-field">
+        <span>Fax</span>
+        <input class="k-textbox" formControlName="fax" type="tel" />
+      </label>
+      <label class="k-form-field">
+        <span>Courriel</span>
+        <input class="k-textbox" formControlName="courriel" type="email" email />
+      </label>
+    </div>
+  </form>
+  <kendo-dialog-actions>
+    <button *ngIf="mode!='READ'" kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="close()">Annuler</button>
+    <button *ngIf="mode!='READ'" kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true"
+      (click)="saveOrganisme()">Enregistrer</button>
+  </kendo-dialog-actions>
+
+</kendo-dialog>

@@ -1,0 +1,50 @@
+<div class="new-organisme">
+  <button kendoButton [iconClass]="'fa fa-user-plus'" (click)="newOrganisme()"> Nouvel organisme</button>
+</div>
+<kendo-grid [data]="filteredOrganismes" [sortable]="{
+  allowUnsort: true,
+  mode: 'single'
+  }" [sort]="state.sort" (dataStateChange)="processData($event)" [filter]="state.filter">
+  <kendo-grid-column [field]="'nom'" [title]="'Nom'" [filter]="true">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'courriel'" [title]="'Courriel'">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'telephone'" [title]="'Telephone'" width="200">
+
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'adresse'" [title]="'Adresse'">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="adresse">
+        <span>{{dataItem.adresse}}</span>
+        <span>{{dataItem.localite}}</span>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column width="120">
+    <!-- [filterable]="col.filterable"> -->
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div class="actions-cell-container">
+        <i class="fa fa-eye" (click)="showOrganisme(dataItem)"></i>
+        <i class="fas fa-edit" (click)="editOrganisme(dataItem)"></i>
+        <i class="far fa-trash-alt delete" (click)="onDeleteOrganismeClick(dataItem)"></i>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+<organisme-edition-dialog>
+</organisme-edition-dialog>
+
+<kendo-dialog title="Supprimer l'organisme" *ngIf="deleteConfirmationOpened" [minWidth]="450" [width]="600"
+  [height]="200" (close)="cancelDeleteOrganisme()">
+  Confirmer la suppression de l'organisme ?
+  <div *ngIf="errorRemovingOrganisme" style="color: red; margin-top: 20px">
+    Impossible de supprimer cet organisme, il est relié à un évènement ou une perturbation existante
+  </div>
+  <kendo-dialog-actions>
+    <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="cancelDeleteOrganisme()">Annuler</button>
+    <button kendoButton [iconClass]="'fa fa-save fa-fw'" [primary]="true" (click)="deleteOrganisme()">Confirmer</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

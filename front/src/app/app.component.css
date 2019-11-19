@@ -1,0 +1,46 @@
+header {
+  height: 40px;
+  width: 100%;
+  position: fixed;
+  z-index: 10;
+  background-color: #1E6259
+}
+
+main {
+  padding-top: 40px
+}
+
+.menu-div {
+  position: fixed;
+  top: 0;
+  height: 40px;
+  width: 100%
+}
+
+.menu-div .menu-content {
+  display: flex;
+  justify-content: center;
+  height: 100%
+}
+
+.menu-div .menu-content ul {
+  height: 100%
+}
+
+.menu-div .menu-content ul li {
+  color: white
+}
+
+.menu-div .menu-content .k-header {
+  height: 100%
+}
+
+.logo-content {
+  width: 120px;
+  height: 40px
+}
+
+.logo-content img {
+  height: 30px;
+  margin: 5px 10px
+}

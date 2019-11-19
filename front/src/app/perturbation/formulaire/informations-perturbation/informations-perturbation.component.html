@@ -1,0 +1,132 @@
+<fieldset [formGroup]="perturbationFormService.perturbationForm">
+  <legend>Informations sur la perturbation</legend>
+  <div style="display: flex; width: 100%">
+    <div class="left-part">
+      <label class="k-form-field">
+        <span>Description</span>
+        <textarea class="k-textarea" formControlName="description">
+        </textarea>
+      </label>
+      <label class="k-form-field">
+        <span>Localisation</span>
+        <input class="k-textbox" formControlName="localisation" />
+      </label>
+      <label class="k-form-field">
+        <span>Etat</span>
+        <kendo-dropdownlist [data]="etatPerturbationListe" [textField]="'description'" [valueField]="'id'"
+          [valuePrimitive]=true formControlName="etat">
+        </kendo-dropdownlist>
+        <div [hidden]="etat.valid || etat.pristine" class="alert">
+          <i class="fa fa-exclamation" title="required"></i>
+        </div>
+      </label>
+      <div class="k-form-field">
+        <span>Date de début <b>*</b></span>
+        <div class="date-with-hour-inputs" formGroupName="dates">
+          <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateDebut"
+            [max]="perturbationFormService?.dateFin?.value">
+          </kendo-datepicker>
+          <span>Heure de début <b>*</b></span>
+          <kendo-maskedtextbox [mask]="timeMask" formControlName="heureDebut" style="width: 55px"
+            [includeLiterals]=true></kendo-maskedtextbox>
+        </div>
+      </div>
+      <div class="k-form-field">
+        <span>Date de fin <b>*</b></span>
+        <div class="date-with-hour-inputs" formGroupName="dates">
+          <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateFin"
+            [min]="perturbationFormService?.dateDebut?.value">
+          </kendo-datepicker>
+          <span>Heure de fin <b>*</b></span>
+          <kendo-maskedtextbox [mask]="timeMask" formControlName="heureFin" style="width: 55px" [includeLiterals]=true>
+          </kendo-maskedtextbox>
+        </div>
+      </div>
+      <label class="k-form-field">
+        <span>Tranche horaire <b>*</b></span>
+        <input type="checkbox" id="tranche-horaire-checkbox" class="k-checkbox" formControlName="trancheHoraire">
+        <label class="k-checkbox-label" for="tranche-horaire-checkbox"></label>
+      </label>
+      <label class="k-form-field">
+        <span>Urgence <b>*</b></span>
+        <input type="checkbox" id="urgence-checkbox" class="k-checkbox" formControlName="urgence">
+        <label class="k-checkbox-label" for="urgence-checkbox"></label>
+      </label>
+      <label class="k-form-field">
+        <span>Validé par</span>
+        <input class="k-textbox" formControlName="utilisateurValidation" />
+      </label>
+      <label class="k-form-field">
+        <span>Validé le</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateValidation"></kendo-datepicker>
+      </label>
+      <label class="k-form-field">
+        <span>Date décision</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateDecision"></kendo-datepicker>
+      </label>
+      <label class="k-form-field">
+        <span>Décision</span>
+        <input class="k-textbox" formControlName="decision" />
+      </label>
+    </div>
+    <div class="right-part">
+      <fieldset formGroupName="responsableTrafic">
+        <legend>Responsable trafic</legend>
+        <label class="k-form-field">
+          <span>Responsable du trafic</span>
+          <kendo-combobox [data]="filteredResponsableTrafic" [filterable]="true"
+            (filterChange)="filterResponsableTrafic($event)" [textField]="'nomComplet'" [valueField]="'id'"
+            [valuePrimitive]=false formControlName="contact">
+          </kendo-combobox>
+          <span class="new-contact" *ngIf="perturbationFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+          </span>
+        </label>
+        <ng-container formGroupName="contactInfos">
+          <label class="k-form-field">
+            <span>Nom</span>
+            <input class="k-textbox" formControlName="nom" />
+          </label>
+          <label class="k-form-field">
+            <span>Prénom</span>
+            <input class="k-textbox" formControlName="prenom" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de mobile</span>
+            <input class="k-textbox" formControlName="mobile" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de téléphone</span>
+            <input class="k-textbox" formControlName="telephone" />
+          </label>
+          <label class="k-form-field">
+            <span>N° de fax</span>
+            <input class="k-textbox" formControlName="fax" />
+          </label>
+          <label class="k-form-field">
+            <span>Courriel</span>
+            <input class="k-textbox" formControlName="courriel" type="email" email />
+          </label>
+        </ng-container>
+      </fieldset>
+      <label class="k-form-field">
+        <span>Créé par </span>
+        <input class="k-textbox" formControlName="utilisateurAjout" />
+      </label>
+      <label class="k-form-field">
+        <span>Créé le</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateAjout">
+        </kendo-datepicker>
+      </label>
+      <label class="k-form-field">
+        <span>Modifié par </span>
+        <input class="k-textbox" formControlName="utilisateurModification" />
+      </label>
+      <label class="k-form-field">
+        <span>Modifié le</span>
+        <kendo-datepicker [format]="'dd.MM.yyyy'" formControlName="dateModification">
+        </kendo-datepicker>
+      </label>
+    </div>
+  </div>
+</fieldset>

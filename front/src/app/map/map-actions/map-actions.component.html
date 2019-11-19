@@ -1,0 +1,78 @@
+<button kendoButton *ngIf="mapService.currentFormType === 'EVENEMENT'" [disabled]="crudMode=='READ_ONLY' || mapService.isEditing" class="map-control polygon-draw"
+  [class.selected]="mapService.currentDrawType === 'Polygon'" (click)="startNewDraw('Polygon')"
+  title="Dessiner un polygone">
+  <i class="fas fa-draw-polygon fa-fw"></i>
+</button>
+
+<button *ngIf="mapService.currentDrawType ==='Polygon'" kendoButton class="map-control polygon-cancel"
+  (click)="cancelCurrentDraw()" title="Annuler">
+  <i class="fas fa-times fa-fw"></i>
+</button>
+
+<button kendoButton [disabled]="crudMode=='READ_ONLY' || mapService.isEditing" class="map-control line-draw"
+  [class.selected]="mapService.currentDrawType === 'LineString'" (click)="startNewDraw('LineString')"
+  title="Dessiner une ligne">
+  <i class="fas fa-slash fa-fw"></i>
+</button>
+
+<button kendoButton *ngIf="mapService.isDeviation" [disabled]="crudMode=='READ_ONLY' || mapService.isEditing"
+  class="map-control deviation-draw" [class.selected]="mapService.currentDrawType === 'Deviation'"
+  (click)="startDeviationDraw()" title="Dessiner une déviation">
+  <i class="fas fa-code-branch"></i>
+</button>
+
+<button *ngIf="mapService.currentDrawType ==='Deviation'" kendoButton class="map-control deviation-cancel"
+  (click)="cancelCurrentDraw()" title="Annuler">
+  <i class="fas fa-times fa-fw"></i>
+</button>
+
+<button *ngIf="mapService.currentDrawType ==='LineString'" kendoButton class="map-control line-cancel"
+  (click)="cancelCurrentDraw()" title="Annuler">
+  <i class="fas fa-times fa-fw"></i>
+</button>
+
+<button kendoButton
+  [disabled]="crudMode=='READ_ONLY' || mapService.isEditing || ( mapService.currentDrawType && mapService.currentDrawType != 'Point')"
+  class="map-control point-draw" [class.selected]="mapService.currentDrawType === 'Point'"
+  (click)="startNewDraw('Point')"  title="Ajouter un point">
+  <i class="fas fa-map-marker-alt fa-fw"></i>
+</button>
+
+<button *ngIf="mapService.currentDrawType ==='Point'" kendoButton class="map-control point-cancel"
+  (click)="cancelCurrentDraw()" title="Annuler">
+  <i class="fas fa-times fa-fw"></i>
+</button>
+
+<button kendoButton
+  [disabled]="crudMode=='READ_ONLY' || !mapService.isFeatureSelected || mapService.currentDrawType != null"
+  class="map-control edit-draw" [class.selected]="mapService.isEditing" (click)="editFeature()" title="Editer la géométrie sélectionnée">
+  <i class="fas fa-edit fa-fw"></i>
+</button>
+
+<button *ngIf="mapService.isEditing" kendoButton class="map-control edit-cancel" (click)="cancelCurrentEdition()" title="Annuler l'édition en cours">
+  <i class="fas fa-times fa-fw"></i>
+</button>
+
+<button kendoButton
+  [disabled]="crudMode=='READ_ONLY' || !mapService.isFeatureSelected || mapService.currentDrawType != null"
+  class="map-control delete-draw" (click)="removeFeature()" title="supprimer la géométrie sélectionnée">
+  <i class="far fa-trash-alt fa-fw"></i>
+</button>
+
+
+
+<button kendoButton [disabled]="crudMode=='READ_ONLY' || mapService.isEditing" class="map-control reperage-edition"
+  (click)="editReperage()" title="Editer les repérages">
+  <i class="fas fa-list fa-fw"></i>
+</button>
+
+<button kendoButton [disabled]="crudMode=='READ_ONLY' || mapService.currentDrawType == null"
+  class="map-control toggle-snapping" title="Activer / désactiver le snapping" (click)="toggleSnapping()"
+  [class.selected]="mapService.isSnapping">
+  <i class="fas fa-magic fa-fw"></i>
+</button>
+
+
+<!-- <button kendoButton [disabled]="evenementFormService.mode=='READ_ONLY'" [primary]="true" [iconClass]="'fa fa-pencil-f-o fa-fw'" class="new-reperage-button">
+  Saisir un repérage
+</button> -->

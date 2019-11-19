@@ -1,0 +1,11 @@
+<fieldset>
+  <legend>Liste des conflits</legend>
+  <div *ngIf="conflicts.length < 1">
+    Pas de conflits en cours
+  </div>
+  <div *ngFor="let conflict of conflicts" class="conflict-line">
+    <i class="fas fa-edit" (click)="editPerturbation(conflict.perturbationConflitId)"></i>
+    <i class="fas fa-globe-europe" title="Voir dans le guichet" (click)="showGuichetCarto()"></i>
+    {{conflict.libelleConflit}}
+  </div>
+</fieldset>

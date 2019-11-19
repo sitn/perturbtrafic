@@ -1,0 +1,7 @@
+<fieldset [formGroup]="evenementFormService.evenementForm">
+  <ng-container formGroupName="manifestation">
+    <legend>Attributs spécifiques à la manifestation</legend>
+    <div class="subtitle-manifestation">Description de l’espace routier utilisé (parcours/stationnement…) </div>
+    <kendo-editor formControlName="parcours"></kendo-editor>
+  </ng-container>
+</fieldset>

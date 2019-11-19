@@ -1,0 +1,7 @@
+{
+    "/api/*": {
+        "target": "http://perturbtrafic.arxit.com/perturbtrafic/",
+        "secure": false,
+        "changeOrigin": true
+    }
+}

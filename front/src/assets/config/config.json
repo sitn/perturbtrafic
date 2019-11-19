@@ -1,0 +1,52 @@
+{
+    "version": "Beta 10",
+    "wsPath": "https://perturbtrafic.arxit.com/perturbtrafic/api/",
+    "urlGuichetCarto": "https://sitn.ne.ch/theme/trafic?lang=fr&baselayer_ref=blank&tree_group_layers_gp_points_interets=&tree_group_layers_gp_main=&tree_enable_osm=false&theme=trafic&tree_groups=gp_mo_cadastre_partiel%2Cgp_rt_perturbations%2Cgp_base_layers",
+    "urlConflits": "https://sitnintra.ne.ch/theme/trafic?wfs_layer=pt00_evenement&wfs_id_evenement=",
+    "sitnWS": {
+        "fond_plan": {
+            "baseUrl": "https://sitn.ne.ch/mapproxy95/service",
+            "version": "1.1.1",
+            "layers": {
+                "plan_cadastral": "plan_cadastral"
+            }
+        },
+        "wms": {
+            "baseUrl": "https://sitn.ne.ch/ogc-sitn-spch/wms",
+            "version": "1.3.0",
+            "layers": {
+                "axes_nationaux": "rt10_axes_nationaux",
+                "secteurs_nationaux": "rt13_secteurs_nationaux",
+                "axes_cantonaux": "rt11_axes_cantonaux",
+                "secteurs_cantonaux": "rt14_secteurs_cantonaux",
+                "hectometrage": "rt45_hectometrage",
+                "secteurs_communaux": "rt15_secteurs_communaux",
+                "axes_communaux": "rt12_axes_communaux"
+            }
+        },
+        "wfs": {
+            "baseUrl": "https://sitn.ne.ch/ogc-sitn-spch/wms",
+            "version": "1.1.0",
+            "layers": {
+                "axes_nationaux": "rt10_axes_nationaux",
+                "axes_cantonaux": "rt11_axes_cantonaux",
+                "axes_communaux": "rt12_axes_communaux"
+            }
+        }
+    },
+    "listeSuggestions": {
+        "occupation": "Occupation",
+        "voieCondamnee": "VoiesCondamnees",
+        "division": "Division",
+        "regulationPar": "RegulationPar"
+    },
+    "evenementPerturbationFieldsMapping": {
+        "geometries": "geometries",
+        "description": "description",
+        "date_debut": "date_debut",
+        "date_fin": "date_fin",
+        "heure_debut": "heure_debut",
+        "heure_fin": "heure_fin",
+        "localisation": "localisation"
+    }
+}
