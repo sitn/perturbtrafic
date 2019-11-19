@@ -30,7 +30,7 @@ setup(
     name='perturbtrafic_api',
     version='1.0-beta-10',
     description='API perturbtrafic',
-    long_description=README + '\n\n' + CHANGES,
+    long_description=CHANGES,
     classifiers=[
         'Programming Language :: Python',
         'Framework :: Pyramid',
