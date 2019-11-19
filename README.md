@@ -24,5 +24,8 @@ cd perturbtrafic
 cd back
 $env:PIPENV_VENV_IN_PROJECT="true"
 pipenv install
-
+pipenv shell
+pip install -e .
 ```
+
+4.
