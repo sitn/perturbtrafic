@@ -6,6 +6,7 @@
 - PostgreSQL 10 + PostGIS 2.4.4
 - Git
 - Apache + mod_wsgi
+- NodeJs with Microsoft Build Tools (option of NodeJs installer)
 
 
 ## Deploy
@@ -77,6 +78,13 @@ It should answer a JSON that looks like this:
 ```
 
 ### Front-end
+
+1. Build your front-end with npm
+
+```powershell
+cd front
+npm run build
+```
 
 ### Scripts
 

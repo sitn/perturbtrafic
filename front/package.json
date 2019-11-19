@@ -1,6 +1,6 @@
 {
   "name": "perturb-trafic",
-  "version": "1.0.0-Beta9",
+  "version": "0.10.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
