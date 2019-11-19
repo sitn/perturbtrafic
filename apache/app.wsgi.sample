@@ -1,0 +1,17 @@
+import os, sys
+
+# replace path here with the root path of your app
+root="/path/to/your/api/back"
+
+sys.path = [
+    root + "/perturbtrafic_api",
+    root + "/.venv/Scripts",
+    root + "/.venv/Lib",
+    root + "/.venv/Lib/site-packages",
+    ] + sys.path
+
+from pyramid.paster import get_app, setup_logging
+
+configfile = os.path.join(root, "production.ini")
+setup_logging(configfile)
+application = get_app(configfile)

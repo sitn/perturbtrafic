@@ -1,0 +1,23 @@
+# APACHE mod_wsgi needs to be enabled
+# CHANGE THE APP PATH HERE:
+WSGIScriptAlias /perturbtrafic_api /path/to/wsgi/file/app.wsgi
+
+## Uncomment this to enable maintenance and comment line above ##
+#DocumentRoot  "/path/to/maintenance/folder"
+#Alias "/perturbtrafic_api" "/path/to/maintenance/folder"
+#RewriteEngine  on
+#RewriteRule    "^/(.+)" "" [R,L]
+#<location />
+#    Require all granted
+#</location>
+## End of maintenance part
+
+ProxyRequests off
+ProxyPreserveHost on
+
+ProxyPass /perturbtrafic/api http://127.0.0.1/perturbtrafic_api/perturbtrafic/api
+ProxyPassReverse /perturbtrafic/api http://127.0.0.1/perturbtrafic_api/perturbtrafic/api
+
+<location /perturbtrafic_api>
+    Require all granted
+</location>
