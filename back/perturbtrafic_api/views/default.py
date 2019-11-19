@@ -5944,10 +5944,6 @@ def mise_a_jours_groupes_ad_view(request):
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
-        auth_tkt = request.cookies.get('auth_tkt', default=None)
-
-        if not auth_tkt:
-            raise HTTPForbidden()
 
         is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
 
