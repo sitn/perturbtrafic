@@ -5788,7 +5788,7 @@ def get_nouveaux_contacts_ad_view(request):
 
         # Logins from AD
         contacts_ad_json = LDAPQuery.get_users_belonging_to_group_entites(request)
-        return contacts_ad_json
+        
         # Logins from DB
         contacts_bd_logins = []
         contacts_bd_logins_query = request.dbsession.query(models.Contact).distinct(models.Contact.login).filter(models.Contact.login.isnot(None)).all()
