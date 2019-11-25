@@ -5788,19 +5788,19 @@ def get_nouveaux_contacts_ad_view(request):
 
         # Logins from AD
         contacts_ad_json = LDAPQuery.get_users_belonging_to_group_entites(request)
-        
+
         # Logins from DB
         contacts_bd_logins = []
         contacts_bd_logins_query = request.dbsession.query(models.Contact).distinct(models.Contact.login).filter(models.Contact.login.isnot(None)).all()
         for c in contacts_bd_logins_query:
-            contacts_bd_logins.append(c.login)
+            contacts_bd_logins.append(c.login.upper())
 
         result = []
 
         for one_contact_ad_json in contacts_ad_json:
             if one_contact_ad_json and login_attr in one_contact_ad_json:
-                if one_contact_ad_json[login_attr] not in contacts_bd_logins:
-                    groups  = LDAPQuery.get_user_groups(request, one_contact_ad_json[login_attr])
+                if one_contact_ad_json[login_attr].upper() not in contacts_bd_logins:
+                    groups  = LDAPQuery.get_user_groups_by_dn(request, one_contact_ad_json['dn'])
 
                     entites = [{'id': x[group_id_attribute], 'name': x[group_name_attribute]} for x in groups if
                                group_id_attribute in x and x[group_id_attribute].startswith(ldap_entite_groups_prefix)]
@@ -5870,7 +5870,7 @@ def add_nouveaux_contacts_ad_view(request):
                         nom=one_contact_ad_json[settings['ldap_user_attribute_lastname']],
                         prenom=one_contact_ad_json[settings['ldap_user_attribute_firstname']],
                         telephone=one_contact_ad_json[settings['ldap_user_attribute_telephone']],
-                        mobile=one_contact_ad_json[settings['ldap_user_attribute_mobile']],
+                        #mobile=one_contact_ad_json[settings['ldap_user_attribute_mobile']],
                         courriel=one_contact_ad_json[settings['ldap_user_attribute_mail']])
 
                     request.dbsession.add(contact_model)
@@ -5914,11 +5914,11 @@ def add_nouveaux_contacts_ad_view(request):
                         for one_contact_ldap_group_item in groupes_fonctions:
                             one_contact_ldap_group_id = one_contact_ldap_group_item['id']
 
-                        fonction_contact_model = models.FonctionContact(
-                            id_contact=max_contact_id,
-                            fonction=one_contact_ldap_group_id
-                        )
-                        request.dbsession.add(fonction_contact_model)
+                            fonction_contact_model = models.FonctionContact(
+                                id_contact=max_contact_id,
+                                fonction=one_contact_ldap_group_id
+                            )
+                            request.dbsession.add(fonction_contact_model)
 
                     transaction.commit()
 
@@ -5944,6 +5944,10 @@ def mise_a_jours_groupes_ad_view(request):
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+
+        if not auth_tkt:
+            raise HTTPForbidden()
 
         is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
 

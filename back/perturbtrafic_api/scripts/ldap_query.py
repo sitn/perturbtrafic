@@ -24,7 +24,6 @@ class LDAPQuery():
 
                 headers = remember(request, dn)
 
-
                 if contact :
                     contact_json = contact.format()
                     contact_json['entites'] = entites
@@ -33,7 +32,7 @@ class LDAPQuery():
 
                 response = Response(contact_json,
                                     content_type='application/json; charset=UTF-8', headers=headers)
-                response.set_cookie('test', 'test1', domain='localhost')
+
             else:
                 raise Exception('Invalid credentials')
 
@@ -89,7 +88,7 @@ class LDAPQuery():
 
     @classmethod
     def get_user_groups(cls, request, login):
-        dn = cls.get_user_dn(request, login)
+        dn = request.authenticated_userid#cls.get_user_dn(request, login)
         groups = []
         try:
             connector = get_ldap_connector(request)
@@ -218,7 +217,7 @@ class LDAPQuery():
 
                     if 'dn' in r and len(cls.get_user_groups_entite_by_dn(request, r['dn'])) > 0:
                         user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
-                        #user_json['dn'] = r['dn']
+                        user_json['dn'] = r['dn']
                         users.append(user_json)
 
         except Exception as error:
@@ -251,7 +250,7 @@ class LDAPQuery():
 
                         if belongs_to_group and len(belongs_to_group) > 0:
                             user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
-                            #user_json['dn'] = r['dn']
+                            user_json['dn'] = r['dn']
                             users.append(user_json)
 
         except Exception as error:

@@ -85,9 +85,9 @@ class Utils():
 
                         # Login exists in BD logins
                         if one_contact_ad_login in contacts_bd_logins:
-                            #one_contact_ad_dn = one_contact_ad_json['dn']
+                            one_contact_ad_dn = one_contact_ad_json['dn']
                             one_contact_bd_id = contacts_bd_logins_id[one_contact_ad_login]
-                            contact_ldap_groups = LDAPQuery.get_user_groups(request, one_contact_ad_login)
+                            contact_ldap_groups = LDAPQuery.get_user_groups_by_dn(request, one_contact_ad_dn)
 
                             # Delete all AD groups relationships of the contact
                             request.dbsession.query(models.FonctionContact).filter(
