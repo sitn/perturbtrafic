@@ -66,11 +66,11 @@ class LDAPQuery():
                 ret = conn.search(
                     search_scope=request.registry.settings['ldap_login_query_scope'],
                     attributes=request.registry.settings['ldap_login_query_attributes'].replace(', ', ',').replace(' , ', ',').replace(' ,', ',').split(','),
-                    search_base=request.registry.settings['ldap_login_query_base_dn'],
+                    search_base=user_id,#request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
                 result, ret = conn.get_response(ret)
-
+            
             if result is None:
                 result = []
             else:

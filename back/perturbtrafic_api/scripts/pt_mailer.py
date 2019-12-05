@@ -17,7 +17,7 @@ class PTMailer():
                               recipients=recipients,
                               body=body)
 
-            mailer.send_immediately(message, fail_silently=True)
+            mailer.send_immediately(message, fail_silently=False)
         except Exception as error:
             raise error
 
@@ -47,7 +47,7 @@ class PTMailer():
                               recipients=recipients,
                               html=html_body)
 
-            mailer.send_immediately(message, fail_silently=True)
+            mailer.send_immediately(message, fail_silently=False)
 
         except Exception as error:
             raise error

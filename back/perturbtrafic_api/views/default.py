@@ -72,7 +72,6 @@ def types_evenements_view(request):
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
-
         query = request.dbsession.query(models.TypeEvenement).all()
 
     except Exception as e:
