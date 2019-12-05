@@ -266,9 +266,11 @@ class LDAPQuery():
 
         return json_obj
 
+    """
     @classmethod
     def get_user_dn(cls, request, login):
-        return str(request.registry.settings['ldap_user_dn_template']).replace('{login}', login)
+        return str(request.registry.settings['ldap_user_dn_template']).replace('{login}', login)        
+    """
 
 
 

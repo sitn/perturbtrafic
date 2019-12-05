@@ -2,8 +2,10 @@ from ..scripts.ldap_query import LDAPQuery
 from .. import models
 import transaction
 from sqlalchemy import exc, func
+from sqlalchemy.schema import Sequence
 from ..scripts.pt_mailer import PTMailer
 from ..scripts.ldap_query import LDAPQuery
+from geoalchemy2 import Geometry
 import json
 
 class Utils():
@@ -69,8 +71,8 @@ class Utils():
 
             # Logins from BD
             for c in contacts_bd_logins_query:
-                contacts_bd_logins.append(c.login)
-                contacts_bd_logins_id[c.login] = c.id
+                contacts_bd_logins.append(c.login.upper())
+                contacts_bd_logins_id[c.login.upper()] = c.id
 
             # Entites from DB
             entites = {}
@@ -84,9 +86,9 @@ class Utils():
                         one_contact_ad_login = one_contact_ad_json[login_attr];
 
                         # Login exists in BD logins
-                        if one_contact_ad_login in contacts_bd_logins:
+                        if one_contact_ad_login.upper() in contacts_bd_logins:
                             one_contact_ad_dn = one_contact_ad_json['dn']
-                            one_contact_bd_id = contacts_bd_logins_id[one_contact_ad_login]
+                            one_contact_bd_id = contacts_bd_logins_id[one_contact_ad_login.upper()]
                             contact_ldap_groups = LDAPQuery.get_user_groups_by_dn(request, one_contact_ad_dn)
 
                             # Delete all AD groups relationships of the contact
@@ -565,4 +567,130 @@ class Utils():
         except Exception:
             return string;
 
+    @classmethod
+    def generate_numero_dossier(cls, request, type):
 
+        try:
+            settings = request.registry.settings
+            numero_dossier = ''
+
+            # Get numero_dossier according to type
+            numero_dossier_next_id_seq = request.dbsession.execute(Sequence("evenement_num_dossier_seq"))
+
+            # Type evenement : autre
+            if int(type) == int(settings['autre_evenement_id']):
+                numero_dossier = settings['num_dossier_prefix_autre'] + str(numero_dossier_next_id_seq)
+
+            # Type evenement : Chantier
+            elif int(type) == int(settings['chantier_evenement_id']):
+                numero_dossier = settings['num_dossier_prefix_chantier'] + str(numero_dossier_next_id_seq)
+
+            # Type evenement : Fouille
+            elif int(type) == int(settings['fouille_evenement_id']):
+                numero_dossier = settings['num_dossier_prefix_fouille'] + str(numero_dossier_next_id_seq)
+
+            # Type evenement : Manifestaion
+            elif int(type) == int(settings['manifestation_evenement_id']):
+                numero_dossier = settings['num_dossier_prefix_manifestation'] + str(numero_dossier_next_id_seq)
+
+            return numero_dossier
+
+        except Exception as error:
+            raise error
+
+    @classmethod
+    def get_geometries_from_collection(cls, request, geometry_collection, type):
+        try:
+            session = request.dbsession
+            with session.no_autoflush:
+                #return  request.dbsession.execute("SELECT public.ST_AsText(public.ST_GeomFromWKB((public.ST_Dump(public.ST_CollectionExtract(public.ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(2553935.7897053463 1218112.2472952164,2553995.3326233597 1218167.3796267102),POLYGON((2553987.246548074 1218189.4325593077,2554001.2134053856 1218173.260408736,2554029.147120009 1218196.7835368402,2554013.7100671907 1218212.9556874116,2553987.246548074 1218189.4325593077)),POINT(2553947.5512693985 1218149.7372806321),POINT(2553972.544593009 1218178.4060930088),POINT(2553919.617554775 1218128.419445788),POINT(2554009.2994806715 1218167.3796267102),POINT(2554029.147120009 1218210.7503941518),POINT(2554025.471631243 1218185.021972788),LINESTRING(2554015.1802626974 1218155.6180626582,2554032.8226087755 1218171.0551154765))'),2))).geom))")
+                settings = request.registry.settings
+                request.dbsession.execute('SET search_path TO public')
+                #return request.dbsession.query(func.public.ST_AsText(func.public.ST_GeomFromWKB((func.ST_Dump(func.public.ST_CollectionExtract(func.public.ST_GeomFromText(geometry_collection), type))).geom)).label("geometry")).all()
+                return session.query(func.public.ST_AsText(func.public.ST_GeomFromWKB((func.ST_Dump(
+                    func.public.ST_CollectionExtract(func.public.ST_GeomFromText(geometry_collection), type))).geom)).label(
+                    "geometry")).all()
+                request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        except Exception as error:
+            raise error
+
+    @classmethod
+    def add_ev_geometries(cls, request, geometry_collection_geom, ev_id):
+        try:
+            settings = request.registry.settings
+            points_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 1)
+            lines_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 2)
+            polygon_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 3)
+
+            request.dbsession.execute('set search_path to ' + settings['schema_name'])
+            #Points
+            for item in points_geom:
+                if item and len(item)>0:
+                    one_model = models.EvenementPoint(
+                        id_evenement=ev_id
+                    )
+
+                    one_model.set_text_geometry(str(item[0]), settings['srid'])
+                    request.dbsession.add(one_model)
+
+            # Lines
+            for item in lines_geom:
+                if item and len(item) > 0:
+                    one_model = models.EvenementLigne(
+                        id_evenement=ev_id
+                    )
+
+                    one_model.set_text_geometry(str(item[0]), settings['srid'])
+                    request.dbsession.add(one_model)
+
+            # Polygons
+            for item in polygon_geom:
+                if item and len(item) > 0:
+                    one_model = models.EvenementPolygone(
+                        id_evenement=ev_id
+                    )
+
+                    one_model.set_text_geometry(str(item[0]), settings['srid'])
+                    request.dbsession.add(one_model)
+
+
+
+
+        except Exception as error:
+            raise error
+
+    @classmethod
+    def add_perturb_geometries(cls, request, geometry_collection_geom, pt_id):
+        try:
+            settings = request.registry.settings
+            points_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 1)
+            lines_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 2)
+            polygon_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 3)
+
+            request.dbsession.execute('set search_path to ' + settings['schema_name'])
+            # Points
+            for item in points_geom:
+                if item and len(item) > 0:
+                    one_model = models.PerturbationPoint(
+                        id_perturbation=pt_id
+                    )
+
+                    one_model.set_text_geometry(str(item[0]), settings['srid'])
+                    request.dbsession.add(one_model)
+
+            # Lines
+            for item in lines_geom:
+                if item and len(item) > 0:
+                    one_model = models.PerturbationLigne(
+                        id_perturbation=pt_id
+                    )
+
+                    one_model.set_text_geometry(str(item[0]), settings['srid'])
+                    request.dbsession.add(one_model)
+
+
+
+
+
+        except Exception as error:
+            raise error

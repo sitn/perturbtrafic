@@ -23,4 +23,7 @@ class EvenementPolygone(Base):
     def set_geometry_collection(self, geom_collection, srid):
         self.geometry = func.public.ST_SetSRID(func.public.ST_GeomFromGeoJSON(func.public.ST_AsGeoJSON(geom_collection)), srid)
 
+    def set_text_geometry(self, text, srid):
+        self.geometry = func.public.ST_SetSRID(func.public.ST_GeomFromText(text), srid)
+
 #Index('my_index', EvenementLigne.nom, unique=True, mysql_length=255)

@@ -133,14 +133,24 @@ def delete_evenement_by_id_view(request):
             raise HTTPForbidden()
 
 
+        # Evenement
         query = request.dbsession.query(models.Evenement)
         evenement = query.filter(models.Evenement.id == id).first()
+
+
+        # Related perturbation
+        query_p = request.dbsession.query(models.Perturbation)
+        perturbations = query_p.filter(models.Perturbation.id_evenement == id).all()
 
         if not evenement:
             raise Exception(id_not_found_exception)
 
         with transaction.manager:
             evenement.date_suppression = func.now()
+
+            for p in perturbations:
+                p.date_suppression = func.now()
+
             # Commit transaction
             transaction.commit()
 
@@ -669,25 +679,7 @@ def add_evenement_edition(request):
 
         if 'type' in request.params:
             type = request.params['type']
-
-            # Get numero_dossier according to type
-            numero_dossier_next_id_seq = request.dbsession.execute(Sequence("evenement_num_dossier_seq"))
-
-            # Type evenement : autre
-            if int(type) == int(settings['autre_evenement_id']):
-                numeroDossier = settings['num_dossier_prefix_autre'] + str(numero_dossier_next_id_seq)
-
-            # Type evenement : Chantier
-            elif int(type) == int(settings['chantier_evenement_id']):
-                numeroDossier = settings['num_dossier_prefix_chantier'] + str(numero_dossier_next_id_seq)
-
-            # Type evenement : Fouille
-            elif int(type) == int(settings['fouille_evenement_id']):
-                numeroDossier = settings['num_dossier_prefix_fouille'] + str(numero_dossier_next_id_seq)
-
-            # Type evenement : Manifestaion
-            elif int(type) == int(settings['manifestation_evenement_id']):
-                numeroDossier = settings['num_dossier_prefix_manifestation'] + str(numero_dossier_next_id_seq)
+            numeroDossier = Utils.generate_numero_dossier(request, type)
 
         if 'division' in request.params:
             division = request.params['division']
@@ -5602,7 +5594,7 @@ def evenements_xml_view(request):
 
         for file in files_array:
             file_json = EvenementXML.xml_to_json(file)
-
+      
             if file_json:
                 is_added = EvenementXML.add_file_data(file_json)
 
@@ -5941,18 +5933,24 @@ def add_nouveaux_contacts_ad_view(request):
 @view_config(route_name='mise_a_jours_groupes_ad', request_method='GET', renderer='json')
 @view_config(route_name='mise_a_jours_groupes_ad_slash', request_method='GET', renderer='json')
 def mise_a_jours_groupes_ad_view(request):
+
+    result = {'message': 'AD groups updated'}
+
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
+
+        """
         auth_tkt = request.cookies.get('auth_tkt', default=None)
 
         if not auth_tkt:
             raise HTTPForbidden()
+        """
 
         is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
 
         if not is_groupes_ad_mis_a_jour:
-            raise Exception('Groupes AD non mis à jour')
+            raise Exception('An error occured while updating AD groups')
 
     except HTTPForbidden as e:
         raise HTTPForbidden()
@@ -5963,7 +5961,7 @@ def mise_a_jours_groupes_ad_view(request):
         log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': general_exception}
 
-    return {'message': 'Data successfully saved'}
+    return result
 
 
 
@@ -6967,3 +6965,4 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
+

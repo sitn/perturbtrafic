@@ -20,5 +20,8 @@ class PerturbationLigne(Base):
     def set_json_geometry(self, geojson, srid):
         self.geometry = func.public.ST_SetSRID(func.public.ST_GeomFromGeoJSON(geojson), srid)
 
+    def set_text_geometry(self, text, srid):
+        self.geometry = func.public.ST_SetSRID(func.public.ST_GeomFromText(text), srid)
+
 
 #Index('my_index', PerturbationLigne.nom, unique=True, mysql_length=255)

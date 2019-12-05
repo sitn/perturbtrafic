@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dossiers>
+	<dossier id="3">
+		<title>Autres entraves</title>
+		<instance_id>7187</instance_id>
+		<state>
+			<code>23</code>
+			<value>Décision</value>
+		</state>
+		<descriptions>
+			<descr_lib>Autres entraves</descr_lib>
+		</descriptions>
+		<forms>
+			<form id="45">
+				<title>Données de l'entrave</title>
+				<sections>
+					<section id="51">
+						<title>Autre entrave</title>
+						<questions>
+							<question id="15">
+								<title>Surface [m2]</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="16">
+								<title>Longueur de l'étape [m]</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>30</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="121">
+								<title>Date de début</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>20.08.2019</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="122">
+								<title>Heure de début</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>9:15</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="123">
+								<title>Date de fin</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>20.08.2019</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="124">
+								<title>Heure de fin</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>15:45</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="134">
+								<title>Cause de la fouille</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Test Points / Lignes / Polygones</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="135">
+								<title>Description</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Occupation de la chaussée par le camion grue qui doit évacuer les débris du toit.</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="201">
+								<title>Adresse de la fouille</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Rue de la Cité-Fourchaux 7, 2303 La Chaux-de-Fonds</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="1">
+						<title>Requérant - Entreprise / Service / Commune</title>
+						<questions>
+							<question id="1">
+								<title>Nom / Raison sociale</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Gérimmo SA</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="2">
+								<title>Rue et numéro</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Rue du Parc 82</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="3">
+								<title>NPA et localité</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>2300 La Chaux-de-Fonds</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="4">
+								<title>N° de téléphone</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>032 648 64 82</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="5">
+								<title>N° de fax</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="6">
+								<title>Courriel</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>marc.wainsenker@ne.ch</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="32">
+						<title>Requérant - Personne de contact</title>
+						<questions>
+							<question id="100">
+								<title>Nom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Rammel</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="101">
+								<title>Prénom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Jérôme</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="102">
+								<title>N° de mobile</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>075 430 94 30</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="103">
+								<title>N° de téléphone</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="104">
+								<title>N° de fax</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="105">
+								<title>Courriel</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="33">
+						<title>Maître de l'ouvrage ou mandataire - Direction locale</title>
+						<questions>
+							<question id="106">
+								<title>Nom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Dietrisch</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="107">
+								<title>Prénom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Elsa</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="108">
+								<title>N° de mobile</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>074 843 94 72</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="109">
+								<title>N° de téléphone</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="110">
+								<title>N° de fax</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="111">
+								<title>Courriel</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="2">
+						<title>Maître de l'ouvrage ou mandataire - Entreprise / Bureau d'ingénieur</title>
+						<questions>
+							<question id="1">
+								<title>Nom / Raison sociale</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Gyger Transports SA</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="2">
+								<title>Rue et numéro</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Vallon 23</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="3">
+								<title>NPA et localité</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>1002 Lausanne</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="4">
+								<title>N° de téléphone</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="5">
+								<title>N° de fax</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="6">
+								<title>Courriel</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>marc.wainsenker@ne.ch</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="4">
+						<title>Facturation</title>
+						<questions>
+							<question id="10">
+								<title>Facturation adressée à</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code>1</code>
+										<value>Au requérant</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="52">
+						<title>Localisation et période</title>
+						<questions>
+							<question id="12">
+								<title>Commune</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code>60</code>
+										<value>La Chaux-de-Fonds</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="94">
+								<title>Coordonnée X</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>2553976</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="95">
+								<title>Coordonnée Y</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>1218162</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="96">
+								<title>Cadastre</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="97">
+								<title>Bien-fonds n°</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="99">
+								<title>Lieu-dit</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Les Arbres</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="211">
+								<title>Service à appliquer</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code>COM</code>
+										<value>Commune</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="213">
+								<title>WKT</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>GEOMETRYCOLLECTION(LINESTRING(2553935.7897053463 1218112.2472952164,2553995.3326233597 1218167.3796267102),POLYGON((2553987.246548074 1218189.4325593077,2554001.2134053856 1218173.260408736,2554029.147120009 1218196.7835368402,2554013.7100671907 1218212.9556874116,2553987.246548074 1218189.4325593077)),POINT(2553947.5512693985 1218149.7372806321),POINT(2553972.544593009 1218178.4060930088),POINT(2553919.617554775 1218128.419445788),POINT(2554009.2994806715 1218167.3796267102),POINT(2554029.147120009 1218210.7503941518),POINT(2554025.471631243 1218185.021972788),LINESTRING(2554015.1802626974 1218155.6180626582,2554032.8226087755 1218171.0551154765))</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+				</sections>
+			</form>
+			<form id="46">
+				<title>Perturbation du trafic</title>
+				<sections>
+					<section id="42">
+						<title>Perturbation du trafic</title>
+						<questions>
+							<question id="125">
+								<title>Type de perturbation</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code>1</code>
+										<value>Occupation</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="41">
+						<title>Occupation</title>
+						<questions>
+							<question id="20">
+								<title>Occupation durant les heures de pointe ?</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="21">
+								<title>Occupation durant le week-end ?</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="24">
+								<title>Remarque</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="100">
+								<title>Nom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Rammel</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="101">
+								<title>Prénom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Jérôme</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="102">
+								<title>N° de mobile</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>075 430 94 30</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="103">
+								<title>N° de téléphone</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="105">
+								<title>Courriel</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="121">
+								<title>Date de début</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>20.08.2019</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="122">
+								<title>Heure de début</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>9:15</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="123">
+								<title>Date de fin</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>20.08.2019</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="124">
+								<title>Heure de fin</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>15:45</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="126">
+								<title>Période d'occupation</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="127">
+								<title>Type d'occupation (chaussée, trottoir, ...)</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value>Trottoir et chaussée</value>
+									</answer>
+								</answers>
+							</question>
+							<question id="128">
+								<title>Voie(s) condamnée(s)</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="129">
+								<title>Type de régulation (feux, palettes, ...)</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="130">
+								<title>Gabarit, hauteur</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="131">
+								<title>Gabarit, largeur</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="43">
+						<title>Fermeture</title>
+						<questions>
+							<question id="24">
+								<title>Remarque</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="100">
+								<title>Nom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="101">
+								<title>Prénom</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="102">
+								<title>N° de mobile</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="103">
+								<title>N° de téléphone</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="105">
+								<title>Courriel</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="121">
+								<title>Date de début</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="122">
+								<title>Heure de début</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="123">
+								<title>Date de fin</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="124">
+								<title>Heure de fin</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="132">
+								<title>Type de fermeture</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+							<question id="133">
+								<title>Déviation prévue</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code/>
+										<value/>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+					<section id="45">
+						<title>Saisie d'une nouvelle perturbation</title>
+						<questions>
+							<question id="143">
+								<title>Souhaitez-vous saisir une autre perturbation ?</title>
+								<answers>
+									<answer item="1" subItem="1">
+										<code>0</code>
+										<value>Aucune</value>
+									</answer>
+								</answers>
+							</question>
+						</questions>
+					</section>
+				</sections>
+			</form>
+		</forms>
+		<requesters>
+			<requester item="Gérimmo SA"/>
+		</requesters>
+		<owners/>
+		<architects/>
+	</dossier>
+</dossiers>

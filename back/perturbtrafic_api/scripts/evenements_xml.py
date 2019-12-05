@@ -7,6 +7,7 @@ import transaction
 from .. import models
 import datetime
 import logging
+from ..scripts.utils import Utils
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ class EvenementXML():
 
     @classmethod
     def xml_to_json(cls, file):
-        with open(cls.folder_path + '/' + file, 'r') as file:
+        with open(cls.folder_path + '/' + file, mode="r", encoding="utf-8") as file:
             data = file.read().replace('\n', '')
             xpars = xmltodict.parse(data)
             return xpars
@@ -753,7 +754,10 @@ class EvenementXML():
                                 date_fin=datetime.datetime.strptime(date_fin,cls.settings['xml_date_template']),
                                 heure_fin=heure_fin,
                                 id_utilisateur_ajout=cls.settings['id_user_ajout_xml_import'],
-                                id_utilisateur_modification=cls.settings['id_user_ajout_xml_import']
+                                id_utilisateur_modification=cls.settings['id_user_ajout_xml_import'],
+                                numero_dossier=Utils.generate_numero_dossier(cls.request,
+                                                                             int(cls.settings['autre_evenement_id'])),
+                                localisation=commune
                             )
 
                             if evenement_model:
@@ -801,6 +805,7 @@ class EvenementXML():
                                 cls.request.dbsession.add(autre_ev_model)
 
                                 # Evenement point model
+                                """
                                 geometry = json.loads(
                                     '{"type":"Point","coordinates":[' + coordonnee_x + ',' + coordonnee_y + ']}')
                                 evenement_point_model = models.EvenementPoint(
@@ -808,7 +813,8 @@ class EvenementXML():
                                 )
                                 evenement_point_model.set_json_geometry(str(geometry), cls.settings['srid'])
 
-                                cls.request.dbsession.add(evenement_point_model)
+                                cls.request.dbsession.add(evenement_point_model)              
+                            
 
                                 # Evenement polygon model
                                 if geometry_collection is not None:
@@ -817,6 +823,10 @@ class EvenementXML():
                                     )
                                     evenement_polygon_model.set_geometry_collection(str(geometry_collection), cls.settings['srid'])
                                     cls.request.dbsession.add(evenement_polygon_model)
+                                """
+
+                                Utils.add_ev_geometries(cls.request, geometry_collection, max_event_id)
+
 
 
                         """------------- (2) Form perturbation ---------------"""
@@ -1345,6 +1355,7 @@ class EvenementXML():
                                             week_end=occupation_weekend)
                                         cls.request.dbsession.add(occupation_model)
 
+                                    #Fermeture
                                     elif type_pertubation == int(
                                             cls.settings['fermeture_perturbation_id']) and section_fermeture:
                                         fermeture_model = models.Fermeture(
@@ -1352,6 +1363,10 @@ class EvenementXML():
                                             deviation=deviation,
                                             id_responsable=cls.settings['id_responsable_xml_import'])
                                         cls.request.dbsession.add(fermeture_model)
+
+                                    # Geometries
+                                    Utils.add_perturb_geometries(cls.request, geometry_collection,
+                                                                 max_perturbation_id)
 
                 # Commit transaction
                 transaction.commit()
@@ -2228,7 +2243,9 @@ class EvenementXML():
                                 date_fin=datetime.datetime.strptime(date_fin,cls.settings['xml_date_template']),
                                 heure_fin=heure_fin,
                                 id_utilisateur_ajout=cls.settings['id_user_ajout_xml_import'],
-                                id_utilisateur_modification=cls.settings['id_user_ajout_xml_import']
+                                id_utilisateur_modification=cls.settings['id_user_ajout_xml_import'],
+                                localisation= commune,
+                                numero_dossier = Utils.generate_numero_dossier(cls.request, int(cls.settings['fouille_evenement_id']))
                             )
 
                             if evenement_model:
@@ -2275,6 +2292,7 @@ class EvenementXML():
                                 cls.request.dbsession.add(fouille_model)
 
                                 # Evenement point model
+                                """
                                 geometry = json.loads(
                                     '{"type":"Point","coordinates":[' + coordonnee_x + ',' + coordonnee_y + ']}')
                                 evenement_point_model = models.EvenementPoint(
@@ -2291,7 +2309,9 @@ class EvenementXML():
                                     evenement_polygon_model.set_geometry_collection(str(geometry_collection),
                                                                                     cls.settings['srid'])
                                     cls.request.dbsession.add(evenement_polygon_model)
+                                """
 
+                                Utils.add_ev_geometries(cls.request, geometry_collection, max_event_id)
 
                         """------------- (2) Form perturbation ---------------"""
                         perturbations_form = [f for f in form if f['@id'] == '41']
@@ -2825,6 +2845,7 @@ class EvenementXML():
                                             week_end=occupation_weekend)
                                         cls.request.dbsession.add(occupation_model)
 
+                                    # Fermeture
                                     elif type_pertubation == int(
                                             cls.settings['fermeture_perturbation_id']) and section_fermeture:
                                         fermeture_model = models.Fermeture(
@@ -2832,6 +2853,10 @@ class EvenementXML():
                                             deviation=deviation,
                                             id_responsable=cls.settings['id_responsable_xml_import'])
                                         cls.request.dbsession.add(fermeture_model)
+
+
+                                    #Geometries
+                                    Utils.add_perturb_geometries(cls.request, geometry_collection, max_perturbation_id)
 
                 # Commit transaction
                 transaction.commit()
