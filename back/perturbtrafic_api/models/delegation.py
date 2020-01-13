@@ -20,7 +20,7 @@ class Delegation(Base):
     autorisation_suppression = Column(Boolean)
 
 
-    def format(self, nom, prenom, organisme):
+    def format(self, nom, prenom):
         return {
             'id': self.id,
             'id_delegant': self.id_delegant,
@@ -29,8 +29,7 @@ class Delegation(Base):
             'autorisation_modification': self.autorisation_modification,
             'autorisation_suppression': self.autorisation_suppression,
             'nom': nom,
-            'prenom': prenom,
-            'organisme': organisme
+            'prenom': prenom
         }
 
 #Index('my_index', Delegation.nom, unique=True, mysql_length=255)

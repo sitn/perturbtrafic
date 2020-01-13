@@ -11,7 +11,6 @@ from .meta import Base
 class Contact(Base):
     __tablename__ = 'contact'
     id = Column(BigInteger, primary_key=True,autoincrement=True)
-    id_organisme = Column(BigInteger)
     login = Column(Text)
     nom = Column(Text)
     prenom = Column(Text)
@@ -22,7 +21,6 @@ class Contact(Base):
     def format(self):
         return {
             'id': self.id,
-            'id_organisme': self.id_organisme,
             'login': self.login,
             'nom': self.nom,
             'prenom': self.prenom,

@@ -14,7 +14,6 @@ class Entite(Base):
     id = Column(BigInteger, primary_key=True,autoincrement=True)
     nom = Column(Text)
     id_responsable = Column(BigInteger)
-    logo = Column(Text)
     limite_echeance_popup_evenement = Column(Integer, default=10)
     nom_groupe_ad = Column(Text)
 

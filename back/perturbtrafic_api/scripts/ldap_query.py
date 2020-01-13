@@ -70,7 +70,7 @@ class LDAPQuery():
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
                 result, ret = conn.get_response(ret)
-            
+
             if result is None:
                 result = []
             else:
@@ -249,6 +249,43 @@ class LDAPQuery():
                         belongs_to_group = [x for x in user_groups if gr_name_attr in x and x[gr_name_attr] == group_name]
 
                         if belongs_to_group and len(belongs_to_group) > 0:
+                            user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
+                            user_json['dn'] = r['dn']
+                            users.append(user_json)
+
+        except Exception as error:
+            raise error
+
+        return users if users else {}
+
+    @classmethod
+    def get_users_belonging_to_two_groups(cls, request, group_name1, group_name2):
+        users = []
+        try:
+            connector = get_ldap_connector(request)
+            gr_name_attr = request.registry.settings['ldap_group_attribute_name']
+
+            with connector.manager.connection() as conn:
+                ret = conn.search(
+                    search_scope=request.registry.settings['ldap_login_query_scope'],
+                    attributes=request.registry.settings['ldap_login_query_attributes'].replace(', ', ',').replace(
+                        ' , ', ',').replace(' ,', ',').split(','),
+                    search_base=request.registry.settings['ldap_login_query_base_dn'],
+                    search_filter=request.registry.settings['ldap_search_user_filter']
+                )
+                result, ret = conn.get_response(ret)
+
+            if result is not None:
+                for r in result:
+                    if 'dn' in r and len(cls.get_user_groups_by_dn(request, r['dn'])) > 0:
+                        user_groups = cls.get_user_groups(request, r['dn']);
+                        belongs_to_group1 = [x for x in user_groups if
+                                            gr_name_attr in x and x[gr_name_attr] == group_name1]
+
+                        belongs_to_group2 = [x for x in user_groups if
+                                             gr_name_attr in x and x[gr_name_attr] == group_name2]
+
+                        if belongs_to_group1 and len(belongs_to_group1) > 0 and belongs_to_group2 and len(belongs_to_group2) > 0:
                             user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
                             user_json['dn'] = r['dn']
                             users.append(user_json)

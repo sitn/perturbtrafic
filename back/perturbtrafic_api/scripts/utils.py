@@ -62,17 +62,18 @@ class Utils():
 
             # Logins from AD
             contacts_ad_json = LDAPQuery.get_users_belonging_to_group_entites(request)
+            contacts_ad_logins = []
 
             # Logins from DB
             contacts_bd_logins = []
-            contacts_bd_logins_id = {}
+            contacts_bd_logins_ids = {}
             contacts_bd_logins_query = request.dbsession.query(models.Contact).distinct(models.Contact.login).filter(
                 models.Contact.login.isnot(None)).all()
 
             # Logins from BD
             for c in contacts_bd_logins_query:
                 contacts_bd_logins.append(c.login.upper())
-                contacts_bd_logins_id[c.login.upper()] = c.id
+                contacts_bd_logins_ids[c.login.upper()] = c.id
 
             # Entites from DB
             entites = {}
@@ -84,11 +85,12 @@ class Utils():
                 for one_contact_ad_json in contacts_ad_json:
                     if one_contact_ad_json and login_attr in one_contact_ad_json:
                         one_contact_ad_login = one_contact_ad_json[login_attr];
+                        contacts_ad_logins.append(one_contact_ad_login.upper())
 
                         # Login exists in BD logins
                         if one_contact_ad_login.upper() in contacts_bd_logins:
                             one_contact_ad_dn = one_contact_ad_json['dn']
-                            one_contact_bd_id = contacts_bd_logins_id[one_contact_ad_login.upper()]
+                            one_contact_bd_id = contacts_bd_logins_ids[one_contact_ad_login.upper()]
                             contact_ldap_groups = LDAPQuery.get_user_groups_by_dn(request, one_contact_ad_dn)
 
                             # Delete all AD groups relationships of the contact
@@ -120,6 +122,12 @@ class Utils():
                                         request.dbsession.flush()
                                         id_entite = entite_model.id
 
+                                    # Else, if exists, replace name (if changed in AD)
+                                    entite_record = request.dbsession.query(models.Entite).filter(models.Entite.nom_groupe_ad == one_contact_ldap_group_id).first()
+
+                                    if entite_record:
+                                        entite_record.nom = one_contact_ldap_group_name
+
                                     lien_entite_contact_model = models.LienContactEntite(
                                         id_contact=one_contact_bd_id,
                                         id_entite=id_entite
@@ -134,6 +142,17 @@ class Utils():
                                         fonction=one_contact_ldap_group_name
                                     )
                                     request.dbsession.add(fonction_contact_model)
+
+                # If the user is not in the LDAP, clear db relationships
+
+                for bd_contact_login in contacts_bd_logins:
+                    if bd_contact_login not in contacts_ad_logins:
+                        bd_contact_id = contacts_bd_logins_ids[bd_contact_login]
+
+                        request.dbsession.query(models.FonctionContact).filter(
+                            models.FonctionContact.id_contact == bd_contact_id).delete(synchronize_session=False)
+                        request.dbsession.query(models.LienContactEntite).filter(
+                            models.LienContactEntite.id_contact == bd_contact_id).delete(synchronize_session=False)
 
             transaction.commit()
 
@@ -184,6 +203,21 @@ class Utils():
         try:
 
             users = LDAPQuery.get_users_belonging_to_a_group(request, group_name);
+            mail_att_name = request.registry.settings['ldap_user_attribute_mail']
+            recipients = [x[mail_att_name] for x in users if mail_att_name in x]
+
+        except Exception as error:
+            raise error
+
+        return recipients
+
+    @classmethod
+    def get_mails_of_contacts_belonging_to_two_groups(cls, request, group_name1, group_name2):
+        recipients = []
+
+        try:
+
+            users = LDAPQuery.get_users_belonging_to_two_groups(request, group_name1, group_name2);
             mail_att_name = request.registry.settings['ldap_user_attribute_mail']
             recipients = [x[mail_att_name] for x in users if mail_att_name in x]
 
