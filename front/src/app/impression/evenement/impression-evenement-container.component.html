@@ -8,9 +8,9 @@
 
     <div class="page-template">
       <div class="header-image">
-        <img style="height: 30px" src="/assets/logos/{{evenementImpression.nom_entite}}.jpg"
+        <img *ngIf="evenementImpression" style="height: 30px" src="/assets/logos/{{evenementImpression.nom_entite}}.jpg"
           alt="evenementImpression.nom_entite">
-        <span style="margin-left: 10px">{{evenementImpression.nom_entite}}</span>
+        <span style="margin-left: 10px">{{evenementImpression?.nom_entite}}</span>
         <span style="text-align: right;flex-grow: 1">Généré le : {{todayDate | date: 'dd-MM-yyyy'}}</span>
       </div>
       <div class="header-title">
@@ -47,7 +47,7 @@
         </div>
         <div class="attribute-line">
           <label>Heure de début</label>
-          <span>{{evenementImpression?.heure_debut}}</span>
+          <span>{{evenementImpression?.heure_debut | slice:0:5}}</span>
         </div>
         <div class="attribute-line">
           <label>Date de fin</label>
@@ -55,7 +55,7 @@
         </div>
         <div class="attribute-line">
           <label>Heure de fin</label>
-          <span>{{evenementImpression?.heure_fin}}</span>
+          <span>{{evenementImpression?.heure_fin | slice:0:5}}</span>
         </div>
         <div class="attribute-line">
           <label>Requérant</label>

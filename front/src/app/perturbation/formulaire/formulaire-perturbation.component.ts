@@ -70,11 +70,11 @@ export class FormulairePerturbationComponent implements OnInit {
         }
         if (perturbationId) {
             this.apiService.getFullPerturbationById(perturbationId).subscribe(res => {
-                this.perturbationFormService.patchValues(res);
-                this.preavisComponent.setCheckedContacts(res.contacts_a_aviser, res.perturbation.type);
                 const editPath = this.route.snapshot.url.findIndex(url => url.path === 'edit');
                 const viewPath = this.route.snapshot.url.findIndex(url => url.path === 'view');
                 const clonePath = this.route.snapshot.url.findIndex(url => url.path === 'clone');
+                this.perturbationFormService.patchValues(res, clonePath > -1);
+                this.preavisComponent.setCheckedContacts(res.contacts_a_aviser, res.perturbation.type);
                 if (viewPath > -1) {
                     this.perturbationFormService.mode = 'READ_ONLY';
                     this.perturbationFormService.perturbationForm.disable();

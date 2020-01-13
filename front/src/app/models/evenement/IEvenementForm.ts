@@ -34,8 +34,8 @@ export class EvenementForm {
     description = new FormControl(null, Validators.maxLength(500));
     prevision = new FormControl();
     dates = new FormGroup({
-        dateDebut: new FormControl(new Date()),
-        dateFin: new FormControl(new Date()),
+        dateDebut: new FormControl(null),
+        dateFin: new FormControl(null),
         heureDebut: new FormControl(null, [
             Validators.required,
             Validators.pattern('^(0[0-9]|1[0-9]|2[0-3]|[0-9]):?[0-5][0-9]:?([0-5][0-9])?$')

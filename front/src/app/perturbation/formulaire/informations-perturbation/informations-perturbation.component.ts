@@ -87,7 +87,7 @@ export class InformationsPerturbationComponent implements OnInit, OnDestroy {
         this.perturbationFormService.responsableTraficContactInfos.reset();
         if (val) {
           this.setResponsableTraficValues(val);
-          this.perturbationFormService.responsableTraficContactInfos.disable();
+          // this.perturbationFormService.responsableTraficContactInfos.disable();
         } else {
           this.perturbationFormService.responsableTraficContactInfos.enable();
         }

@@ -123,12 +123,10 @@ export class MainHeaderComponent implements OnInit {
         this.items = [
             {
                 text: 'Evénements',
-                path: '/evenements',
                 cssClass: 'active',
                 items: evenementSubItems
             }, {
                 text: 'Perturbations',
-                path: '/perturbations',
                 cssClass: 'active',
                 items: perturbationSubItems
             }, {

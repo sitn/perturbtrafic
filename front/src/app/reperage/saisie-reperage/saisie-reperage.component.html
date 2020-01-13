@@ -1,5 +1,6 @@
 <kendo-dialog title="Repérages prévus" *ngIf="opened" [minWidth]="450" [width]="1000" [height]="400" (close)="close()">
-  Nouveau repérage <i class="fas fa-plus-square" (click)="addReperage()"></i>
+  <div *ngIf="crudMode != 'READ_ONLY'">Nouveau repérage <i class="fas fa-plus-square" (click)="addReperage()"></i>
+  </div>
   <kendo-grid [data]="reperages">
     <kendo-grid-messages noRecords="Aucun repérage">
     </kendo-grid-messages>
@@ -7,7 +8,7 @@
       <kendo-grid-column [field]="col.field" [title]="col.header" [format]="col.format" [width]="col.width">
         <ng-template *ngIf="col.field==='action'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
           <div class="actions-cell-container">
-            <i class="far fa-trash-alt delete" (click)="onDeleteReperageClick(rowIndex, dataItem)"></i>
+            <i *ngIf="crudMode != 'READ_ONLY'" class="far fa-trash-alt delete" (click)="onDeleteReperageClick(rowIndex, dataItem)"></i>
           </div>
         </ng-template>
         <ng-template *ngIf="col.field==='axe'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -18,10 +19,10 @@
           </kendo-combobox>
         </ng-template>
         <ng-template *ngIf="col.field==='debutPr'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-          <kendo-combobox [data]="dataItem.filteredPrDebuts" [(ngModel)]="dataItem.debutPr" [filterable]="true" [disabled]="dataItem.fromDb || dataItem.drawn"
-            (valueChange)="onDebutPrChanged($event, rowIndex)" (filterChange)="filterPrDebuts($event, rowIndex)"
-            [textField]="'secteur_nom'" [valueField]="'secteur_nom'" style="width: 100%" [valuePrimitive]=false
-            [disabled]="!dataItem.axe || dataItem.id > -1">
+          <kendo-combobox [data]="dataItem.filteredPrDebuts" [(ngModel)]="dataItem.debutPr" [filterable]="true"
+            [disabled]="dataItem.fromDb || dataItem.drawn" (valueChange)="onDebutPrChanged($event, rowIndex)"
+            (filterChange)="filterPrDebuts($event, rowIndex)" [textField]="'secteur_nom'" [valueField]="'secteur_nom'"
+            style="width: 100%" [valuePrimitive]=false [disabled]="!dataItem.axe || dataItem.id > -1">
           </kendo-combobox>
         </ng-template>
         <!--<ng-template *ngIf="col.field=='distMaxDebut'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -41,9 +42,10 @@
         </ng-template>
 
         <ng-template *ngIf="col.field==='finPr'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-          <kendo-combobox [data]="dataItem.filteredPrFins" [(ngModel)]="dataItem.finPr" [filterable]="true" (valueChange)="onFinPrChanged($event, rowIndex)"
-            (filterChange)="filterPrFins($event, rowIndex)" [textField]="'secteur_nom'" [valueField]="'secteur_nom'" style="width: 100%"
-            [valuePrimitive]=false [disabled]="!dataItem.axe || dataItem.fromDb || dataItem.drawn">
+          <kendo-combobox [data]="dataItem.filteredPrFins" [(ngModel)]="dataItem.finPr" [filterable]="true"
+            (valueChange)="onFinPrChanged($event, rowIndex)" (filterChange)="filterPrFins($event, rowIndex)"
+            [textField]="'secteur_nom'" [valueField]="'secteur_nom'" style="width: 100%" [valuePrimitive]=false
+            [disabled]="!dataItem.axe || dataItem.fromDb || dataItem.drawn">
           </kendo-combobox>
         </ng-template>
         <ng-template *ngIf="col.field=='distMaxFin'" kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">

@@ -231,7 +231,7 @@ export class ApiService {
     );
   }
 
-  updateNewUsersWithOrganismes(users: IUserAD[]): Observable<any> {
+  updateNewUsers(users: IUserAD[]): Observable<any> {
     const body = new FormData();
     body.append('contacts', JSON.stringify(users));
 

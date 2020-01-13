@@ -56,7 +56,7 @@
         <!-- <span style="font-weight: bold">Maitre d'ouvrage</span>
                 <div class="card"> -->
         <label class="k-form-field">
-          <span>Requérant</span>
+          <span>Sélectionner un organisme</span>
           <kendo-combobox [data]="filteredRequerants" [filterable]="true" (filterChange)="filterRequerants($event)"
             [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=false formControlName="organisme">
           </kendo-combobox>
@@ -153,10 +153,13 @@
         <!-- <span style="font-weight: bold">Maitre d'ouvrage</span>
                 <div class="card"> -->
         <label class="k-form-field">
-          <span>Contact</span>
+          <span>Sélectionner un Contact</span>
           <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
             [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=false formControlName="contact">
           </kendo-combobox>
+          <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
+            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+          </span>
         </label>
         <ng-container formGroupName="contactInfos">
           <label class="k-form-field">

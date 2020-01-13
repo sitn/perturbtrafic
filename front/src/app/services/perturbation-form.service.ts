@@ -6,6 +6,7 @@ import { ReperageGridLine } from '../models/IReperage';
 import { IPerturbationServerEdition, PerturbationForm, PerturbationFormValues } from '../models/perturbation/IPerturbation';
 import { ApiService } from './api.service';
 import { MapService } from './map.service';
+import { DropDownService } from './dropdown.service';
 
 @Injectable()
 export class PerturbationFormService {
@@ -21,7 +22,8 @@ export class PerturbationFormService {
 
     etatsLOV: { name: string, code: number }[];
 
-    constructor(private fb: FormBuilder, private mapService: MapService, private apiService: ApiService) {
+    constructor(private fb: FormBuilder, private mapService: MapService, private apiService: ApiService,
+        private dropDownService: DropDownService) {
         this.geometries = [];
         this.reperages = [];
         this.avisContacts = [];
@@ -32,7 +34,7 @@ export class PerturbationFormService {
         });
     }
 
-    patchValues(perturbationServer: IPerturbationServerEdition) {
+    patchValues(perturbationServer: IPerturbationServerEdition, cloned= false) {
         this.geometries = [];
         this.reperages = [];
         this.deviations = [];
@@ -40,13 +42,26 @@ export class PerturbationFormService {
         this.geometries = perturbationServer.geometries;
         this.deviations = perturbationServer.deviations;
         if (perturbationServer.reperages) {
-            perturbationServer.reperages.forEach(reperage => {
+            perturbationServer.reperages.forEach(async reperage => {
                 this.geometries.map(geom => {
                     const parsedGeom: any = JSON.parse(geom.geometry);
                     if ((['geometrycollection', 'linestring', 'multilinestring'].indexOf(parsedGeom.type.toLowerCase()) > -1)
                         && geom.id === reperage.id_perturbation_ligne) {
                         geom.id_reperage = reperage.id;
                     }
+                });
+
+                const wsReperage =
+                    await this.apiService.getPrByAxeMaintenance({
+                        nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
+                        proprietaire: reperage.proprietaire
+                    }).toPromise();
+
+                const wsPrDebut = wsReperage.find(pr => {
+                    return pr.secteur_nom === reperage.pr_debut;
+                });
+                const wsPrFin = wsReperage.find(pr => {
+                    return pr.secteur_nom === reperage.pr_fin;
                 });
 
                 const reperageGridLine = <ReperageGridLine>{};
@@ -64,7 +79,7 @@ export class PerturbationFormService {
                     {
                         axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                         secteur_nom: reperage.pr_debut,
-                        secteur_longueur: reperage.pr_debut_distance,
+                        secteur_longueur: null,
                         segment_sequence: null
                     }
                 ];
@@ -72,20 +87,20 @@ export class PerturbationFormService {
                     {
                         axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                         secteur_nom: reperage.pr_fin,
-                        secteur_longueur: reperage.pr_fin_distance,
+                        secteur_longueur: null,
                         segment_sequence: null
                     }
                 ];
                 reperageGridLine.debutPr = {
                     axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                     secteur_nom: reperage.pr_debut,
-                    secteur_longueur: reperage.pr_debut_distance,
+                    secteur_longueur: wsPrDebut ? wsPrDebut.secteur_longueur : null,
                     segment_sequence: null
                 };
                 reperageGridLine.finPr = {
                     axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                     secteur_nom: reperage.pr_fin,
-                    secteur_longueur: reperage.pr_fin_distance,
+                    secteur_longueur: wsPrFin ? wsPrFin.secteur_longueur : null,
                     segment_sequence: null
                 };
                 reperageGridLine.distanceDebut = reperage.pr_debut_distance;
@@ -94,7 +109,7 @@ export class PerturbationFormService {
             });
         }
         this.avisContacts = perturbationServer.contacts_a_aviser;
-        const patched = new PerturbationFormValues(perturbationServer);
+        const patched = new PerturbationFormValues(perturbationServer, cloned);
         this.mapService.initializeFeaturesAndExtent(this.geometries);
         this.mapService.initializeDeviationsAndExtent(this.deviations);
         this.perturbationForm.patchValue(patched);

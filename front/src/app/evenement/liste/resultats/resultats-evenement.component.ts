@@ -61,7 +61,7 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
     { field: 'division', header: 'Division', type: 'string', filterable: false, show: true, export: true, groupable: true },
     { field: 'debut', header: 'Début', type: 'date', format: 'dd.MM.yyyy', filterable: false, show: true, export: true, groupable: true },
     { field: 'fin', header: 'Fin', type: 'date', format: 'dd.MM.yyyy', filterable: false, show: true, export: true, groupable: true },
-    { field: 'action', header: 'Action', type: 'action', filterable: false, show: true, export: false, groupable: false },
+    { field: 'action', header: 'Actions', type: 'action', filterable: false, show: true, export: false, groupable: false },
     {
       field: 'localisationImpression',
       header: 'Localisation', type: 'string', filterable: false, show: false, export: true, groupable: false
@@ -212,7 +212,7 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
         }
       });
       rootGroup.append(...group.children);
-      return exportPDF(rootGroup, { paperSize: 'A4' });
+      return exportPDF(rootGroup, { paperSize: 'A4', landscape: true });
     }).then(dataUri => {
       this.loaderService.hide();
       saveAs(dataUri, 'Evenements.pdf');

@@ -13,23 +13,23 @@
             </kendo-menu>
         </div>
     </div>
-    <div class="user-info-container" *ngIf="currentUser">
+    <div class="user-info-container" *ngIf="currentUser" (mouseover)="show = true" (mouseleave)="show = false">
+
         <div class="user-info">
             <i class="fas fa-user-circle" style="font-size: 25px; line-height: 40px"></i>
-            <span class="user-name"> 
+            <span #userNameSpan class="user-name">
                 {{currentUser?.prenom}} {{currentUser?.nom}}
             </span>
-            <span *ngIf="currentUser?.currentEntity" class="entity">
-                ({{currentUser.currentEntity.nom}})
+            <span #entitySpan class="entity">
+                ({{currentUser?.currentEntity?.nom}})
             </span>
         </div>
         <div #anchor>
-            <i class="fas fa-sort-down" style="font-size: 14px; line-height: 35px" (click)="toggle()"></i>
+            <i class="fas fa-sort-down" style="font-size: 14px; line-height: 35px"></i>
         </div>
-        <kendo-popup [anchor]="anchor" (anchorViewportLeave)="show = false" [anchorAlign]="anchorAlign"
+        <kendo-popup [anchor]="anchor" (mouseleave)="show = false" [anchorAlign]="anchorAlign"
             [popupAlign]="popupAlign" [margin]="popupMargin" *ngIf="show">
-            <div class='popup-content'>
-                <!-- User-defined content -->
+            <div class='popup-content' [ngStyle]="{'width.px': userNameSpan.offsetWidth + entitySpan.offsetWidth + 40}">
                 <span *ngFor="let entity of currentUser.entites" class="user-entity" (click)="updateUserEntity(entity)">
                     <span>
                         <i *ngIf="entity === currentUser.currentEntity" class="fas fa-check"></i>

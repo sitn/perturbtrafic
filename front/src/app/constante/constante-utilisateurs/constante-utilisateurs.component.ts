@@ -3,7 +3,6 @@ import { ApiService } from 'src/app/services/api.service';
 import { IUser, IUserAD } from 'src/app/models/IUser';
 import { DropDownService } from 'src/app/services/dropdown.service';
 import { Subscription } from 'rxjs';
-import { IOrganisme } from 'src/app/models/IOrganisme';
 
 @Component({
   selector: 'constante-utilisateurs',
@@ -17,7 +16,6 @@ export class ConstanteUtilisateursComponent implements OnInit {
   users: IUser[];
   newUsers: IUserAD[];
   subscriptions: Subscription[];
-  organismes: IOrganisme[];
   constructor(private apiService: ApiService, private dropdownService: DropDownService) { }
 
   ngOnInit() {
@@ -32,7 +30,7 @@ export class ConstanteUtilisateursComponent implements OnInit {
 
 
   checkNewUsers(): void {
-    this.dropdownService.getOrganismes();
+    this.newUsers = [];
     this.newUsersOpened = true;
     this.apiService.checkNewUsers().subscribe(users => {
       this.newUsers = users;
@@ -41,34 +39,18 @@ export class ConstanteUtilisateursComponent implements OnInit {
 
   closeNewUsersDialog(): void {
     this.newUsersOpened = false;
+    this.newUsers = [];
   }
 
   registerNewUsers(): void {
-    this.missingOrganisme = false;
-    if (this.newUsers.some(user => {
-      return !user.id_organisme;
-    })) {
-      this.missingOrganisme = true;
-    } else {
-      this.missingOrganisme = false;
-    }
 
-    if (!this.missingOrganisme) {
-      this.apiService.updateNewUsersWithOrganismes(this.newUsers).subscribe(res => {
-        if (!res.error) {
-          this.closeNewUsersDialog();
-        }
-      });
-    }
+    this.apiService.updateNewUsers(this.newUsers).subscribe(res => {
+      if (!res.error) {
+        this.closeNewUsersDialog();
+      }
+    });
   }
 
   private setSubscriptions(): void {
-
-
-    this.subscriptions.push(
-      this.dropdownService.organismesReceived$.subscribe(organismes => {
-        this.organismes = [...organismes];
-      })
-    );
   }
 }

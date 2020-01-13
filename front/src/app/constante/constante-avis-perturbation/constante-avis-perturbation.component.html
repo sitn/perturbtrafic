@@ -3,10 +3,7 @@
 </div>
 
 <kendo-grid [data]="preavisContacts">
-  <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
-
-  </kendo-grid-column>
-  <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+  <kendo-grid-column [field]="'nomComplet'" [title]="'Contact'">
 
   </kendo-grid-column>
   <kendo-grid-column [title]="'Occupation'" [width]="'120'">
@@ -27,7 +24,7 @@
       </div>
     </ng-template>
   </kendo-grid-column>
-  <kendo-grid-column [title]="'Action'" [width]="'80'">
+  <kendo-grid-column [title]="'Actions'" [width]="'80'">
     <!-- [filterable]="col.filterable"> -->
     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
       <div class="actions-cell-container">
@@ -60,7 +57,7 @@
 <kendo-dialog title="Ajouter un contact pour avis" *ngIf="addContactPreavisOpened" [minWidth]="450" [width]="600"
   (close)="closeCreationDialog()">
   <div class="k-form-field preavis-line">
-    <span>Contact</span>
+    <span>Contact *</span>
     <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
       [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true width="'250px'"
       [(ngModel)]="currentPreavisContact.id_contact">

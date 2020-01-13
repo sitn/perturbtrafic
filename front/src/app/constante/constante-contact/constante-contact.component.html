@@ -8,16 +8,16 @@
   <kendo-grid-column [field]="'nom'" [title]="'Nom'">
 
   </kendo-grid-column>
-  <kendo-grid-column [field]="'prenom'" [title]="'Prenom'">
+  <kendo-grid-column [field]="'prenom'" [title]="'Prénom'">
 
   </kendo-grid-column>
   <kendo-grid-column [field]="'courriel'" [title]="'Courriel'">
 
   </kendo-grid-column>
-  <kendo-grid-column [field]="'telephone'" [title]="'Telephone'">
+  <kendo-grid-column [field]="'telephone'" [title]="'Téléphone'">
 
   </kendo-grid-column>
-  <kendo-grid-column>
+  <kendo-grid-column [title]="'Actions'">
     <!-- [filterable]="col.filterable"> -->
     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
       <div class="actions-cell-container">

@@ -6,6 +6,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { MapService } from 'src/app/services/map.service';
 import { NavigationService } from 'src/app/services/navigation.service';
 import { IPointRepere } from 'src/app/models/IPointRepere';
+import { DropDownService } from 'src/app/services/dropdown.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'saisie-reperage',
@@ -34,15 +36,18 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
     { field: 'finPr', header: 'Fin PR', type: 'string', show: true, width: '120px' },
     { field: 'distMaxFin', header: 'Fin Dist. max', type: 'string', show: true },
     { field: 'distanceFin', header: 'Fin distance', type: 'string', show: true },
-    { field: 'action', header: '', type: 'action', filterable: false, show: true, export: false, width: '40px' }
+    { field: 'action', header: 'Actions', type: 'action', filterable: false, show: true, export: false, width: '40px' }
   ];
 
   public opened = false;
+  crudMode: string;
 
   axeMaintenances: IAxeMaintenance[];
   filteredAxeMaintenances: IAxeMaintenance[];
 
-  constructor(private navigationService: NavigationService, private apiService: ApiService, private mapService: MapService) {
+  constructor(private navigationService: NavigationService, private route: ActivatedRoute,
+    private apiService: ApiService, private mapService: MapService) {
+    this.crudMode = 'READ_ONLY';
     this.fakeReperageId = -1;
     this.subscriptions = [];
     this.axeMaintenances = [];
@@ -54,6 +59,15 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const editPath = this.route.snapshot.url.findIndex(url => url.path === 'edit');
+    const viewPath = this.route.snapshot.url.findIndex(url => url.path === 'view');
+    if (viewPath > -1) {
+      this.crudMode = 'READ_ONLY';
+    } else if (editPath > -1) {
+      this.crudMode = 'EDIT';
+    } else {
+      this.crudMode = 'NEW';
+    }
     this.setSubscriptions();
     this.deletedReperage = [];
     this.hasWSError = false;
@@ -69,44 +83,45 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
     this.hasWSError = false;
     this.wsErrorMessage = null;
     this.hasInputError = false;
-    console.log(this.reperages);
-    if (this.checkValidReperages()) {
-      this.hasInputError = true;
+    if (this.crudMode === 'READ_ONLY') {
+      this.opened = false;
     } else {
-      const newReperages = [];
-      this.reperages.forEach(reperage => {
-        if (!reperage.fromDb && !reperage.drawn) {
-          newReperages.push(reperage);
-        }
-      });
-      if (newReperages.length > 0) {
-        this.apiService.getGeometryReperages(newReperages).subscribe(geometries => {
-          if (geometries && Array.isArray(geometries)) {
-            const geometriesReperages = [];
-            geometries.forEach((geom, index) => {
-              if (geom.error) {
-                this.hasWSError = true;
-                this.wsErrorMessage = geom.message;
-              } else {
-                geometriesReperages.push(geom);
-              }
-            });
-            if (!this.hasWSError) {
-              this.mapService.updateFeatures(geometriesReperages, this.deletedReperage);
-              this.reperages.map(rep => {
-                rep.drawn = true;
-              });
-              this.opened = false;
-            }
+      if (this.checkValidReperages()) {
+        this.hasInputError = true;
+      } else {
+        const newReperages = [];
+        this.reperages.forEach(reperage => {
+          if (!reperage.fromDb && !reperage.drawn) {
+            newReperages.push(reperage);
           }
         });
-      } else {
-        this.mapService.updateFeatures([], this.deletedReperage);
-        this.opened = false;
+        if (newReperages.length > 0) {
+          this.apiService.getGeometryReperages(newReperages).subscribe(geometries => {
+            if (geometries && Array.isArray(geometries)) {
+              const geometriesReperages = [];
+              geometries.forEach((geom, index) => {
+                if (geom.error) {
+                  this.hasWSError = true;
+                  this.wsErrorMessage = geom.message;
+                } else {
+                  geometriesReperages.push(geom);
+                }
+              });
+              if (!this.hasWSError) {
+                this.mapService.updateFeatures(geometriesReperages, this.deletedReperage);
+                this.reperages.map(rep => {
+                  rep.drawn = true;
+                });
+                this.opened = false;
+              }
+            }
+          });
+        } else {
+          this.mapService.updateFeatures([], this.deletedReperage);
+          this.opened = false;
+        }
       }
     }
-
-
   }
 
   public open() {
@@ -227,7 +242,7 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
 
     this.reperages[rowIndex].filteredPrDebuts = [];
     for (const prDebut of this.reperages[rowIndex].prDebuts) {
-      if (prDebut.axe_nom_complet.toLowerCase().includes(event.toLowerCase()) && prDebut.secteur_longueur > 0) {
+      if (prDebut.secteur_nom.toLowerCase().includes(event.toLowerCase()) && prDebut.secteur_longueur > 0) {
         this.reperages[rowIndex].filteredPrDebuts.push(prDebut);
       }
     }
@@ -243,9 +258,11 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
 
     this.reperages[rowIndex].filteredPrFins = [];
     for (const prFin of this.reperages[rowIndex].prFins) {
-      if (prFin.axe_nom_complet.toLowerCase().includes(event.toLowerCase())) {
-        if (!this.reperages[rowIndex].debutPr ||
-          Number(prFin.secteur_sequence) >= Number(this.reperages[rowIndex].debutPr.secteur_sequence)) {
+      if (prFin.secteur_nom.toLowerCase().includes(event.toLowerCase())) {
+        const prDebut = this.reperages[rowIndex].debutPr;
+        if (!prDebut || Number(prFin.segment_sequence) > Number(prDebut.segment_sequence) ||
+          (Number(prFin.segment_sequence) === Number(prDebut.segment_sequence)
+            && Number(prFin.secteur_sequence) >= Number(prDebut.secteur_sequence))) {
           this.reperages[rowIndex].filteredPrFins.push(prFin);
         }
       }

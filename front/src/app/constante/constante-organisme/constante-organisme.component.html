@@ -11,7 +11,7 @@
   <kendo-grid-column [field]="'courriel'" [title]="'Courriel'">
 
   </kendo-grid-column>
-  <kendo-grid-column [field]="'telephone'" [title]="'Telephone'" width="200">
+  <kendo-grid-column [field]="'telephone'" [title]="'Téléphone'" width="200">
 
   </kendo-grid-column>
   <kendo-grid-column [field]="'adresse'" [title]="'Adresse'">
@@ -22,7 +22,7 @@
       </div>
     </ng-template>
   </kendo-grid-column>
-  <kendo-grid-column width="120">
+  <kendo-grid-column width="120" [title]="'Actions'">
     <!-- [filterable]="col.filterable"> -->
     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
       <div class="actions-cell-container">
@@ -41,7 +41,7 @@
   [height]="200" (close)="cancelDeleteOrganisme()">
   Confirmer la suppression de l'organisme ?
   <div *ngIf="errorRemovingOrganisme" style="color: red; margin-top: 20px">
-    Impossible de supprimer cet organisme, il est relié à un évènement ou une perturbation existante
+    Impossible de supprimer cet organisme, il est relié à un contact, une perturbation ou un évènement existant.
   </div>
   <kendo-dialog-actions>
     <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="cancelDeleteOrganisme()">Annuler</button>

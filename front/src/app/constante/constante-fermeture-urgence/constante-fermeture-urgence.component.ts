@@ -99,7 +99,12 @@ export class ConstanteFermetureUrgenceComponent implements OnInit {
 
     this.subscriptions.push(
       this.dropDownService.contactReceived$.subscribe(contacts => {
-        this.contacts = [...contacts];
+        this.contacts = [];
+        contacts.forEach(contact => {
+          if (contact.courriel) {
+            this.contacts.push(contact);
+          }
+        });
         this.filteredContacts = [...contacts];
       })
     );

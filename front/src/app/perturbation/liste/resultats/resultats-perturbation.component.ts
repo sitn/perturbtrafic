@@ -231,7 +231,7 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
         rootGroup.append(...group.children);
       });
 
-      return exportPDF(rootGroup, { paperSize: 'A4' });
+      return exportPDF(rootGroup, { paperSize: 'A4', landscape: true });
     }).then(dataUri => {
       this.loaderService.hide();
       saveAs(dataUri, 'Perturbations.pdf');
