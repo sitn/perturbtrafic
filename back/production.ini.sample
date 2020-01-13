@@ -1,3 +1,22 @@
+###
+# app configuration
+# https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/environment.html
+###
+
+[app:mypyramidapp]
+use = egg:perturbtrafic_api
+
+pyramid.reload_templates = false
+pyramid.debug_authorization = false
+pyramid.debug_notfound = false
+pyramid.debug_routematch = false
+pyramid.default_locale_name = en
+pyramid.includes =
+    pyramid_mailer
+    pyramid_debugtoolbar
+    pyramid_tm
+    pyramid_chameleon
+
 #############################################
 # Les informations de connexion à la BD
 #############################################
@@ -205,3 +224,96 @@ occupation_perturbation_id = 2
 # Le buffer en jours pour retourner les conflits des perturbations
 ########################################################################
 conflicts_date_buffer = 3
+
+retry.attempts = 3
+
+[filter:translogger]
+use = egg:Paste#translogger
+setup_console_handler = False
+
+[pipeline:main]
+pipeline = translogger
+    mypyramidapp
+
+[pshell]
+setup = perturbtrafic_api.pshell.setup
+
+###
+# wsgi server configuration
+###
+
+[alembic]
+# path to migration scripts
+script_location = perturbtrafic_api/alembic
+file_template = %%(year)d%%(month).2d%%(day).2d_%%(rev)s
+# file_template = %%(rev)s_%%(slug)s
+
+[server:main]
+use = egg:waitress#main
+listen = *:6543
+
+###
+# logging configuration
+# https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/logging.html
+###
+
+[loggers]
+keys = root, perturbtrafic_api, sqlalchemy, wsgi, waitress
+
+[handlers]
+keys = console, filelog, accesslog
+
+[formatters]
+keys = generic, accesslog
+
+[logger_root]
+level = INFO
+handlers = filelog
+
+[logger_perturbtrafic_api]
+level = DEBUG
+handlers =
+qualname = perturbtrafic_api
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+# "level = INFO" logs SQL queries.
+# "level = DEBUG" logs SQL queries and results.
+# "level = WARN" logs neither.  (Recommended for production systems.)
+
+[logger_wsgi]
+level = INFO
+handlers = accesslog
+qualname = wsgi
+propagate = 0
+
+[logger_waitress]
+level = WARN
+handlers =
+qualname = waitress
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[handler_filelog]
+class = FileHandler
+args = (r'%(here)s/logs/logs.log','a')
+level = INFO
+formatter = generic
+
+[handler_accesslog]
+class = FileHandler
+args = (r'logs/access.log','a')
+level = INFO
+formatter = accesslog
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s
+
+[formatter_accesslog]
+format = %(message)s
