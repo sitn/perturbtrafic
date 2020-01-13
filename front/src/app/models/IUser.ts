@@ -2,9 +2,9 @@ import { IAutorisations } from './IAutorisations';
 
 export interface IUser {
     courriel: string;
-    entites: {id: number, nom: string}[];
+    entites: { id: number, nom: string }[];
     autorisations: IAutorisations;
-    currentEntity?: {id: number, nom: string};
+    currentEntity?: { id: number, nom: string };
     id: number;
     id_organisme?: number;
     login: string;
@@ -17,9 +17,9 @@ export interface IUser {
 
 export class User implements IUser {
     courriel: string;
-    entites: {id: number, nom: string}[];
+    entites: { id: number, nom: string }[];
     autorisations: IAutorisations;
-    currentEntity?: {id: number, nom: string};
+    currentEntity?: { id: number, nom: string };
     id: number;
     id_organisme?: number;
     login: string;
@@ -46,10 +46,17 @@ export class User implements IUser {
 export interface IUserAD {
     uid: string;
     telephoneNumber: string;
+    entites: {
+        id: string;
+        name: string
+    }[];
+    roles: {
+        id: string;
+        name: string
+    }[];
     sn: string;
     givenName: string;
     mail: string;
     mobile: string;
     dn: string;
-    id_organisme?: number;
 }

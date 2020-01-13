@@ -2,16 +2,13 @@
   <fieldset>
     <legend>Autorisations accordées</legend>
     <div class="new-contact">
-      <button kendoButton [iconClass]="'fa fa-plus'" (click)="openCreationDialog()">Ajouter un contact</button>
+      <button kendoButton [iconClass]="'fa fa-plus'" (click)="openCreationDialog()">Ajouter un Utilisateur</button>
     </div>
 
     <kendo-grid [data]="autorisationsDonneesContacts">
       <kendo-grid-messages noRecords="Aucune autorisation">
       </kendo-grid-messages>
-      <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
-
-      </kendo-grid-column>
-      <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+      <kendo-grid-column [field]="'nomComplet'" [title]="'Utilisateur'">
 
       </kendo-grid-column>
       <kendo-grid-column [title]="'Lecture'" [width]="'110'">
@@ -41,7 +38,7 @@
           </div>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column [title]="'Action'" [width]="'80'">
+      <kendo-grid-column [title]="'Actions'" [width]="'80'">
         <!-- [filterable]="col.filterable"> -->
         <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
           <div class="actions-cell-container">
@@ -59,10 +56,7 @@
     <kendo-grid [data]="autorisationsRecuesContacts">
       <kendo-grid-messages noRecords="Aucune autorisation">
       </kendo-grid-messages>
-      <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
-
-      </kendo-grid-column>
-      <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
+      <kendo-grid-column [field]="'nomComplet'" [title]="'Utilisateur'">
 
       </kendo-grid-column>
       <kendo-grid-column [title]="'Lecture'" [width]="'110'">
@@ -121,10 +115,10 @@
   </kendo-dialog-actions>
 </kendo-dialog>
 
-<kendo-dialog title="Ajouter un contact pour autorisation" *ngIf="addContactAutorisationOpened" [minWidth]="450" [width]="600"
+<kendo-dialog title="Ajouter un utilisateur pour autorisation" *ngIf="addContactAutorisationOpened" [minWidth]="450" [width]="600"
   (close)="closeCreationDialog()">
   <div class="k-form-field autorisation-line">
-    <span>Contact</span>
+    <span>Utilisateur *</span>
     <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
       [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true width="'250px'"
       [(ngModel)]="currentAutorisationContact.id_contact">

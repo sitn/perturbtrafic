@@ -89,6 +89,9 @@ cp .htaccess dist\PerturbTrafic\.htaccess
 cd ..
 ```
 
+If you are unable to run these steps on servers because of Firewall limitations which avoid access
+to aws URLs, then build the front on your computer and copy the dist folder.
+
 2. Make sure your Apache has the right path in `DocumentRoot` parameter. It should link to the `dist/PerturbTrafic` folder newly created by the build.
 
 3. Edit `dist/PerturbTrafic/assets/config/config.json` file and set the right url to the api back-end

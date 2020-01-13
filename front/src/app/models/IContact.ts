@@ -20,6 +20,7 @@ export interface IContactPreavis {
     nom?: string;
     prenom?: string;
     nomComplet?: string;
+    courriel?: string;
     organisme?: string;
     envoi_auto_occupation: boolean;
     envoi_auto_fermeture: boolean;
@@ -49,6 +50,7 @@ export interface IContactAutorisation {
     nom?: string;
     prenom?: string;
     nomComplet?: string;
+    courriel?: string;
     organisme?: string;
     autorisation_lecture: boolean;
     autorisation_modification: boolean;
@@ -78,6 +80,7 @@ export interface IContactPreavisUrgence {
     nom?: string;
     prenom?: string;
     nomComplet?: string;
+    courriel?: string;
     organisme?: string;
 }
 
@@ -87,6 +90,7 @@ export interface IContactAvisPrTouche {
     nom?: string;
     prenom?: string;
     nomComplet?: string;
+    courriel?: string;
     organisme?: string;
 }
 
@@ -99,7 +103,6 @@ export class ContactServerSave {
     telephone: string;
     courriel: string;
     login: string;
-    idOrganisme: number;
 
     constructor(contact: IContact) {
         if (contact.id) {
@@ -111,7 +114,6 @@ export class ContactServerSave {
         this.telephone = contact.telephone;
         this.courriel = contact.courriel;
         this.login = contact.login;
-        this.idOrganisme = contact.id_organisme;
     }
 
 }
@@ -176,5 +178,4 @@ export class ContactEditionFormGroup {
     fax = new FormControl();
     courriel = new FormControl();
     login = new FormControl();
-    id_organisme = new FormControl(null, Validators.required);
 }

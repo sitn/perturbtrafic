@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ContactEditionFormGroup, IContact } from 'src/app/models/IContact';
-import { IOrganisme } from 'src/app/models/IOrganisme';
 import { ApiService } from 'src/app/services/api.service';
 import { DropDownService } from 'src/app/services/dropdown.service';
 import { NavigationService } from 'src/app/services/navigation.service';
@@ -24,10 +23,6 @@ export class ContactEditionComponent implements OnInit, OnDestroy {
 
   public contactEditionFormGroup: FormGroup;
   public contactReceived$: EventEmitter<any>;
-  public organismesReceived$: EventEmitter<any>;
-
-  public organismes: IOrganisme[];
-  public filteredOrganismes: IOrganisme[];
 
   subscriptions: Subscription[];
 
@@ -38,8 +33,6 @@ export class ContactEditionComponent implements OnInit, OnDestroy {
     );
     this.errorMessage = null;
     this.warningDisplayed = false;
-    this.dropDownService.getOrganismes();
-    this.filteredOrganismes = [];
     this.subscriptions = [];
   }
 
@@ -59,7 +52,6 @@ export class ContactEditionComponent implements OnInit, OnDestroy {
         this.apiService.saveContact(this.contactEditionFormGroup.value).subscribe(res => {
           if (!res.error) {
             this.navigationService.closeNewContactDialog(true);
-            this.dropDownService.getOrganismes();
             this.close();
           } else {
             if (res.message.toLowerCase() === 'Contact already exists'.toLowerCase()) {
@@ -77,7 +69,6 @@ export class ContactEditionComponent implements OnInit, OnDestroy {
         this.apiService.updateContact(this.contactEditionFormGroup.value).subscribe(res => {
           if (!res.error) {
             this.navigationService.closeNewContactDialog(true);
-            this.dropDownService.getOrganismes();
             this.close();
           } else {
             if (res.message.toLowerCase() === 'Contact already exists'.toLowerCase()) {
@@ -100,14 +91,6 @@ export class ContactEditionComponent implements OnInit, OnDestroy {
     this.opened = true;
   }
 
-  filterOrganismes(event) {
-    this.filteredOrganismes = [];
-    for (const organisme of this.organismes) {
-      if (organisme.nom.toLowerCase().includes(event.toLowerCase())) {
-        this.filteredOrganismes.push(organisme);
-      }
-    }
-  }
 
   private setSubscriptions(): void {
 
@@ -125,12 +108,6 @@ export class ContactEditionComponent implements OnInit, OnDestroy {
           this.contactEditionFormGroup.enable();
         }
         this.open();
-      })
-    );
-    this.subscriptions.push(
-      this.dropDownService.organismesReceived$.subscribe(organismes => {
-        this.organismes = organismes;
-        this.filteredOrganismes = organismes;
       })
     );
   }

@@ -67,7 +67,7 @@
         </div>
         <div class="attribute-line">
           <label>Heure de début</label>
-          <span>{{perturbationImpression.heure_debut}}</span>
+          <span>{{perturbationImpression.heure_debut | slice:0:5}}</span>
         </div>
         <div class="attribute-line">
           <label>Date de fin</label>
@@ -75,7 +75,7 @@
         </div>
         <div class="attribute-line">
           <label>Heure de fin</label>
-          <span>{{perturbationImpression.heure_fin}}</span>
+          <span>{{perturbationImpression.heure_fin | slice:0:5}}</span>
         </div>
         <div class="attribute-line">
           <label>Uniquement durant la tranche horaire</label>

@@ -6,13 +6,10 @@
 </div>
 
 <kendo-grid [data]="avisPrTouchesList">
-  <kendo-grid-column [field]="'nomComplet'" [title]="'Nom'">
+  <kendo-grid-column [field]="'nomComplet'" [title]="'Contact'">
 
   </kendo-grid-column>
-  <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
-
-  </kendo-grid-column>
-  <kendo-grid-column [title]="'Action'" [width]="'80'">
+  <kendo-grid-column [title]="'Actions'" [width]="'80'">
     <!-- [filterable]="col.filterable"> -->
     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
       <div class="actions-cell-container">

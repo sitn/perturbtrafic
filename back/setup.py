@@ -3,6 +3,8 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'README.txt')) as f:
+    README = f.read()
 with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
@@ -28,9 +30,9 @@ tests_require = [
 
 setup(
     name='perturbtrafic_api',
-    version='1.0-beta-10',
+    version='1.0-RC',
     description='API perturbtrafic',
-    long_description=CHANGES,
+    long_description=README + '\n\n' + CHANGES,
     classifiers=[
         'Programming Language :: Python',
         'Framework :: Pyramid',
@@ -50,7 +52,7 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = perturbtrafic_api:main',
+            'main = test:main',
         ],
         'console_scripts': [
             'initialize_test_db=test.scripts.initialize_db:main',

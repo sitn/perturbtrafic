@@ -102,10 +102,10 @@ export class PerturbationForm {
         new OccupationPerturbationFormGroup()
     );
 
-    utilisateurAjout = new FormControl({disabled: true});
-    dateAjout = new FormControl({disabled: true});
-    utilisateurModification = new FormControl({disabled: true});
-    dateModification = new FormControl({disabled: true});
+    utilisateurAjout = new FormControl({ disabled: true });
+    dateAjout = new FormControl({ disabled: true });
+    utilisateurModification = new FormControl({ disabled: true });
+    dateModification = new FormControl({ disabled: true });
 
     private dateOrderValidator(g: FormGroup) {
         const valueDebut = g.get('dateDebut').value;
@@ -170,7 +170,7 @@ export class PerturbationFormValues {
     dateModification: Date;
     utilisateurModification: string;
 
-    constructor(perturbationServer: IPerturbationServerEdition) {
+    constructor(perturbationServer: IPerturbationServerEdition, cloned = false) {
         this.id = perturbationServer.perturbation.id;
         this.type = perturbationServer.perturbation.type;
         this.evenement = {
@@ -201,17 +201,19 @@ export class PerturbationFormValues {
             perturbationServer.perturbation.courriel_responsable_trafic);
         this.remarque = perturbationServer.perturbation.remarque;
         this.urgence = perturbationServer.perturbation.urgence;
-        this.etat = perturbationServer.perturbation.etat;
-        this.utilisateurValidation = perturbationServer.perturbation.nom_utilisateur_validation;
-        this.utilisateurAjout = perturbationServer.perturbation.nom_utilisateur_ajout;
-        this.utilisateurModification = perturbationServer.perturbation.nom_utilisateur_modification;
-        this.dateAjout = perturbationServer.perturbation.date_ajout ? new Date(perturbationServer.perturbation.date_ajout) : null;
-        this.dateModification =
+        this.etat = cloned ? null : perturbationServer.perturbation.etat;
+        this.utilisateurValidation = cloned ? null : perturbationServer.perturbation.nom_utilisateur_validation;
+        this.utilisateurAjout = cloned ? null : perturbationServer.perturbation.nom_utilisateur_ajout;
+        this.utilisateurModification = cloned ? null : perturbationServer.perturbation.nom_utilisateur_modification;
+        this.dateAjout = cloned ? null :
+            perturbationServer.perturbation.date_ajout ? new Date(perturbationServer.perturbation.date_ajout) : null;
+        this.dateModification = cloned ? null :
             perturbationServer.perturbation.date_modification ? new Date(perturbationServer.perturbation.date_modification) : null;
-        this.dateValidation =
+        this.dateValidation = cloned ? null :
             perturbationServer.perturbation.date_validation ? new Date(perturbationServer.perturbation.date_validation) : null;
-        this.dateDecision = perturbationServer.perturbation.date_decision ? new Date(perturbationServer.perturbation.date_decision) : null;
-        this.decision = perturbationServer.perturbation.decision;
+        this.dateDecision = cloned ? null :
+            perturbationServer.perturbation.date_decision ? new Date(perturbationServer.perturbation.date_decision) : null;
+        this.decision = cloned ? null : perturbationServer.perturbation.decision;
     }
 }
 

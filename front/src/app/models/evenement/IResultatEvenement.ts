@@ -90,11 +90,11 @@ export class ResultatEvenement implements IResultatEvenement {
                 this.localisationImpressionReperage = JSON.parse(resultatServer.localisation_impression);
                 this.localisationImpressionReperage.forEach((rep, index) => {
                     if (index === 0) {
-                        this.localisationImpressionExcel = rep.axe +
-                            rep.pr_debut + rep.pr_debut_distance + rep.pr_fin + rep.pr_fin_distance;
+                        this.localisationImpressionExcel = rep.axe + ' de ' +
+                            rep.pr_debut + rep.pr_debut_distance + ' à ' + rep.pr_fin + rep.pr_fin_distance;
                     } else {
-                        this.localisationImpressionExcel = this.localisationImpressionExcel + '\r\n' + rep.axe +
-                            rep.pr_debut + rep.pr_debut_distance + rep.pr_fin + rep.pr_fin_distance;
+                        this.localisationImpressionExcel = this.localisationImpressionExcel + '\r\n' + rep.axe + ' de ' +
+                            rep.pr_debut + rep.pr_debut_distance + ' à ' + rep.pr_fin + rep.pr_fin_distance;
                     }
                 });
             } catch (e) {

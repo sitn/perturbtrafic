@@ -47,7 +47,6 @@ class PerturbationImpression(Base):
     heure_pointe = Column(Boolean)
     week_end = Column(Boolean)
     nom_entite = Column(Text)
-    logo_entite = Column(Text)
     geometry_point = Column(JSON)
     geometry_ligne = Column(JSON)
     preavis_contacts = Column(JSON)
@@ -88,7 +87,6 @@ class PerturbationImpression(Base):
             'heure_pointe': self.heure_pointe,
             'week_end': self.week_end,
             'nom_entite': self.nom_entite,
-            'logo_entite': self.logo_entite,
             'geometry_point': self.geometry_point,
             'geometry_ligne': self.geometry_ligne,
             'preavis_contacts': self.preavis_contacts,

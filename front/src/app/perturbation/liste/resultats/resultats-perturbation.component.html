@@ -96,7 +96,7 @@
     </kendo-excelexport>
 
     <kendo-grid #occupationGrid [data]="occupationResultats" style="display:none">
-      <kendo-grid-pdf paperSize="A4" [allPages]="true" [repeatHeaders]="false" [scale]="0.5">
+      <kendo-grid-pdf paperSize="A4" [allPages]="true" [repeatHeaders]="true" [scale]="0.5" [landscape]=true>
         <kendo-grid-pdf-margin top="2cm" left="0.5cm" right="0.5cm" bottom="2cm"></kendo-grid-pdf-margin>
         <ng-template kendoGridPDFTemplate let-pageNum="pageNum" let-totalPages="totalPages">
           <div class="page-template">
@@ -111,58 +111,18 @@
             </div>
           </div>
         </ng-template>
-        <!-- <kendo-grid-column field="localisationImpression" title="Axe" width="100">
-          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-            <div *ngFor="let loc of dataItem.localisationImpression">
-              {{loc.axe}}
-            </div>
-          </ng-template>
-        </kendo-grid-column>
-        <kendo-grid-column-group title="Début" [width]="110">
-
-          <kendo-grid-column field="localisationImpression" title="PR" width="50">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_debut}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_debut_distance}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-        </kendo-grid-column-group>
-        <kendo-grid-column-group title="Fin" [width]="110">
-          <kendo-grid-column field="localisationImpression" title="PR" width="50">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_fin}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_fin_distance}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-        </kendo-grid-column-group> -->
         <kendo-grid-column [field]="'urgence'" title="Urgence" width="80">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.urgence">Oui</ng-container>
             <ng-container *ngIf="!dataItem.urgence">Non</ng-container>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="debut" title="Début, date et heure">
+        <kendo-grid-column field="debut" title="Début, date et heure" width="250">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             {{dataItem.debut | date : 'dd.MM.yyyy'}} {{dataItem.heureDebut}}
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="fin" title="Fin, date et heure">
+        <kendo-grid-column field="fin" title="Fin, date et heure" width="250">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             {{dataItem.fin | date : 'dd.MM.yyyy'}} {{dataItem.heureFin}}
           </ng-template>
@@ -173,7 +133,7 @@
             <ng-container *ngIf="!dataItem.trancheHoraire">Non</ng-container>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="deviation" title="Déviation" width="100">
+        <kendo-grid-column field="deviation" title="Déviation" width="250">
         </kendo-grid-column>
         <kendo-grid-column field="descriptionEvenement" title="Evénement">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -181,11 +141,13 @@
               ({{dataItem.numeroDossier}})</span>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="localisationImpression" title="Localisation" width="220">
+        <kendo-grid-column field="typeEvenement" title="Type Evénement" width="200">
+        </kendo-grid-column>
+        <kendo-grid-column field="localisationImpression" title="Localisation" width="270">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.localisationImpressionReperage">
               <div *ngFor="let loc of dataItem.localisationImpressionReperage">
-                {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+                {{loc.axe}} de {{loc.pr_debut}}{{loc.pr_debut_distance}} à {{loc.pr_fin}}{{loc.pr_fin_distance}}
               </div>
             </ng-container>
             <ng-container *ngIf="dataItem.localisationImpression">
@@ -197,7 +159,7 @@
     </kendo-grid>
 
     <kendo-grid #fermetureGrid [data]="fermetureResultats" style="display:none">
-      <kendo-grid-pdf paperSize="A4" [allPages]="true" [repeatHeaders]="false" [scale]="0.5">
+      <kendo-grid-pdf paperSize="A4" [allPages]="true" [repeatHeaders]="true" [scale]="0.5" [landscape]=true>
         <kendo-grid-pdf-margin top="2cm" left="0.5cm" right="0.5cm" bottom="2cm"></kendo-grid-pdf-margin>
         <ng-template kendoGridPDFTemplate let-pageNum="pageNum" let-totalPages="totalPages">
           <div class="page-template">
@@ -212,58 +174,18 @@
             </div>
           </div>
         </ng-template>
-        <!-- <kendo-grid-column field="localisationImpression" title="Axe" width="100">
-          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-            <div *ngFor="let loc of dataItem.localisationImpression">
-              {{loc.axe}}
-            </div>
-          </ng-template>
-        </kendo-grid-column>
-         <kendo-grid-column-group title="Début" [width]="110">
-
-          <kendo-grid-column field="localisationImpression" title="PR" width="50">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_debut}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_debut_distance}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-        </kendo-grid-column-group>
-        <kendo-grid-column-group title="Fin" [width]="110">
-          <kendo-grid-column field="localisationImpression" title="PR" width="50">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_fin}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="localisationImpression" title="Dist." width="60">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <div *ngFor="let loc of dataItem.localisationImpression">
-                {{loc.pr_fin_distance}}
-              </div>
-            </ng-template>
-          </kendo-grid-column>
-        </kendo-grid-column-group> -->
         <kendo-grid-column field="urgence" title="Urgence" width="80">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.urgence">Oui</ng-container>
             <ng-container *ngIf="!dataItem.urgence">Non</ng-container>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="debut" title="Début, date et heure">
+        <kendo-grid-column field="debut" title="Début, date et heure" width="250">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             {{dataItem.debut | date : 'dd.MM.yyyy'}} {{dataItem.heureDebut}}
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="fin" title="Fin, date et heure">
+        <kendo-grid-column field="fin" title="Fin, date et heure" width="250">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             {{dataItem.fin | date : 'dd.MM.yyyy'}} {{dataItem.heureFin}}
           </ng-template>
@@ -274,7 +196,7 @@
             <ng-container *ngIf="!dataItem.trancheHoraire">Non</ng-container>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="deviation" title="Déviation">
+        <kendo-grid-column field="deviation" title="Déviation" width="250">
         </kendo-grid-column>
         <kendo-grid-column field="descriptionEvenement" title="Evénement">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -283,12 +205,15 @@
           </ng-template>
         </kendo-grid-column>
 
+        <kendo-grid-column field="typeEvenement" title="Type Evénement" width="200">
+        </kendo-grid-column>
 
-        <kendo-grid-column field="localisationImpression" title="Localisation" width="220">
+
+        <kendo-grid-column field="localisationImpression" title="Localisation" width="270">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.localisationImpressionReperage">
               <div *ngFor="let loc of dataItem.localisationImpressionReperage">
-                {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+                {{loc.axe}} de {{loc.pr_debut}}{{loc.pr_debut_distance}} à {{loc.pr_fin}}{{loc.pr_fin_distance}}
               </div>
             </ng-container>
             <ng-container *ngIf="dataItem.localisationImpression">

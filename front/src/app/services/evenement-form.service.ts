@@ -5,6 +5,7 @@ import { IEvenementServerEdition } from '../models/evenement/IEvenement';
 import { EvenementForm, EvenementFormValues } from '../models/evenement/IEvenementForm';
 import { ReperageGridLine } from '../models/IReperage';
 import { MapService } from './map.service';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class EvenementFormService {
@@ -17,7 +18,7 @@ export class EvenementFormService {
     geometries: any;
     reperages: ReperageGridLine[];
 
-    constructor(private fb: FormBuilder, private mapService: MapService) {
+    constructor(private fb: FormBuilder, private mapService: MapService, private apiService: ApiService) {
         this.geometries = [];
         this.reperages = [];
         this.mode = 'READ_ONLY';
@@ -27,13 +28,26 @@ export class EvenementFormService {
         this.reperages = [];
         this.geometries = evenementServer.geometries;
         if (evenementServer.reperages) {
-            evenementServer.reperages.forEach(reperage => {
+            evenementServer.reperages.forEach(async reperage => {
                 this.geometries.map(geom => {
                     const parsedGeom: any = JSON.parse(geom.geometry);
                     if ((['geometrycollection', 'linestring', 'multilinestring'].indexOf(parsedGeom.type.toLowerCase()) > -1)
                         && geom.id === reperage.id_evenement_ligne) {
                         geom.id_reperage = reperage.id;
                     }
+                });
+
+                const wsReperage =
+                    await this.apiService.getPrByAxeMaintenance({
+                        nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
+                        proprietaire: reperage.proprietaire
+                    }).toPromise();
+
+                const wsPrDebut = wsReperage.find(pr => {
+                    return pr.secteur_nom === reperage.pr_debut;
+                });
+                const wsPrFin = wsReperage.find(pr => {
+                    return pr.secteur_nom === reperage.pr_fin;
                 });
 
                 const reperageGridLine = <ReperageGridLine>{};
@@ -51,7 +65,7 @@ export class EvenementFormService {
                     {
                         axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                         secteur_nom: reperage.pr_debut,
-                        secteur_longueur: reperage.pr_debut_distance,
+                        secteur_longueur: null,
                         segment_sequence: null
                     }
                 ];
@@ -59,20 +73,20 @@ export class EvenementFormService {
                     {
                         axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                         secteur_nom: reperage.pr_fin,
-                        secteur_longueur: reperage.pr_fin_distance,
+                        secteur_longueur: null,
                         segment_sequence: null
                     }
                 ];
                 reperageGridLine.debutPr = {
                     axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                     secteur_nom: reperage.pr_debut,
-                    secteur_longueur: reperage.pr_debut_distance,
+                    secteur_longueur: wsPrDebut ? wsPrDebut.secteur_longueur : null,
                     segment_sequence: null
                 };
                 reperageGridLine.finPr = {
                     axe_nom_complet: [reperage.proprietaire, reperage.axe, reperage.sens].join(':'),
                     secteur_nom: reperage.pr_fin,
-                    secteur_longueur: reperage.pr_fin_distance,
+                    secteur_longueur: wsPrFin ? wsPrFin.secteur_longueur : null,
                     segment_sequence: null
                 };
                 reperageGridLine.distanceDebut = reperage.pr_debut_distance;
@@ -90,8 +104,8 @@ export class EvenementFormService {
         this.reperages = [];
         this.evenementForm.reset();
         this.evenementForm.controls.dateDemande.setValue(new Date());
-        this.dateDebut.setValue(new Date());
-        this.dateFin.setValue(new Date());
+        this.dateDebut.setValue(null);
+        this.dateFin.setValue(null);
         this.evenementForm.controls.numeroDossier.disable();
         this.evenementForm.controls.utilisateurAjout.disable();
         this.evenementForm.controls.dateAjout.disable();

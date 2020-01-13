@@ -61,12 +61,12 @@
 
 
 
-<button kendoButton [disabled]="crudMode=='READ_ONLY' || mapService.isEditing" class="map-control reperage-edition"
+<button kendoButton [disabled]="mapService.isEditing" class="map-control reperage-edition"
   (click)="editReperage()" title="Editer les repérages">
   <i class="fas fa-list fa-fw"></i>
 </button>
 
-<button kendoButton [disabled]="crudMode=='READ_ONLY' || mapService.currentDrawType == null"
+<button kendoButton [disabled]="crudMode=='READ_ONLY' || (mapService.currentDrawType == null && !mapService.isEditing)"
   class="map-control toggle-snapping" title="Activer / désactiver le snapping" (click)="toggleSnapping()"
   [class.selected]="mapService.isSnapping">
   <i class="fas fa-magic fa-fw"></i>

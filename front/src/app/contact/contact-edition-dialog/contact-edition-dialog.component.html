@@ -2,7 +2,7 @@
   <form class="k-form-inline" [formGroup]="contactEditionFormGroup">
     <div style="width: 100%">
       <label class="k-form-field">
-        <span>Nom</span>
+        <span>Nom *</span>
         <input class="k-textbox" formControlName="nom" autofocus />
       </label>
       <label class="k-form-field">
@@ -20,12 +20,6 @@
       <label class="k-form-field">
         <span>Courriel</span>
         <input type="email" class="k-textbox" formControlName="courriel" email />
-      </label>
-      <label class="k-form-field">
-        <span>Organisme</span>
-        <kendo-combobox [data]="filteredOrganismes" [filterable]="true" (filterChange)="filterOrganismes($event)"
-          [textField]="'nom'" [valueField]="'id'" [valuePrimitive]="true" formControlName="id_organisme">
-        </kendo-combobox>
       </label>
     </div>
     <div *ngIf="errorMessage" style="color: red; margin-top: 20px">{{errorMessage}}</div>

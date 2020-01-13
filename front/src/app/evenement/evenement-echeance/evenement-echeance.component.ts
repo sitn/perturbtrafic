@@ -22,7 +22,7 @@ export class EvenementEcheanceComponent implements OnInit, OnDestroy {
     { field: 'numeroDossier', header: 'N° dossier', type: 'string', filterable: false },
     { field: 'libelle', header: 'Libellé', type: 'string', filterable: false },
     { field: 'dateDebut', header: 'Début', type: 'date', format: 'dd.MM.yyyy', filterable: false },
-    { field: 'action', header: '', type: 'action', filterable: false, width: '40px' }
+    { field: 'action', header: 'Actions', type: 'action', filterable: false, width: '40px' }
 
   ];
 

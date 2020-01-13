@@ -41,7 +41,6 @@ class EvenementImpression(Base):
     date_facture = Column(DateTime)
     date_demande = Column(DateTime)
     nom_entite = Column(Text)
-    logo_entite = Column(Text)
     geometry_point = Column(JSON)
     geometry_ligne = Column(JSON)
     geometry_polygone = Column(JSON)
@@ -75,7 +74,6 @@ class EvenementImpression(Base):
             'date_facture': self.date_facture if not self.date_facture else self.date_facture.isoformat(),
             'date_demande': self.date_demande if not self.date_demande else self.date_demande.isoformat(),
             'nom_entite': self.nom_entite,
-            'logo_entite': self.logo_entite,
             'geometry_point': self.geometry_point,
             'geometry_ligne': self.geometry_ligne,
             'geometry_polygone': self.geometry_polygone

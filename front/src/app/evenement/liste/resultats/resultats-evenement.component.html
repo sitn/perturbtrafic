@@ -39,7 +39,8 @@
         </kendo-grid-column>
       </ng-container>
 
-      <kendo-grid-pdf fileName="evenements.pdf" paperSize="A4" [allPages]="true" [repeatHeaders]="true" [scale]="0.5">
+      <kendo-grid-pdf fileName="evenements.pdf" paperSize="A4" [allPages]="true" [repeatHeaders]="true" [scale]="0.5"
+        [landscape]=true>
         <kendo-grid-pdf-margin top="2cm" left="0.5cm" right="0.5cm" bottom="2cm"></kendo-grid-pdf-margin>
         <ng-template kendoGridPDFTemplate let-pageNum="pageNum" let-totalPages="totalPages">
           <div class="page-template">
@@ -64,9 +65,9 @@
             <ng-container *ngIf="!dataItem.prevision">Non</ng-container>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="libelle" title="Libellé" width="180">
+        <kendo-grid-column field="libelle" title="Libellé">
         </kendo-grid-column>
-        <kendo-grid-column field="description" title="Description" width="180">
+        <kendo-grid-column field="description" title="Description" width="400">
         </kendo-grid-column>
         <kendo-grid-column field="debut" title="Date de début" width="105" [format]="'dd.MM.yyyy'">
         </kendo-grid-column>
@@ -74,11 +75,11 @@
         </kendo-grid-column>
         <kendo-grid-column field="division" title="Sect./Div" width="75">
         </kendo-grid-column>
-        <kendo-grid-column field="localisationImpression" title="Localisation">
+        <kendo-grid-column field="localisationImpression" title="Localisation" width="200">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.localisationImpressionReperage">
               <div *ngFor="let loc of dataItem.localisationImpressionReperage">
-                {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
+                {{loc.axe}} de {{loc.pr_debut}}{{loc.pr_debut_distance}} à {{loc.pr_fin}}{{loc.pr_fin_distance}}
               </div>
             </ng-container>
             <ng-container *ngIf="dataItem.localisationImpression">
@@ -112,22 +113,6 @@
       </kendo-excelexport-column>
       <kendo-excelexport-column field="localisationImpressionExcel" title="Localisation">
       </kendo-excelexport-column>
-      <!-- <kendo-excelexport-column field="localisationImpressionReperage" title="Localisation">
-         <ng-template kendoGridCellTemplate let-dataItem >
-          {{dataItem.localisationImpressionReperage[0].axe}}
-           
-           <div *ngFor="let loc of dataItem.localisationImpressionReperage">
-              {{dataItem[0].axe}}
-            {{loc.axe}} {{loc.pr_debut}} {{loc.pr_debut_distance}} {{loc.pr_fin}} {{loc.pr_fin_distance}}
-          </div>
-          <ng-container *ngIf="dataItem.localisationImpressionReperage">
-            reperage
-          </ng-container>
-          <ng-container *ngIf="dataItem.localisationImpression">
-            {{dataItem.localisationImpression}}
-          </ng-container> 
-         </ng-template> 
-      </kendo-excelexport-column> -->
     </kendo-excelexport>
 
   </fieldset>

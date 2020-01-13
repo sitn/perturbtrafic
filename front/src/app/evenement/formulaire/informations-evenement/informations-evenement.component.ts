@@ -141,6 +141,10 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
     this.navigationService.openNewOrganismeDialog('NEW', null);
   }
 
+  createNewContact() {
+    this.navigationService.openNewContactDialog('NEW', null);
+  }
+
   private setSubscriptions(): void {
 
     this.subscriptions.push(
@@ -177,7 +181,7 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
         if (val) {
           this.evenementFormService.requerantContactInfos.reset();
           this.setRequerantValues(val);
-          this.evenementFormService.requerantContactInfos.disable();
+          // this.evenementFormService.requerantContactInfos.disable();
         } else if (this.evenementFormService.mode !== 'READ_ONLY') {
           this.evenementFormService.requerantContactInfos.reset();
           this.evenementFormService.requerantContactInfos.enable();
