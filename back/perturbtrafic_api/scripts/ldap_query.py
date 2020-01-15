@@ -244,14 +244,16 @@ class LDAPQuery():
 
             if result is not None:
                 for r in result:
-                    if 'dn' in r and len(cls.get_user_groups_by_dn(request, r['dn'])) > 0:
-                        user_groups = cls.get_user_groups(request, r['dn']);
-                        belongs_to_group = [x for x in user_groups if gr_name_attr in x and x[gr_name_attr] == group_name]
+                    if 'dn' in r: 
+                        user_groups = cls.get_user_groups_by_dn(request, r['dn'])
+                        
+                        if len(user_groups) > 0:
+                            belongs_to_group = [x for x in user_groups if gr_name_attr in x and x[gr_name_attr] == group_name]
 
-                        if belongs_to_group and len(belongs_to_group) > 0:
-                            user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
-                            user_json['dn'] = r['dn']
-                            users.append(user_json)
+                            if belongs_to_group and len(belongs_to_group) > 0:
+                                user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
+                                user_json['dn'] = r['dn']
+                                users.append(user_json)
 
         except Exception as error:
             raise error
@@ -277,18 +279,21 @@ class LDAPQuery():
 
             if result is not None:
                 for r in result:
-                    if 'dn' in r and len(cls.get_user_groups_by_dn(request, r['dn'])) > 0:
-                        user_groups = cls.get_user_groups(request, r['dn']);
-                        belongs_to_group1 = [x for x in user_groups if
-                                            gr_name_attr in x and x[gr_name_attr] == group_name1]
+                    if 'dn' in r: 
+                        user_groups = cls.get_user_groups_by_dn(request, r['dn'])
+                        
+                        if len(user_groups) > 0:
+                            belongs_to_group1 = [x for x in user_groups if
+                                                gr_name_attr in x and x[gr_name_attr] == group_name1]
 
-                        belongs_to_group2 = [x for x in user_groups if
-                                             gr_name_attr in x and x[gr_name_attr] == group_name2]
+                            belongs_to_group2 = [x for x in user_groups if
+                                                 gr_name_attr in x and x[gr_name_attr] == group_name2]
 
-                        if belongs_to_group1 and len(belongs_to_group1) > 0 and belongs_to_group2 and len(belongs_to_group2) > 0:
-                            user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
-                            user_json['dn'] = r['dn']
-                            users.append(user_json)
+                            if belongs_to_group1 and len(belongs_to_group1) > 0 and belongs_to_group2 and len(belongs_to_group2) > 0:
+                                user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
+                                user_json['dn'] = r['dn']
+                                user_json['group'] = user_groups
+                                users.append(user_json)
 
         except Exception as error:
             raise error
