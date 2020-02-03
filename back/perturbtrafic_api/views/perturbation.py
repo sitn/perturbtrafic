@@ -1709,7 +1709,7 @@ def conflits_perturabations_view(request):
         conflicts_date_buffer = settings['conflicts_date_buffer']
         conflicts_geom_buffer = settings['conflicts_geom_buffer']
         query_s = 'perturbtrafic.pt_conflits_json({0}, {1})'.format(conflicts_date_buffer, conflicts_geom_buffer)
-        return query_s
+        
         query = request.dbsession.query(query_s).all()
 
         result = None

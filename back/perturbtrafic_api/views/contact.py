@@ -378,9 +378,9 @@ def contact_potentiel_avis_perturbation_view(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         result = []
 
-        for cp, c, o in request.dbsession.query(models.ContactPotentielAvisPerturbation, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
+        for cp, c in request.dbsession.query(models.ContactPotentielAvisPerturbation, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
                 models.ContactPotentielAvisPerturbation.id_contact == models.Contact.id).all():
-            result.append(cp.format(c.nom, c.prenom, o.nom))
+            result.append(cp.format(c.nom, c.prenom))
 
     except Exception as e:
         log.error(str(e))
@@ -558,9 +558,9 @@ def contact_avis_fermeture_urgence_view(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         result = []
 
-        for cp, c, o in request.dbsession.query(models.ContactAvisFermetureUrgence, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
+        for cp, c in request.dbsession.query(models.ContactAvisFermetureUrgence, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
                 models.ContactAvisFermetureUrgence.id_contact == models.Contact.id).all():
-            result.append(cp.format(c.nom, c.prenom, o.nom))
+            result.append(cp.format(c.nom, c.prenom))
 
     except Exception as e:
         log.error(str(e))
