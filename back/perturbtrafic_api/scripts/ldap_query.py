@@ -244,11 +244,12 @@ class LDAPQuery():
 
             if result is not None:
                 for r in result:
-                    if 'dn' in r: 
+                    if 'dn' in r:
                         user_groups = cls.get_user_groups_by_dn(request, r['dn'])
-                        
+
                         if len(user_groups) > 0:
-                            belongs_to_group = [x for x in user_groups if gr_name_attr in x and x[gr_name_attr] == group_name]
+                            belongs_to_group = [x for x in user_groups if
+                                                gr_name_attr in x and x[gr_name_attr] == group_name]
 
                             if belongs_to_group and len(belongs_to_group) > 0:
                                 user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
@@ -279,9 +280,9 @@ class LDAPQuery():
 
             if result is not None:
                 for r in result:
-                    if 'dn' in r: 
+                    if 'dn' in r:
                         user_groups = cls.get_user_groups_by_dn(request, r['dn'])
-                        
+
                         if len(user_groups) > 0:
                             belongs_to_group1 = [x for x in user_groups if
                                                 gr_name_attr in x and x[gr_name_attr] == group_name1]

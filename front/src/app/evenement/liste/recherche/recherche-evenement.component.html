@@ -60,7 +60,7 @@
           <label class="k-form-field">
             <span>Requérant</span>
             <kendo-combobox [data]="filteredRequerants" [filterable]="true" (filterChange)="filterRequerants($event)"
-              [textField]="'nom'" [valueField]="'id'" [valuePrimitive]=true formControlName="requerant">
+              [textField]="'nom'" [valueField]="'nom'" [valuePrimitive]=true formControlName="requerant">
             </kendo-combobox>
           </label>
           <label class="k-form-field">
@@ -80,7 +80,8 @@
           <label class="k-form-field">
             <span>PR de début</span>
             <kendo-combobox [data]="filteredPrDebuts" [filterable]="true" (filterChange)="filterPrDebuts($event)"
-              [textField]="'secteur_nom'" [valueField]="'secteur_nom'" [valuePrimitive]=false formControlName="prDebut">
+              (valueChange)="onDebutPrChanged($event)" [textField]="'secteur_nom'" [valueField]="'secteur_nom'"
+              [valuePrimitive]=false formControlName="prDebut">
             </kendo-combobox>
           </label>
           <label class="k-form-field">

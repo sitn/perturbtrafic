@@ -1,5 +1,6 @@
 import { DateUtils } from 'src/app/utils/date.utils';
 import { EvenementFormValues } from './IEvenementForm';
+import { IUser } from '../IUser';
 
 export class EvenementServer {
     id: number;
@@ -124,9 +125,11 @@ export abstract class EvenementServerForSave {
     _parcours?: string;
 
 
-    constructor(evenement: EvenementFormValues, geometries?: any[]) {
+    constructor(evenement: EvenementFormValues, user: IUser, geometries?: any[]) {
         this.idEvenement = evenement.id;
-        this.idEntite = 1;
+        if (user && user.currentEntity) {
+            this.idEntite = user.currentEntity.id;
+        }
         this.idResponsable = evenement.responsable;
         this.type = evenement.type.type;
         this.numeroDossier = evenement.numeroDossier;
@@ -156,9 +159,7 @@ export abstract class EvenementServerForSave {
         this.remarque = evenement.remarque;
         this.dateDemande = DateUtils.formatDate(evenement.dateDemande);
         this.dateOctroi = DateUtils.formatDate(evenement.dateOctroi);
-        this.ajoutePar = 2;
         this.dateAjout = DateUtils.formatDate(new Date());
-        this.modifiePar = 2;
         this.dateModification = DateUtils.formatDate(new Date());
         this.geometries_reperages = JSON.stringify(geometries); // this.dateSuppression = evenement.d;
         // this._parcours = evenement.p;

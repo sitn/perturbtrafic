@@ -1,6 +1,7 @@
 import { FormControl, Validators } from '@angular/forms';
 import { EvenementServerForSave } from './EvenementServer';
 import { EvenementFormValues } from './IEvenementForm';
+import { IUser } from '../IUser';
 
 export class ManifestationFormGroup {
     parcours = new FormControl(null, Validators.maxLength(2048));
@@ -20,8 +21,8 @@ export class ManifestationServerEdition {
 export class ManifestationServerSave extends EvenementServerForSave {
     _parcours: string;
 
-    constructor(evenement: EvenementFormValues, geometries?: any[]) {
-        super(evenement, geometries);
+    constructor(evenement: EvenementFormValues, user: IUser, geometries?: any[]) {
+        super(evenement, user, geometries);
         const manifestationValues = evenement.manifestation;
         this._parcours = manifestationValues.parcours;
     }

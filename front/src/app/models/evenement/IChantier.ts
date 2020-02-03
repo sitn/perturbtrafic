@@ -5,6 +5,7 @@ import { IOrganisme } from '../IOrganisme';
 import { EvenementServerForSave } from './EvenementServer';
 import { EvenementFormValues } from './IEvenementForm';
 import { DateUtils } from 'src/app/utils/date.utils';
+import { IUser } from '../IUser';
 
 export class ChantierFormGroup {
     maitreOuvrage = new FormControl();
@@ -163,8 +164,8 @@ export class ChantierServerSave extends EvenementServerForSave {
     _reperageEffectif: string;
     _categories: string;
 
-    constructor(evenement: EvenementFormValues, geometries?: any[]) {
-        super(evenement, geometries);
+    constructor(evenement: EvenementFormValues, user: IUser, geometries?: any[]) {
+        super(evenement, user, geometries);
         const chantier = evenement.chantier;
         this._idMaitreOuvrage = chantier.maitreOuvrage;
         this._idDirectionLocale = chantier.directionLocale;
@@ -190,7 +191,7 @@ export class ChantierServerSave extends EvenementServerForSave {
         this._reperageEffectif = chantier.reperageEffectif ? 'true' : 'false';
         this._autre = chantier.autre;
         this._lieuSeance = chantier.lieuSeance;
-        this._jourSeance = DateUtils.formatDate(chantier.jourSeance);
+        this._jourSeance = chantier.jourSeance;
         this._heureSeance = chantier.heureSeance;
         if (evenement.chantier.categorie && evenement.chantier.categorie.length > 0) {
             this._categories = JSON.stringify(evenement.chantier.categorie);

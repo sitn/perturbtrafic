@@ -38,10 +38,8 @@ export class ImpressionPerturbationComponent implements OnInit, OnChanges, After
   ngOnInit() {
     this.todayDate = new Date();
     const perturbationId = this.route.snapshot.paramMap.get('id');
-    console.log(perturbationId);
     if (perturbationId) {
       this.apiService.getPerturbationImpression(perturbationId).subscribe(pertImpression => {
-        console.log(pertImpression);
         this.perturbationImpression = pertImpression;
         this.initializeMap();
         this.ref.detectChanges();
@@ -122,7 +120,6 @@ export class ImpressionPerturbationComponent implements OnInit, OnChanges, After
       saveAs(dataUri, 'Evenements.pdf');
       this.loaderService.hide(true);
     });
-    console.log('test');
   }
 
 }

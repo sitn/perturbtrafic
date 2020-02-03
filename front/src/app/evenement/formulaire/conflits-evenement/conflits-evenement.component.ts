@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { Conflit } from 'src/app/models/IConflit';
 import { ApiService } from 'src/app/services/api.service';
 import { ConfigService } from 'src/app/services/config.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'conflits-evenement',
@@ -16,7 +17,8 @@ export class ConflitsEvenementComponent implements OnInit, OnDestroy {
 
   public conflicts: Conflit[];
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router, private configService: ConfigService) {
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router, private configService: ConfigService,
+    private userService: UserService) {
     this.subscriptions = [];
     this.conflicts = [];
   }
@@ -37,6 +39,13 @@ export class ConflitsEvenementComponent implements OnInit, OnDestroy {
     window.open(this.configService.getUrlGuichetCarto(), '_blank');
   }
 
+  isEven(i: number) {
+    return i % 2 === 0;
+  }
+
+  isOdd(i: number) {
+    return Math.abs(i % 2) === 1;
+  }
 
   private setSubscriptions(): void {
 
@@ -45,7 +54,7 @@ export class ConflitsEvenementComponent implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.apiService.getConflitsByEvenementId(evenementId).subscribe(res => {
           if (res && res.length > -1) {
-            this.conflicts = res.slice(0, 10);
+            this.conflicts = res;
           }
         })
       );

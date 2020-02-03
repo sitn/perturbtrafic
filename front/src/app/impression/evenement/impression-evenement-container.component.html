@@ -8,8 +8,8 @@
 
     <div class="page-template">
       <div class="header-image">
-        <img *ngIf="evenementImpression" style="height: 30px" src="/assets/logos/{{evenementImpression.nom_entite}}.jpg"
-          alt="evenementImpression.nom_entite">
+        <img *ngIf="evenementImpression" style="height: 30px" src="/assets/logos/{{evenementImpression.logo_entite}}"
+          alt="{{evenementImpression.nom_entite}}">
         <span style="margin-left: 10px">{{evenementImpression?.nom_entite}}</span>
         <span style="text-align: right;flex-grow: 1">Généré le : {{todayDate | date: 'dd-MM-yyyy'}}</span>
       </div>
@@ -71,7 +71,16 @@
         </div>
         <div class="attribute-line">
           <label>Localisation</label>
-          <span>{{evenementImpression?.localisation}}</span>
+          <span *ngIf="evenementImpression?.localisationImpressionReperage">
+            <ng-container *ngFor="let loc of evenementImpression.localisationImpressionReperage">
+              {{loc.axe}} de {{loc.pr_debut}}{{loc.pr_debut_distance}} à {{loc.pr_fin}}{{loc.pr_fin_distance}}<br>
+            </ng-container>
+          </span>
+          <ng-container *ngIf="evenementImpression && !evenementImpression?.localisationImpressionReperage">
+            <span>
+              {{evenementImpression.localisation_impression}}
+            </span>
+          </ng-container>
         </div>
         <div class="attribute-line">
           <label>Maître de l'ouvrage</label>

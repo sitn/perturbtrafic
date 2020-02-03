@@ -11,7 +11,7 @@
             </kendo-dropdownlist>
           </label>
           <label class="k-form-field">
-            <span>Etat de la perturbation</span>
+            <span>État de la perturbation</span>
             <kendo-dropdownlist [data]="etatPerturbationListe" [textField]="'description'" [valueField]="'id'"
               [valuePrimitive]=true formControlName="etat">
             </kendo-dropdownlist>
@@ -39,12 +39,14 @@
           <div class="k-form-field">
             <span>Dès le </span>
             <div class="dates-between-container" formGroupName="dates">
-              <kendo-datepicker  #startDate [format]="'dd.MM.yyyy'" formControlName="dateDebut" [max]="endDate?.value"></kendo-datepicker>
+              <kendo-datepicker #startDate [format]="'dd.MM.yyyy'" formControlName="dateDebut" [max]="endDate?.value">
+              </kendo-datepicker>
               <!-- <div [hidden]="dates.valid || dates.pristine" class="alert">
                 <i class="fa fa-exclamation" title="required"></i>
               </div> -->
               <span>Jusqu'au</span>
-              <kendo-datepicker #endDate [format]="'dd.MM.yyyy'" formControlName="dateFin"  [min]="startDate?.value"></kendo-datepicker>
+              <kendo-datepicker #endDate [format]="'dd.MM.yyyy'" formControlName="dateFin" [min]="startDate?.value">
+              </kendo-datepicker>
             </div>
           </div>
         </div>
@@ -57,14 +59,16 @@
           </label>
           <label class="k-form-field">
             <span>Axe de maintenance</span>
-            <kendo-combobox [data]="filteredAxeMaintenances" [filterable]="true" [textField]="'nom_complet'" [valueField]="'nom_complet'"
-              (filterChange)="filterAxeMaintenances($event)" [valuePrimitive]=false formControlName="axeMaintenance">
+            <kendo-combobox [data]="filteredAxeMaintenances" [filterable]="true" [textField]="'nom_complet'"
+              [valueField]="'nom_complet'" (filterChange)="filterAxeMaintenances($event)" [valuePrimitive]=false
+              formControlName="axeMaintenance">
             </kendo-combobox>
           </label>
           <label class="k-form-field">
             <span>PR de début</span>
             <kendo-combobox [data]="filteredPrDebuts" [filterable]="true" (filterChange)="filterPrDebuts($event)"
-              [textField]="'secteur_nom'" [valueField]="'secteur_nom'" [valuePrimitive]=false formControlName="prDebut">
+              (valueChange)="onDebutPrChanged($event)" [textField]="'secteur_nom'" [valueField]="'secteur_nom'"
+              [valuePrimitive]=false formControlName="prDebut">
             </kendo-combobox>
           </label>
           <label class="k-form-field">
@@ -95,8 +99,8 @@
       </div>
       <div style="width: 100%">
         <div class="buttons-container">
-          <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="onReset()" [disabled]="recherchePerturbationForm.pristine"
-            type="button">Réinitialiser</button>
+          <button kendoButton [iconClass]="'fa fa-times fa-fw'" (click)="onReset()"
+            [disabled]="recherchePerturbationForm.pristine" type="button">Réinitialiser</button>
           <button kendoButton [primary]="true" [iconClass]="'fa fa-search fa-fw'" (click)="onSearchPerturbation()"
             [disabled]="recherchePerturbationForm.invalid">Rechercher</button>
         </div>

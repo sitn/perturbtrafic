@@ -33,7 +33,7 @@ export class DropDownService {
     destinatairesFacturations: IDestinataireFacturation[];
     libellesEvenements: any[];
 
-    public contactReceived$: EventEmitter<IContact[]>;
+    public contactReceived$: EventEmitter<{ contacts: IContact[], lastUpdatedId?: number }>;
     public entityContactReceived$: EventEmitter<IContact[]>;
     public organismesReceived$: EventEmitter<IOrganisme[]>;
     public localitesNPAReceived$: EventEmitter<ILocaliteNPA[]>;
@@ -79,7 +79,7 @@ export class DropDownService {
         this.libellesEvenementsReceived$ = new EventEmitter();
     }
 
-    getContacts(): void {
+    getContacts(lastUpdatedId?: number): void {
         this.apiService.getContacts().subscribe(contacts => {
             contacts.sort((c1, c2) => {
                 let c1Nom = '';
@@ -93,7 +93,7 @@ export class DropDownService {
                 return c1Nom.localeCompare(c2Nom);
             });
             this.contacts = [...contacts];
-            this.contactReceived$.emit(this.contacts);
+            this.contactReceived$.emit({ contacts: this.contacts, lastUpdatedId: lastUpdatedId });
         });
     }
 

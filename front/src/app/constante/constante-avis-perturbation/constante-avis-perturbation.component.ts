@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { IContact, IContactPreavis } from 'src/app/models/IContact';
 import { ApiService } from 'src/app/services/api.service';
 import { DropDownService } from 'src/app/services/dropdown.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'constante-avis-perturbation',
@@ -22,7 +23,7 @@ export class ConstanteAvisPerturbationComponent implements OnInit {
   addContactPreavisOpened = false;
   deleteConfirmationOpened = false;
 
-  constructor(private apiService: ApiService, private dropDownService: DropDownService) {
+  constructor(private apiService: ApiService, private dropDownService: DropDownService, private userService: UserService) {
     this.subscriptions = [];
     this.preavisContacts = [];
     this.filteredContacts = [];
@@ -36,9 +37,9 @@ export class ConstanteAvisPerturbationComponent implements OnInit {
 
   addPreavisContact() {
     if (this.currentPreavisContact.id_contact) {
-      this.apiService.addNewContactPreavis(this.currentPreavisContact).subscribe(res => {
+      this.apiService.addNewContactPreavis(this.currentPreavisContact, this.userService.currentUser).subscribe(res => {
         if (!res.error) {
-          this.apiService.getContactsPreavis().subscribe(preavisContacts => {
+          this.apiService.getContactsPreavis(this.userService.currentUser.currentEntity.id).subscribe(preavisContacts => {
             this.preavisContacts = [...preavisContacts];
             this.closeCreationDialog();
           });
@@ -48,9 +49,9 @@ export class ConstanteAvisPerturbationComponent implements OnInit {
   }
 
   updatePreavisContact() {
-    this.apiService.updateContactPreavis(this.currentPreavisContact).subscribe(res => {
+    this.apiService.updateContactPreavis(this.currentPreavisContact, this.userService.currentUser).subscribe(res => {
       if (!res.error) {
-        this.apiService.getContactsPreavis().subscribe(preavisContacts => {
+        this.apiService.getContactsPreavis(this.userService.currentUser.currentEntity.id).subscribe(preavisContacts => {
           this.preavisContacts = [...preavisContacts];
           this.closeEditionDialog();
         });
@@ -61,7 +62,7 @@ export class ConstanteAvisPerturbationComponent implements OnInit {
   deletePreavisContact() {
     this.apiService.deleteContactPreavis(this.currentPreavisContact.id).subscribe(res => {
       if (!res.error) {
-        this.apiService.getContactsPreavis().subscribe(preavisContacts => {
+        this.apiService.getContactsPreavis(this.userService.currentUser.currentEntity.id).subscribe(preavisContacts => {
           this.preavisContacts = [...preavisContacts];
           this.closeDeleteDialog();
         });
@@ -114,20 +115,20 @@ export class ConstanteAvisPerturbationComponent implements OnInit {
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.apiService.getContactsPreavis().subscribe(preavisContacts => {
+      this.apiService.getContactsPreavis(this.userService.currentUser.currentEntity.id).subscribe(preavisContacts => {
         this.preavisContacts = [...preavisContacts];
       })
     );
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
         this.contacts = [];
-        contacts.forEach(contact => {
+        res.contacts.forEach(contact => {
           if (contact.courriel) {
             this.contacts.push(contact);
           }
         });
-        this.filteredContacts = [...contacts];
+        this.filteredContacts = [...res.contacts];
       })
     );
   }

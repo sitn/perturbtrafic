@@ -17,13 +17,14 @@ class ContactPotentielAvisPerturbation(Base):
     envoi_auto_occupation = Column(Boolean)
     envoi_auto_fermeture = Column(Boolean)
 
-    def format(self, nom, prenom):
+    def format(self, nom, prenom, organisme):
         return {
             'id': self.id,
             'id_contact': self.id_contact,
             'envoi_auto_occupation': self.envoi_auto_occupation,
             'envoi_auto_fermeture': self.envoi_auto_fermeture,
             'nom': nom,
-            'prenom': prenom
+            'prenom': prenom,
+            'organisme': organisme
         }
 #Index('my_index', Contact.nom, unique=True, mysql_length=255)

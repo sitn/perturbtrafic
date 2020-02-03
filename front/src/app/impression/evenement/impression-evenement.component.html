@@ -3,8 +3,8 @@
   <div class='page-break'>
     <!--        <img src="{{perturbationImpression.canvas}}" width="100%" height="100%"> -->
     <div class="header-image">
-      <img style="height: 30px" src="/assets/logos/{{perturbationImpression.nom_entite}}.jpg"
-        alt="perturbationImpression.nom_entite">
+      <img style="height: 30px" src="/assets/logos/{{perturbationImpression.logo_entite}}"
+        alt="{{perturbationImpression.nom_entite}}">
       <span style="margin-left: 10px">{{perturbationImpression.nom_entite}}</span>
       <span style="text-align: right;flex-grow: 1">Généré le : {{todayDate | date: 'dd-MM-yyyy'}}</span>
     </div>
@@ -31,7 +31,7 @@
 
     <div class="items">
       <div class="attribute-line">
-        <label>Etat de la demande</label>
+        <label>État de la demande</label>
         <span>{{perturbationImpression.etat_description}}</span>
       </div>
       <div class="attribute-line">

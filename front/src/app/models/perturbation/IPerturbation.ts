@@ -89,12 +89,12 @@ export class PerturbationForm {
         new ContactFormGroup()
     );
     remarque = new FormControl();
-    urgence = new FormControl();
+    urgence = new FormControl({ disabled: true });
     etat = new FormControl({ disabled: true });
     utilisateurValidation = new FormControl({ disabled: true }, Validators.maxLength(20));
     dateValidation = new FormControl({ disabled: true });
     dateDecision = new FormControl({ disabled: true });
-    decision = new FormControl({ disabled: true }, Validators.maxLength(200));
+    decision = new FormControl({ disabled: true }, Validators.maxLength(2000));
     fermeture = new FormBuilder().group(
         new FermeturePerturbationFormGroup()
     );
@@ -318,6 +318,7 @@ export interface IPerturbationImpression {
     localisation: string;
     remarque: string;
     nom_entite: string;
+    logo_entite: string;
     type_occupation: string;
     voies_condamnees: string;
     type_regulation: string;

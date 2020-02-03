@@ -25,6 +25,8 @@ export class AttributsOccupationPerturbationComponent implements OnInit, OnDestr
 
   subscriptions: Subscription[];
 
+  dropdownOriginForNewContact: any;
+
   constructor(
     private dropDownService: DropDownService,
     private navigationService: NavigationService,
@@ -61,16 +63,26 @@ export class AttributsOccupationPerturbationComponent implements OnInit, OnDestr
     this.perturbationFormService.typeOccupation.setValue(value);
   } */
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
-        this.contacts = [...contacts];
-        this.filteredResponsableOccupation = [...contacts];
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.contacts = [...res.contacts];
+        this.filteredResponsableOccupation = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found.id);
+          }
+        }
+        this.dropdownOriginForNewContact = null;
       })
     );
     this.subscriptions.push(

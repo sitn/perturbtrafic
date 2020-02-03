@@ -46,6 +46,8 @@ export class ConstanteAutorisationComponent implements OnInit {
             this.autorisationsDonneesContacts = [...autorisationsContacts];
             this.closeCreationDialog();
           });
+        } else if (res.message === 'Delegation already exists for the user') {
+          this.closeCreationDialog();
         }
       });
     }

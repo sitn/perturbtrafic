@@ -36,6 +36,8 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
 
   public timeMask = '00:00';
 
+  dropdownOriginForNewContact: any;
+
   // @Input() evenementForm: FormGroup;
   // @Output() evenementChange = new EventEmitter<IEvenement>();
 
@@ -64,19 +66,17 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
 
   ngOnInit() {
 
-
+    this.dropdownOriginForNewContact = null;
     this.setSubscriptions();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.ref.detectChanges();
-    console.log(changes);
     const eve = this.evenementFormService.evenementForm;
     /* if (this.evenementForm.disabled) {
       this.evenementForm.disable();
     } */
     // this.evenementForm.disable();
-    console.log(eve);
   }
 
   ngOnDestroy() {
@@ -86,7 +86,8 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
   filterResponsables(event) {
     this.filteredResponsables = [];
     for (const responsable of this.dropDownService.contacts) {
-      if (responsable.nom.toLowerCase().includes(event.toLowerCase()) || responsable.prenom.toLowerCase().includes(event.toLowerCase())) {
+      if (responsable.nom.toLowerCase().includes(event.toLowerCase()) ||
+        (responsable.prenom && responsable.prenom.toLowerCase().includes(event.toLowerCase()))) {
         this.filteredResponsables.push(responsable);
       }
     }
@@ -141,17 +142,27 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
     this.navigationService.openNewOrganismeDialog('NEW', null);
   }
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(data => {
-        this.filteredResponsables = data;
-        this.filteredContacts = data;
-        this.contacts = data;
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.filteredResponsables = [...res.contacts];
+        this.filteredContacts = [...res.contacts];
+        this.contacts = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found);
+          }
+        }
+        this.dropdownOriginForNewContact = null;
       })
     );
 
@@ -203,13 +214,11 @@ export class InformationsEvenementComponent implements OnInit, OnDestroy, OnChan
 
     this.subscriptions.push(
       this.evenementFormService.dateDebut.valueChanges.subscribe(val => {
-        console.log('value debut changed : ', val);
       })
     );
 
     this.subscriptions.push(
       this.evenementFormService.dateFin.valueChanges.subscribe(val => {
-        console.log('value fin changed : ', val);
       })
     );
 

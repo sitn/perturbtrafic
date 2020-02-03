@@ -36,6 +36,8 @@ export class AttributsAutreEvenementComponent implements OnInit, OnDestroy {
 
   public filteredFacturations: IDestinataireFacturation[];
 
+  dropdownOriginForNewContact: any;
+
 
 
   constructor(private navigationService: NavigationService, private dropDownService: DropDownService,
@@ -64,6 +66,7 @@ export class AttributsAutreEvenementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.dropdownOriginForNewContact = null;
     this.setSubscriptions();
   }
 
@@ -139,7 +142,7 @@ export class AttributsAutreEvenementComponent implements OnInit, OnDestroy {
   filterFacturation(event) {
     this.filteredFacturations = [];
     for (const facturation of this.facturations) {
-      if (facturation.description.toLowerCase().includes(event.toLowerCase())) {
+      if (facturation.description && facturation.description.toLowerCase().includes(event.toLowerCase())) {
         this.filteredFacturations.push(facturation);
       }
     }
@@ -147,8 +150,9 @@ export class AttributsAutreEvenementComponent implements OnInit, OnDestroy {
 
 
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   createNewOrganisme() {
@@ -194,8 +198,19 @@ export class AttributsAutreEvenementComponent implements OnInit, OnDestroy {
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
-        this.contacts = [...contacts];
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.contacts = [...res.contacts];
+        this.filteredResponsableTravaux = [...res.contacts];
+        this.filteredDirectionLocale = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found);
+          }
+        }
+        this.dropdownOriginForNewContact = null;
       })
     );
 
@@ -213,6 +228,7 @@ export class AttributsAutreEvenementComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.dropDownService.destinatairesFacturationsReceived$.subscribe(facturations => {
+        this.filteredFacturations = [...facturations];
         this.facturations = [...facturations];
       })
     );

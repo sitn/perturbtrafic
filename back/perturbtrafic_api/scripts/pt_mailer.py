@@ -8,6 +8,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 
+import logging
+log = logging.getLogger(__name__)
+
 
 class PTMailer():
 
@@ -59,37 +62,42 @@ class PTMailer():
 
     @classmethod
     def send_templated_mail(cls, request, recipients, subject, template, context, dynamic_content=None):
-        host = request.registry.settings['mail.host']
-        port = request.registry.settings['mail.port'] if 'mail.port' in request.registry.settings else None
-        user = request.registry.settings['mail.username']
-        pwd = request.registry.settings['mail.password'] if 'mail.password' in request.registry.settings else None
+        try:
+            host = request.registry.settings['mail.host']
+            port = request.registry.settings['mail.port'] if 'mail.port' in request.registry.settings else None
+            user = request.registry.settings['mail.username']
+            pwd = request.registry.settings['mail.password'] if 'mail.password' in request.registry.settings else None
 
-        msg = MIMEMultipart()
-        msg['From'] = user
-        msg['To'] = ", ".join(recipients)
-        msg['Subject'] = subject
-        html_body = render(template + ".body.pt", context, request=request)
+            msg = MIMEMultipart()
+            msg['From'] = user
+            msg['To'] = ", ".join(recipients)
+            msg['Subject'] = subject
+            html_body = render(template + ".body.pt", context, request=request)
 
-        # Inline CSS styles
-        html_body = premailer.transform(html_body)
+            # Inline CSS styles
+            html_body = premailer.transform(html_body)
 
-        if dynamic_content:
-            html_body = html_body.replace('@@dynamic_content@@', dynamic_content)
-        elif dynamic_content == None or dynamic_content == '':
-            html_body = html_body.replace('<tr>@@dynamic_content@@</tr>', '')
+            if dynamic_content:
+                html_body = html_body.replace('@@dynamic_content@@', dynamic_content)
+            elif dynamic_content == None or dynamic_content == '':
+                html_body = html_body.replace('@@dynamic_content@@', '')
 
-        body = html_body
+            body = html_body
 
-        msg.attach(MIMEText(body, 'html'))
+            msg.attach(MIMEText(body, 'html'))
 
-        server = smtplib.SMTP(host, port if port else None)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
+            server = smtplib.SMTP(host, port if port else None)
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
 
-        if user and pwd:
-            server.login(user, pwd)
+            if user and pwd:
+                server.login(user, pwd)
 
-        text = msg.as_string()
-        server.sendmail(user, recipients, text)
-        server.quit()
+            text = msg.as_string()
+            server.sendmail(user, recipients, text)
+
+            server.quit()
+
+        except Exception as error:
+            raise error

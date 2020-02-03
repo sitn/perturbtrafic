@@ -48,17 +48,25 @@ def contact_by_id_view(request):
 @view_config(route_name='contacts', request_method='GET', renderer='json')
 @view_config(route_name='contacts_slash', request_method='GET', renderer='json')
 def contacts_view(request):
+
+    result = []
+
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
 
         query = request.dbsession.query(models.Contact).all()
 
+        for item in query:
+            item = item.format();
+            item['nom_organisme'] = Utils.get_contact_organisme(request, item['id_organisme'])
+            result.append(item)
+
     except Exception as e:
         log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
-    return query
+    return result
 
 
 ########################################################
@@ -75,6 +83,7 @@ def add_contact_view(request):
 
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        max_contact_id = None
 
         current_user_id = Utils.get_connected_user_id(request)
         current_user_id = int(current_user_id) if current_user_id else None
@@ -93,26 +102,60 @@ def add_contact_view(request):
         telephone = None
         courriel = None
         login = None
+        idOrganisme = None
         forcerAjout = None
+        conditions = []
+        check_exist = false
 
         # Read params
         if ('nom' in request.params):
             nom = request.params['nom']
+            conditions.append(func.lower(models.Contact.nom) == func.lower(nom))
+            check_exist = True
+        else:
+            conditions.append(models.Contact.nom.__eq__(null()))
 
         if ('prenom' in request.params):
             prenom = request.params['prenom']
+            conditions.append(func.lower(models.Contact.prenom) == func.lower(prenom))
+            check_exist = True
+        else:
+            conditions.append(models.Contact.prenom.__eq__(null()))
 
         if ('mobile' in request.params):
             mobile = request.params['mobile']
+            conditions.append(models.Contact.mobile == mobile)
+            check_exist = True
+        else:
+            conditions.append(models.Contact.mobile.__eq__(null()))
 
         if ('telephone' in request.params):
             telephone = request.params['telephone']
+            conditions.append(models.Contact.telephone == telephone)
+            check_exist = True
+        else:
+            conditions.append(models.Contact.telephone.__eq__(null()))
 
         if ('courriel' in request.params):
             courriel = request.params['courriel']
+            conditions.append(func.lower(models.Contact.courriel) == func.lower(courriel))
+            check_exist = True
+        else:
+            conditions.append(models.Contact.courriel.__eq__(null()))
 
         if ('login' in request.params):
             login = request.params['login']
+            conditions.append(func.lower(models.Contact.login) == func.lower(login))
+            check_exist = True
+        else:
+            conditions.append(models.Contact.login.__eq__(null()))
+
+        if ('idOrganisme' in request.params):
+            idOrganisme = request.params['idOrganisme']
+            conditions.append(models.Contact.id_organisme == idOrganisme)
+            check_exist = True
+        else:
+            conditions.append(models.Contact.id_organisme.__eq__(null()))
 
         if ('forcerAjout' in request.params):
             forcerAjout = request.params['forcerAjout']
@@ -123,10 +166,13 @@ def add_contact_view(request):
                 forcerAjout = False
 
         # Check if contact already exists
-        if not forcerAjout:
-            query = request.dbsession.query(models.Contact).filter(and_(func.lower(models.Contact.prenom) == func.lower(prenom), func.lower(models.Contact.nom) == func.lower(nom), models.Contact.mobile == mobile, func.lower(models.Contact.courriel) == func.lower(courriel), func.lower(models.Contact.login) == func.lower(login))).all()
+        if forcerAjout is None or forcerAjout == False:
+
+            if len(conditions) > 0 and check_exist:
+                query = request.dbsession.query(models.Contact).filter(*conditions).all()
 
             if len(query) > 0:
+
                 return {'error': 'true', 'code': 500, 'message': 'Contact already exists'}
 
 
@@ -137,9 +183,13 @@ def add_contact_view(request):
                 prenom=prenom,
                 telephone=telephone,
                 mobile=mobile,
-                courriel=courriel)
+                courriel=courriel,
+                id_organisme=idOrganisme)
 
             request.dbsession.add(model)
+            request.dbsession.flush()
+            max_contact_id = model.id
+
             transaction.commit()
 
     except HTTPForbidden as e:
@@ -151,7 +201,7 @@ def add_contact_view(request):
         log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
-    return {'message': 'Data successfully saved'}
+    return {'message': 'Data successfully saved', 'id': max_contact_id}
 
 
 ########################################################
@@ -193,6 +243,7 @@ def update_contact_view(request):
         telephone = None
         courriel = None
         login = None
+        idOrganisme = None
 
         # Read params
         if ('id' in request.params and request.params['id'] != ''):
@@ -216,6 +267,9 @@ def update_contact_view(request):
         if ('login' in request.params):
             login = request.params['login']
 
+        if ('idOrganisme' in request.params):
+            idOrganisme = request.params['idOrganisme']
+
         with transaction.manager as tm:
             contact_query = request.dbsession.query(models.Contact).filter(models.Contact.id == id)
 
@@ -226,6 +280,7 @@ def update_contact_view(request):
                 contact_record.prenom = prenom
                 contact_record.telephone = telephone
                 contact_record.courriel = courriel
+                contact_record.id_organisme = idOrganisme
 
                 transaction.commit()
             else:
@@ -301,10 +356,12 @@ def contacts_having_login_view(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
 
         query = request.dbsession.query(models.Contact).filter(models.Contact.login.isnot(None)).all()
+
         result = []
 
         for contact in query:
-            contact_json = contact.format()
+            contact_json = contact.format();
+            contact_json['nom_organisme'] = Utils.get_contact_organisme(request, contact_json['id_organisme'])
 
 
             # Entites
@@ -343,21 +400,32 @@ def contacts_entite_view(request):
     entite_err_msg = 'idEntite parameter is empty'
     result = []
     try:
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
-        idEntite = None
+        current_user_id = Utils.get_connected_user_id(request)
+        current_user_id = int(current_user_id) if current_user_id else None
 
-        if ('idEntite' in request.params):
-            idEntite = request.params['idEntite']
+        if current_user_id:
+            idEntite = None
 
-        if idEntite is None:
-            raise Exception(entite_err_msg)
+            if ('idEntite' in request.params):
+                idEntite = request.params['idEntite']
 
+            if idEntite is None:
+                raise Exception(entite_err_msg)
 
-        query = request.dbsession.query(models.Contact, models.LienContactEntite).filter(models.Contact.id == models.LienContactEntite.id_contact).filter(models.LienContactEntite.id_entite == idEntite).all()
+            query = request.dbsession.query(models.Contact, models.LienContactEntite).filter(
+                models.Contact.id != current_user_id).filter(
+                models.Contact.id == models.LienContactEntite.id_contact).filter(
+                models.LienContactEntite.id_entite == idEntite).all()
 
-        for c, lce in query:
-            result.append(c.format())
+            for c, lce in query:
+                result.append(c.format())
 
     except Exception as e:
         log.error(str(e))
@@ -377,10 +445,17 @@ def contact_potentiel_avis_perturbation_view(request):
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         result = []
+        idEntite = None
 
-        for cp, c in request.dbsession.query(models.ContactPotentielAvisPerturbation, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
-                models.ContactPotentielAvisPerturbation.id_contact == models.Contact.id).all():
-            result.append(cp.format(c.nom, c.prenom))
+        if ('idEntite' in request.params):
+            idEntite = request.params['idEntite']
+
+        for cp, c, o in request.dbsession.query(models.ContactPotentielAvisPerturbation, models.Contact,
+                                                models.Organisme).filter(
+                models.ContactPotentielAvisPerturbation.id_entite == idEntite).filter(
+                models.ContactPotentielAvisPerturbation.id_contact == models.Contact.id).filter(
+            models.Contact.id_organisme == models.Organisme.id).all():
+            result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
         log.error(str(e))
@@ -548,7 +623,7 @@ def delete_contact_potentiels_avis_perturbation_by_id_view(request):
 
 
 ########################################################
-# Get Contact_potentiel_avis_perturbation view
+# Get Contact_avis_fermeture_urgence_view view
 ########################################################
 @view_config(route_name='contacts_avis_fermeture_urgence', request_method='GET', renderer='json')
 @view_config(route_name='contacts_avis_fermeture_urgence_slash', request_method='GET', renderer='json')
@@ -558,9 +633,11 @@ def contact_avis_fermeture_urgence_view(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         result = []
 
-        for cp, c in request.dbsession.query(models.ContactAvisFermetureUrgence, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
-                models.ContactAvisFermetureUrgence.id_contact == models.Contact.id).all():
-            result.append(cp.format(c.nom, c.prenom))
+        for cp, c, o in request.dbsession.query(models.ContactAvisFermetureUrgence, models.Contact,
+                                                models.Organisme).filter(
+                models.ContactAvisFermetureUrgence.id_contact == models.Contact.id).filter(
+            models.Contact.id_organisme == models.Organisme.id).all():
+            result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
         log.error(str(e))
@@ -696,9 +773,10 @@ def contact_avis_pr_touche_view(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         result = []
 
-        for cp, c in request.dbsession.query(models.ContactAvisPrTouche, models.Contact).filter(models.Contact.courriel.isnot(None)).filter(
-                models.ContactAvisPrTouche.id_contact == models.Contact.id).all():
-            result.append(cp.format(c.nom, c.prenom))
+        for cp, c, o in request.dbsession.query(models.ContactAvisPrTouche, models.Contact, models.Organisme).filter(
+                models.ContactAvisPrTouche.id_contact == models.Contact.id).filter(
+            models.Contact.id_organisme == models.Organisme.id).all():
+            result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
         log.error(str(e))
@@ -818,6 +896,477 @@ def delete_contact_avis_pr_touche_by_id_view(request):
         log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+
+    return {'message': 'Data successfully saved'}
+
+
+########################################################
+# Get nouveaux contacts AD
+########################################################
+@view_config(route_name='nouveaux_contacts_ad', request_method='GET', renderer='json')
+@view_config(route_name='nouveaux_contacts_ad_slash', request_method='GET', renderer='json')
+def get_nouveaux_contacts_ad_view(request):
+    try:
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+        group_id_attribute = settings['ldap_group_attribute_id']
+        group_name_attribute = settings['ldap_group_attribute_name']
+        ldap_entite_groups_prefix = settings['ldap_entite_groups_prefix']
+        ldap_fonction_groups_prefix = settings['ldap_fonction_groups_prefix']
+        login_attr = settings['ldap_user_attribute_login']
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
+        # Logins from AD
+        contacts_ad_json = LDAPQuery.get_users_belonging_to_group_entites(request)
+
+        # Logins from DB
+        contacts_bd_logins = []
+        contacts_bd_logins_query = request.dbsession.query(models.Contact).distinct(models.Contact.login).filter(
+            models.Contact.login.isnot(None)).all()
+        for c in contacts_bd_logins_query:
+            contacts_bd_logins.append(c.login.upper())
+
+        result = []
+
+        for one_contact_ad_json in contacts_ad_json:
+            if one_contact_ad_json and login_attr in one_contact_ad_json:
+                if one_contact_ad_json[login_attr].upper() not in contacts_bd_logins:
+                    groups = LDAPQuery.get_user_groups_by_dn(request, one_contact_ad_json['dn'])
+
+                    entites = [{'id': x[group_id_attribute], 'name': x[group_name_attribute]} for x in groups if
+                               group_id_attribute in x and x[group_id_attribute].startswith(ldap_entite_groups_prefix)]
+
+                    roles = [{'id': x[group_id_attribute], 'name': x[group_name_attribute]} for x in groups if
+                             group_id_attribute in x and x[group_id_attribute].startswith(ldap_fonction_groups_prefix)]
+
+                    one_contact_ad_json['entites'] = entites
+                    one_contact_ad_json['roles'] = roles
+                    result.append(one_contact_ad_json)
+
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+    except Exception as error:
+        log.error(str(error))
+        return {'error': 'true', 'code': 403, 'message': str(error)}
+
+    return result
+
+
+########################################################
+# Add nouveaux contacts AD
+########################################################
+@view_config(route_name='nouveaux_contacts_ad', request_method='POST', renderer='json')
+@view_config(route_name='nouveaux_contacts_ad_slash', request_method='POST', renderer='json')
+def add_nouveaux_contacts_ad_view(request):
+    try:
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+        login_attr = settings['ldap_user_attribute_login']
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
+        contacts_ad_json = None
+
+        if 'contacts' in request.params:
+            contacts_ad_json = request.params['contacts']
+
+        if contacts_ad_json is None:
+            raise Exception('Parameter contacts is empty')
+
+        # Mise à jour groupes AD
+        is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
+
+        if is_groupes_ad_mis_a_jour:
+
+            contacts_ad_json = json.loads(contacts_ad_json)
+
+            # Get all entités
+            entites = {}
+            entites_query = request.dbsession.query(models.Entite).all()
+            for e in entites_query:
+                entites[e.nom_groupe_ad] = e.id
+
+            for one_contact_ad_json in contacts_ad_json:
+
+                with transaction.manager as tm:
+                    # Add contact to DB
+                    contact_model = models.Contact(
+                        id_organisme=one_contact_ad_json['id_organisme'] if 'id_organisme' in one_contact_ad_json else None,
+                        login=one_contact_ad_json[settings['ldap_user_attribute_login']],
+                        nom=one_contact_ad_json[settings['ldap_user_attribute_lastname']],
+                        prenom=one_contact_ad_json[settings['ldap_user_attribute_firstname']],
+                        telephone=one_contact_ad_json[settings['ldap_user_attribute_telephone']],
+                        # mobile=one_contact_ad_json[settings['ldap_user_attribute_mobile']],
+                        courriel=one_contact_ad_json[settings['ldap_user_attribute_mail']])
+
+                    request.dbsession.add(contact_model)
+                    request.dbsession.flush()
+                    max_contact_id = contact_model.id
+
+                    # Add entites groups
+                    groupes_entites = one_contact_ad_json['entites'] if 'entites' in one_contact_ad_json else None
+
+                    if groupes_entites is not None and len(groupes_entites) > 0:
+                        for one_contact_ldap_group_item in groupes_entites:
+                            one_contact_ldap_group_id = one_contact_ldap_group_item['id']
+                            one_contact_ldap_group_name = one_contact_ldap_group_item['name']
+
+                            # Entite group
+                            if one_contact_ldap_group_id.startswith(settings['ldap_entite_groups_prefix']):
+                                id_entite = entites[
+                                    one_contact_ldap_group_id] if entites and one_contact_ldap_group_id in entites else None
+
+                                # If entite does not exist
+                                if id_entite is None:
+                                    entite_model = models.Entite(
+                                        nom=one_contact_ldap_group_name,
+                                        id_responsable=settings['id_responsable_entite'],
+                                        nom_groupe_ad=one_contact_ldap_group_id
+                                    )
+                                    request.dbsession.add(entite_model)
+                                    request.dbsession.flush()
+                                    id_entite = entite_model.id
+
+                                if id_entite is not None:
+                                    lien_entite_contact_model = models.LienContactEntite(
+                                        id_contact=max_contact_id,
+                                        id_entite=id_entite
+                                    )
+                                    request.dbsession.add(lien_entite_contact_model)
+
+                    # Add Fonction group
+                    groupes_fonctions = one_contact_ad_json['roles'] if 'roles' in one_contact_ad_json else None
+
+                    if groupes_fonctions is not None and len(groupes_fonctions) > 0:
+                        for one_contact_ldap_group_item in groupes_fonctions:
+                            one_contact_ldap_group_id = one_contact_ldap_group_item['id']
+
+                            fonction_contact_model = models.FonctionContact(
+                                id_contact=max_contact_id,
+                                fonction=one_contact_ldap_group_id
+                            )
+                            request.dbsession.add(fonction_contact_model)
+
+                    transaction.commit()
+
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+    except Exception as e:
+        transaction.abort()
+        request.dbsession.rollback()
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
+
+    return {'message': 'Data successfully saved'}
+
+
+########################################################
+# Mise a jour des groupes AD
+########################################################
+@view_config(route_name='mise_a_jours_groupes_ad', request_method='GET', renderer='json')
+@view_config(route_name='mise_a_jours_groupes_ad_slash', request_method='GET', renderer='json')
+def mise_a_jours_groupes_ad_view(request):
+    result = {'message': 'AD groups updated'}
+
+    try:
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+
+        """
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+        """
+
+        is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
+
+        if not is_groupes_ad_mis_a_jour:
+            raise Exception('An error occured while updating AD groups')
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+    except Exception as e:
+        transaction.abort()
+        request.dbsession.rollback()
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
+
+    return result
+
+
+########################################################
+# Autorisations accordees
+########################################################
+@view_config(route_name='autorisations_accordees', request_method='GET', renderer='json')
+@view_config(route_name='autorisations_accordees_slash', request_method='GET', renderer='json')
+def autorisations_accordees_view(request):
+    result = []
+    entite_err_msg = 'idEntite parameter is empty'
+    try:
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+        idEntite = None
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
+        if ('idEntite' in request.params):
+            idEntite = request.params['idEntite']
+
+        if idEntite is None:
+            raise Exception(entite_err_msg)
+
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        current_user_id = Utils.get_connected_user_id(request)
+        current_user_id = int(current_user_id) if current_user_id else None
+
+        if current_user_id:
+
+            for d, c, lce in request.dbsession.query(models.Delegation, models.Contact,
+                                                     models.LienContactEntite).filter(
+                models.Delegation.id_delegant == current_user_id).filter(
+                models.Contact.id == models.Delegation.id_delegataire).filter(
+                models.LienContactEntite.id_entite == idEntite).filter(
+                models.Delegation.id_delegataire == models.LienContactEntite.id_contact).all():
+                result.append(d.format(c.nom, c.prenom, Utils.get_contact_organisme(request, c.id_organisme)))
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+    except Exception as error:
+        log.error(str(error))
+        return {'error': 'true', 'code': 500,
+                'message': entite_err_msg if str(error) == entite_err_msg else CustomError.general_exception}
+
+    return result
+
+
+#######################################################
+# Autorisations recues
+########################################################
+@view_config(route_name='autorisations_recues', request_method='GET', renderer='json')
+@view_config(route_name='autorisations_recues_slash', request_method='GET', renderer='json')
+def autorisations_recues_view(request):
+    result = []
+    try:
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        current_user_id = Utils.get_connected_user_id(request)
+        current_user_id = int(current_user_id) if current_user_id else None
+
+        if current_user_id:
+
+            for d, c in request.dbsession.query(models.Delegation, models.Contact).filter(
+                    models.Delegation.id_delegataire == current_user_id).filter(
+                models.Contact.id == models.Delegation.id_delegant).all():
+                result.append(d.format(c.nom, c.prenom, Utils.get_contact_organisme(request, c.id_organisme)))
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+    except Exception as error:
+        log.error(str(error))
+        return {'error': 'true', 'code': 403, 'message': str(error)}
+
+    return result
+
+
+########################################################
+# Add autorisation
+########################################################
+@view_config(route_name='autorisations', request_method='POST', renderer='json')
+@view_config(route_name='autorisations_slash', request_method='POST', renderer='json')
+def add_autorisations_view(request):
+    try:
+
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        current_user_id = Utils.get_connected_user_id(request)
+        current_user_id = int(current_user_id) if current_user_id else None
+
+        if current_user_id:
+
+            # Params
+            idDelegataire = None
+            autorisationLecture = None
+            autorisationModification = None
+            autorisationSuppression = None
+
+            if 'idDelegataire' in request.params:
+                idDelegataire = request.params['idDelegataire']
+
+            # Check delegation exists
+            delegation_query = request.dbsession.query(models.Delegation).filter(
+                models.Delegation.id_delegataire == idDelegataire).filter(
+                models.Delegation.id_delegant == current_user_id).all()
+
+            if delegation_query and len(delegation_query) > 0:
+                raise Exception(CustomError.delegation_exists_exception)
+
+            with transaction.manager:
+
+                if 'autorisationLecture' in request.params:
+                    autorisationLecture = request.params['autorisationLecture']
+
+                    if autorisationLecture == 'true':
+                        autorisationLecture = True
+                    elif autorisationLecture == 'false':
+                        autorisationLecture = False
+                    else:
+                        autorisationLecture = None
+
+                if 'autorisationModification' in request.params:
+                    autorisationModification = request.params['autorisationModification']
+
+                    if autorisationModification == 'true':
+                        autorisationModification = True
+                    elif autorisationModification == 'false':
+                        autorisationModification = False
+                    else:
+                        autorisationModification = None
+
+                if 'autorisationSuppression' in request.params:
+                    autorisationSuppression = request.params['autorisationSuppression']
+
+                    if autorisationSuppression == 'true':
+                        autorisationSuppression = True
+                    elif autorisationSuppression == 'false':
+                        autorisationSuppression = False
+                    else:
+                        autorisationSuppression = None
+
+                model = models.Delegation(
+                    id_delegant=current_user_id,
+                    id_delegataire=idDelegataire,
+                    autorisation_lecture=autorisationLecture,
+                    autorisation_modification=autorisationModification,
+                    autorisation_suppression=autorisationSuppression)
+
+                request.dbsession.add(model)
+
+                transaction.commit()
+
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+
+    except Exception as e:
+        transaction.abort()
+        request.dbsession.rollback()
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.delegation_exists_exception if str(
+            e) == CustomError.delegation_exists_exception else CustomError.general_exception}
+
+    return {'message': 'Data successfully saved'}
+
+
+########################################################
+# Update autorisation
+########################################################
+@view_config(route_name='autorisations', request_method='PUT', renderer='json')
+@view_config(route_name='autorisations_slash', request_method='PUT', renderer='json')
+def update_autorisations_view(request):
+    try:
+
+        auth_tkt = request.cookies.get('auth_tkt', default=None)
+
+        if not auth_tkt:
+            raise HTTPForbidden()
+
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+        current_user_id = Utils.get_connected_user_id(request)
+        current_user_id = int(current_user_id) if current_user_id else None
+
+        if current_user_id:
+
+            # Params
+            idDelegation = None
+            idDelegataire = None
+            autorisationLecture = None
+            autorisationModification = None
+            autorisationSuppression = None
+
+            if 'idDelegation' in request.params:
+                idDelegation = request.params['idDelegation']
+                delegation_record = request.dbsession.query(models.Delegation).filter(
+                    models.Delegation.id == idDelegation).first()
+
+                if delegation_record == None:
+                    raise Exception(CustomError.id_not_found_exception)
+
+                with transaction.manager:
+
+                    if 'idDelegataire' in request.params:
+                        idDelegataire = request.params['idDelegataire']
+                        delegation_record.id_delegataire = idDelegataire
+
+                    if 'autorisationLecture' in request.params:
+                        autorisationLecture = request.params['autorisationLecture']
+
+                        if autorisationLecture == 'true':
+                            autorisationLecture = True
+                        elif autorisationLecture == 'false':
+                            autorisationLecture = False
+                        else:
+                            autorisationLecture = None
+
+                        delegation_record.autorisation_lecture = autorisationLecture
+
+                    if 'autorisationModification' in request.params:
+                        autorisationModification = request.params['autorisationModification']
+
+                        if autorisationModification == 'true':
+                            autorisationModification = True
+                        elif autorisationModification == 'false':
+                            autorisationModification = False
+                        else:
+                            autorisationModification = None
+
+                        delegation_record.autorisation_modification = autorisationModification
+
+                    if 'autorisationSuppression' in request.params:
+                        autorisationSuppression = request.params['autorisationSuppression']
+
+                        if autorisationSuppression == 'true':
+                            autorisationSuppression = True
+                        elif autorisationSuppression == 'false':
+                            autorisationSuppression = False
+                        else:
+                            autorisationSuppression = None
+
+                        delegation_record.autorisation_suppression = autorisationSuppression
+
+                    transaction.commit()
+
+    except HTTPForbidden as e:
+        raise HTTPForbidden()
+
+    except Exception as error:
+        log.error(str(error))
+        return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return {'message': 'Data successfully saved'}
 

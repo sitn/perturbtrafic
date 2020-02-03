@@ -38,6 +38,8 @@ export class AttributsChantierEvenementComponent implements OnInit, OnDestroy {
 
   chantierEvenementForm: FormGroup;
 
+  dropdownOriginForNewContact: any;
+
   constructor(private fb: FormBuilder, private navigationService: NavigationService, private dropDownService: DropDownService,
     public evenementFormService: EvenementFormService) {
     this.subscriptions = [];
@@ -56,6 +58,7 @@ export class AttributsChantierEvenementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.dropdownOriginForNewContact = null;
     this.setSubscriptions();
     this.selectedDirectionLocale = this.contacts.find(cont => {
       return cont.id === this.evenementFormService.directionLocale.value;
@@ -121,8 +124,9 @@ export class AttributsChantierEvenementComponent implements OnInit, OnDestroy {
     }
   }
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   createNewOrganisme() {
@@ -156,16 +160,26 @@ export class AttributsChantierEvenementComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.contacts = [...res.contacts];
+        this.filteredResponsableTravaux = [...res.contacts];
+        this.filteredDirectionLocale = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found.id);
+          }
+        }
         this.selectedDirectionLocale = this.contacts.find(cont => {
           return cont.id === this.evenementFormService.directionLocale.value;
         });
         this.selectedResponsableTravaux = this.contacts.find(cont => {
           return cont.id === this.evenementFormService.responsableTravaux.value;
         });
-        this.contacts = [...contacts];
-        this.filteredResponsableTravaux = [...contacts];
-        this.filteredDirectionLocale = [...contacts];
+
+        this.dropdownOriginForNewContact = null;
       })
     );
 

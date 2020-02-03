@@ -40,7 +40,7 @@ export class MainHeaderComponent implements OnInit {
         this.show = false;
         this.items = [
             {
-                text: 'Evénements',
+                text: 'Événements',
                 path: '/evenements',
                 cssClass: 'active',
             }, {
@@ -110,8 +110,8 @@ export class MainHeaderComponent implements OnInit {
         let perturbationSubItems: any[] = [];
         if (this.userService.canAddEvent()) {
             evenementSubItems = [
-                { text: 'Evénements', path: '/evenements' },
-                { text: 'Nouvel evenement', path: '/evenements/formulaire' }
+                { text: 'Événements', path: '/evenements' },
+                { text: 'Nouvel événement', path: '/evenements/formulaire' }
             ];
         }
         if (this.userService.canAddPerturbation()) {
@@ -122,7 +122,7 @@ export class MainHeaderComponent implements OnInit {
         }
         this.items = [
             {
-                text: 'Evénements',
+                text: 'Événements',
                 cssClass: 'active',
                 items: evenementSubItems
             }, {

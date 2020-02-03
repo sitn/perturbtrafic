@@ -39,7 +39,6 @@ export class ImpressionEvenementContainerComponent implements OnInit, AfterViewI
     this.todayDate = new Date();
     this.perturbationsRenderedCounter = 0;
     const evenementId = this.route.snapshot.paramMap.get('id');
-    console.log(this.route.snapshot.params);
     if (evenementId) {
       const printPath = this.route.snapshot.url.findIndex(url => url.path.toLowerCase() === 'print'.toLowerCase());
       const printFolderPath = this.route.snapshot.url.findIndex(url => url.path.toLowerCase() === 'print_folder'.toLowerCase());
@@ -105,7 +104,6 @@ export class ImpressionEvenementContainerComponent implements OnInit, AfterViewI
       if (counter === 0) {
         map.render();
         map.once('rendercomplete', (event) => {
-          console.log('rendercomplete ');
           const canvas = event.context.canvas;
           this.evenementImpression.canvas = canvas.toDataURL();
           this.loaderService.hide(true);
@@ -129,7 +127,6 @@ export class ImpressionEvenementContainerComponent implements OnInit, AfterViewI
   }
 
   ngAfterViewInit() {
-    console.log('after view init');
   }
 
   printEvenement(pdf: PDFComponent): void {

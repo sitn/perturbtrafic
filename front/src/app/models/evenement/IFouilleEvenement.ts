@@ -5,6 +5,7 @@ import { ContactFormGroup, ContactFormValues, IContact } from '../IContact';
 import { IOrganisme, OrganismeFormGroup, OrganismeFormValues } from '../IOrganisme';
 import { EvenementFormValues } from './IEvenementForm';
 import { EvenementServerForSave } from './EvenementServer';
+import { IUser } from '../IUser';
 
 export class FouilleFormGroup {
 
@@ -236,8 +237,8 @@ export class FouilleServerSave extends EvenementServerForSave {
     _reserveEventuelle: string;
     _reperageEffectif: string;
 
-    constructor(evenement: EvenementFormValues, geometries?: any[]) {
-        super(evenement, geometries);
+    constructor(evenement: EvenementFormValues, user: IUser, geometries?: any[]) {
+        super(evenement, user, geometries);
         const fouille = evenement.fouille;
         // this._idMaitreOuvrage = fouille.maitreOuvrage.organisme;
         // this._idDirectionLocale = fouille.directionLocale.contact;

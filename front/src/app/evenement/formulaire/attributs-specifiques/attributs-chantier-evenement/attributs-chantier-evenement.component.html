@@ -46,7 +46,7 @@
             [valuePrimitive]=true formControlName="directionLocale">
           </kendo-combobox>
           <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
-            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+            <i class="fa fa-user-plus" (click)="createNewContact(evenementFormService.directionLocale)"></i>
           </span>
         </label>
         <ng-container>
@@ -175,7 +175,7 @@
             [valuePrimitive]=true formControlName="responsableTravaux">
           </kendo-combobox>
           <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
-            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+            <i class="fa fa-user-plus" (click)="createNewContact(evenementFormService.responsableTravaux)"></i>
           </span>
         </label>
         <ng-container>

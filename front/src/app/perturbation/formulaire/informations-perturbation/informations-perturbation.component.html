@@ -12,7 +12,7 @@
         <input class="k-textbox" formControlName="localisation" />
       </label>
       <label class="k-form-field">
-        <span>Etat</span>
+        <span>État</span>
         <kendo-dropdownlist [data]="etatPerturbationListe" [textField]="'description'" [valueField]="'id'"
           [valuePrimitive]=true formControlName="etat">
         </kendo-dropdownlist>
@@ -79,7 +79,7 @@
             [valuePrimitive]=false formControlName="contact">
           </kendo-combobox>
           <span class="new-contact" *ngIf="perturbationFormService.mode!='READ_ONLY'">
-            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+            <i class="fa fa-user-plus" (click)="createNewContact(perturbationFormService.responsableTraficId)"></i>
           </span>
         </label>
         <ng-container formGroupName="contactInfos">

@@ -1,7 +1,7 @@
 <kendo-grid [data]="conflictList">
   <kendo-grid-messages noRecords="Aucun conflit">
   </kendo-grid-messages>
-  <kendo-grid-column [field]="'evenementNumeroDossier'" [title]="'Evénement'">
+  <kendo-grid-column [field]="'evenementNumeroDossier'" [title]="'Événement'">
     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
       <div class="cell">
         <span><b>{{dataItem.evenementNumeroDossier}}</b> - {{dataItem.libelle}}</span>
@@ -19,7 +19,7 @@
       </div>
     </ng-template>
   </kendo-grid-column>
-  <kendo-grid-column [field]="'evenementConflitNumeroDossier'" [title]="'Evénement en conflit'">
+  <kendo-grid-column [field]="'evenementConflitNumeroDossier'" [title]="'Événement en conflit'">
     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
       <div class="cell">
         <span><b>{{dataItem.evenementConflitNumeroDossier}}</b> - {{dataItem.libelleConflit}}</span>

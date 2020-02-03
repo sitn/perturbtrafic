@@ -10,7 +10,7 @@
             [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true formControlName="responsable">
           </kendo-combobox>
           <span class="new-contact" *ngIf="perturbationFormService.mode!='READ_ONLY'">
-            <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+            <i class="fa fa-user-plus" (click)="createNewContact(perturbationFormService.responsableFermeture)"></i>
           </span>
         </label>
         <label class="k-form-field">

@@ -5,6 +5,7 @@ import { ContactFormGroup, ContactFormValues, IContact } from '../IContact';
 import { IOrganisme, OrganismeFormGroup, OrganismeFormValues } from '../IOrganisme';
 import { EvenementServerForSave } from './EvenementServer';
 import { EvenementFormValues } from './IEvenementForm';
+import { IUser } from '../IUser';
 
 export interface IAutreEvenement {
     maitreOuvrage: IOrganisme;
@@ -190,8 +191,8 @@ export class AutreEvenementServerSave extends EvenementServerForSave {
     _dateFacture: string;
     _reserveEventuelle: string;
 
-    constructor(evenementValue: EvenementFormValues, geometries?: any[]) {
-        super(evenementValue, geometries);
+    constructor(evenementValue: EvenementFormValues, user: IUser, geometries?: any[]) {
+        super(evenementValue, user, geometries);
         const autreEvenementValue = evenementValue.autre;
         // this._idMaitreOuvrage = autreEvenementValue.maitreOuvrage.organisme;
         // this._idDirectionLocale = autreEvenementValue.directionLocale.contact;

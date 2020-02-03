@@ -117,7 +117,7 @@ id_responsable_entite=359
 # Les informations du serveur des mails
 mail.host = smtp.gmail.com
 mail.port = 587
-mail.username = test@gmail.com
+mail.username = username
 mail.password = password
 mail.tls = True
 mail.debug = 1

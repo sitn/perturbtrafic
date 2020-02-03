@@ -122,6 +122,7 @@ def includeme(config):
     config.add_route('conflits_perturabations', '/perturbtrafic/api/conflits_perturbations')
     config.add_route('conflits_perturabations_slash', '/perturbtrafic/api/conflits_perturbations/')
     config.add_route('conflits_perturabations_by_id', '/perturbtrafic/api/conflits_perturbations/{id}')
+    config.add_route('conflits_evenement_by_id', '/perturbtrafic/api/conflits_evenement/{id}')
     #Get geometry_reperage
     config.add_route('geometry_reperage', '/perturbtrafic/api/geometry_reperage')
     config.add_route('geometry_reperage_slash', '/perturbtrafic/api/geometry_reperage/')

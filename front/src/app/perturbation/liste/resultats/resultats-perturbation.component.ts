@@ -67,16 +67,15 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
   };
 
   cols: any[] = [
-    { field: 'type', header: 'Type perturbation', type: 'string', groupable: true },
+    { field: 'type', header: 'Type de perturbation', type: 'string', groupable: true },
     { field: 'debut', header: 'Début', type: 'date', format: 'dd.MM.yyyy', groupable: true },
     { field: 'fin', header: 'Fin', type: 'date', format: 'dd.MM.yyyy', groupable: true },
-    { field: 'typeEvenement', header: 'Type évémenemt', type: 'string', groupable: true },
+    { field: 'typeEvenement', header: 'Type d\'évènement', type: 'string', groupable: true },
     { field: 'numeroDossier', header: 'N° dossier', type: 'string', groupable: true },
-    { field: 'descriptionEvenement', header: 'événement', type: 'string', groupable: true },
-    { field: 'description', header: 'description', type: 'string', groupable: true },
-    { field: 'etat', header: 'etat', type: 'string', groupable: true },
-    { field: 'action', header: 'action', type: 'action', groupable: false }
-    /* { field: '', header: 'Action', type: "actions" }, */
+    { field: 'descriptionEvenement', header: 'Évènement', type: 'string', groupable: true },
+    { field: 'description', header: 'Description', type: 'string', groupable: true },
+    { field: 'etat', header: 'État', type: 'string', groupable: true },
+    { field: 'action', header: 'Actions', type: 'action', groupable: false }
   ];
 
   /*   public rowClass = (context: any): string => {
@@ -118,7 +117,14 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
 
   public processData(state: any): void {
     this.state = state;
+    const excelState: State = {
+      sort: [{
+        field: '',
+        dir: 'desc'
+      }]
+    };
     const dataResults = process(this.resultats, this.state);
+    const excelResults = process(this.resultats, excelState);
     this.filteredResultats = [...dataResults.data];
     /* console.log('skip : ', this.state.skip);
     this.filteredResultats = dataResults.data.slice(this.state.skip, this.state.skip + this.pageSize);
@@ -129,8 +135,8 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
     this.totalResults = this.filteredResultats.length;
     this.occupationResultats = [];
     this.fermetureResultats = [];
-    if (dataResults.data && dataResults.data.length > 0) {
-      dataResults.data.forEach(resultObject => {
+    if (excelResults.data && excelResults.data.length > 0) {
+      excelResults.data.forEach(resultObject => {
         if (resultObject.type === 'Fermeture') {
           this.fermetureResultats.push(resultObject);
         } else if (resultObject.type === 'Occupation') {
@@ -141,11 +147,6 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
 
   }
 
-  /*   public pageChange(event: PageChangeEvent): void {
-      console.log('page changed : ', event);
-      this.state.skip = event.skip;
-      this.processData(this.state);
-    } */
 
   public formatRows(rows: any): void {
     // const rows = e.workbook.sheets[0].rows;
@@ -188,7 +189,6 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
 
   public exportExcel(): void {
     this.loaderService.show();
-    console.log(this.fermetureResultats);
     Promise.all([this.fermetureExcel.workbookOptions(), this.occupationExcel.workbookOptions()]).then((workbooks) => {
       this.formatRows(workbooks[0].sheets[0].rows);
       this.formatRows(workbooks[1].sheets[0].rows);
@@ -217,7 +217,6 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
         }
       });
     }
-    console.log(pdfResults);
     const promises = [];
     promises.push(this.fermetureGrid.drawPDF());
     promises.push(this.occupationGrid.drawPDF());
@@ -250,7 +249,6 @@ export class ResultatsPerturbationComponent implements OnInit, OnChanges {
   }
 
   public onDeletePerturbationClick(event) {
-    console.log(event);
     this.deleteConfirmationOpened = true;
     this.currentPerturbation = event;
 

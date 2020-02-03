@@ -34,7 +34,7 @@ export class PerturbationFormService {
         });
     }
 
-    patchValues(perturbationServer: IPerturbationServerEdition, cloned= false) {
+    patchValues(perturbationServer: IPerturbationServerEdition, cloned = false) {
         this.geometries = [];
         this.reperages = [];
         this.deviations = [];
@@ -112,7 +112,7 @@ export class PerturbationFormService {
         const patched = new PerturbationFormValues(perturbationServer, cloned);
         this.mapService.initializeFeaturesAndExtent(this.geometries);
         this.mapService.initializeDeviationsAndExtent(this.deviations);
-        this.perturbationForm.patchValue(patched);
+        this.perturbationForm.patchValue(patched, { emitEvent: false });
     }
 
     reset() {
@@ -120,6 +120,7 @@ export class PerturbationFormService {
         this.reperages = [];
         this.avisContacts = [];
         this.perturbationForm.controls.etat.disable();
+        this.perturbationForm.controls.urgence.disable();
         this.perturbationForm.controls.utilisateurValidation.disable();
         this.perturbationForm.controls.dateValidation.disable();
         this.perturbationForm.controls.utilisateurAjout.disable();
@@ -209,6 +210,20 @@ export class PerturbationFormService {
     }
     get responsableTraficId() {
         return (this.perturbationForm.controls.responsableTrafic as FormGroup).controls.contact;
+    }
+
+    /*
+*** Fermeture
+*/
+    get responsableFermeture() {
+        return (this.perturbationForm.controls.fermeture as FormGroup).controls.responsable;
+    }
+
+    /*
+*** Occupation
+*/
+    get responsableOccupation() {
+        return (this.perturbationForm.controls.occupation as FormGroup).controls.responsable;
     }
 
     getEtatLabel(etatId: number): string {

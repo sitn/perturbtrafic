@@ -9,7 +9,7 @@ export interface IRechercheEvenement {
     dateDebut: Date;
     dateFin: Date;
     division: string;
-    idRequerant: number;
+    nomRequerant: number;
     idResponsable: number;
     axeMaintenance: string;
     prDebut: string;
@@ -27,7 +27,7 @@ export class RechercheEvenement {
     dateDebut: string;
     dateFin: string;
     division: string;
-    idRequerant: number;
+    nomRequerant: number;
     idResponsable: number;
     axe: string;
     prDebutSegSeq: number;
@@ -71,7 +71,7 @@ export class RechercheEvenement {
             this.dateFin = formatDate(rechercheEvenementForm.dates.dateFin);
         }
         this.division = rechercheEvenementForm.division;
-        this.idRequerant = rechercheEvenementForm.requerant;
+        this.nomRequerant = rechercheEvenementForm.requerant;
         this.idResponsable = rechercheEvenementForm.responsable;
         this.axe = rechercheEvenementForm.axeMaintenance ? rechercheEvenementForm.axeMaintenance.nom_complet : null;
         if (rechercheEvenementForm.prDebut) {

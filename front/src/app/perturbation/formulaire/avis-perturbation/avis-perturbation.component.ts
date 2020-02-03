@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { IContact, IContactPreavis } from 'src/app/models/IContact';
 import { ApiService } from 'src/app/services/api.service';
 import { PerturbationFormService } from 'src/app/services/perturbation-form.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'avis-perturbation',
@@ -17,7 +18,7 @@ export class AvisPerturbationComponent implements OnInit, OnDestroy, OnChanges {
   potentialPreavisList: IContactPreavis[];
   fullPreavisList: IContactPreavis[];
 
-  constructor(public perturbationFormService: PerturbationFormService, public apiService: ApiService) {
+  constructor(public perturbationFormService: PerturbationFormService, public apiService: ApiService, private userService: UserService) {
     this.subscriptions = [];
     this.potentialPreavisList = [];
     this.fullPreavisList = [];
@@ -89,7 +90,7 @@ export class AvisPerturbationComponent implements OnInit, OnDestroy, OnChanges {
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.apiService.getContactsPreavis().subscribe((data: IContactPreavis[]) => {
+      this.apiService.getContactsPreavis(this.userService.currentUser.currentEntity.id).subscribe((data: IContactPreavis[]) => {
         this.fullPreavisList = [...data];
         this.updatePreavisList();
       })

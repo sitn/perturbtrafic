@@ -115,13 +115,12 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
         this.prFin.enable();
         this.apiService.getPrByAxeMaintenance(this.axeMaintenance.value)
           .subscribe(data => {
-            data.sort((a1, a2) => {
-              return Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
-            });
             this.prDebuts = data;
             this.filteredPrDebuts = data;
+            this.filterPrDebuts('');
             this.prFins = data;
             this.filteredPrFins = data;
+            this.filterPrFins('');
           });
       } else {
         this.prDebut.disable();
@@ -152,7 +151,6 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
     this.apiService.searchEvenement(recherche, this.userService.currentUser).subscribe(results => {
       this.searchChange.emit(results);
     });
-    console.log('resultat form', recherche);
   }
 
   filterRequerants(event) {
@@ -167,7 +165,8 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
   filterResponsables(event) {
     this.filteredResponsables = [];
     for (const responsable of this.responsables) {
-      if (responsable.nom.toLowerCase().includes(event.toLowerCase()) || responsable.prenom.toLowerCase().includes(event.toLowerCase())) {
+      if (responsable.nom.toLowerCase().includes(event.toLowerCase()) ||
+        (responsable.prenom && responsable.prenom.toLowerCase().includes(event.toLowerCase()))) {
         this.filteredResponsables.push(responsable);
       }
     }
@@ -185,7 +184,7 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
   }
 
   filterPrDebuts(event) {
-    if (!this.axeMaintenance && !this.axeMaintenance.value.id) {
+    if (!this.axeMaintenance && !this.axeMaintenance.value.nom) {
       return [];
     }
 
@@ -196,24 +195,38 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
       }
     }
     this.filteredPrDebuts.sort((a1, a2) => {
-      return Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
+      return Number(a1.segment_sequence) - Number(a2.segment_sequence) || Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
     });
   }
 
   filterPrFins(event) {
-    if (!this.axeMaintenance.value.id) {
+    if (!this.axeMaintenance.value.nom) {
       return [];
     }
 
     this.filteredPrFins = [];
     for (const prFin of this.prFins) {
       if (prFin.secteur_nom.toLowerCase().includes(event.toLowerCase())) {
-        this.filteredPrFins.push(prFin);
+        if (!this.prDebut.value || Number(prFin.segment_sequence) > Number(this.prDebut.value.segment_sequence) ||
+          (Number(prFin.segment_sequence) === Number(this.prDebut.value.segment_sequence)
+            && Number(prFin.secteur_sequence) >= Number(this.prDebut.value.secteur_sequence))) {
+          this.filteredPrFins.push(prFin);
+        }
       }
     }
     this.filteredPrFins.sort((a1, a2) => {
-      return Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
+      return (Number(a1.segment_sequence) - Number(a2.segment_sequence) || Number(a1.secteur_sequence) - Number(a2.secteur_sequence));
     });
+  }
+
+  onDebutPrChanged(event) {
+    if (event) {
+      this.prFin.setValue(null);
+      this.filterPrFins('');
+    } else {
+      this.prFin.setValue(null);
+      this.filteredPrFins = this.prFins;
+    }
   }
 
   filterAjoutePars(event) {

@@ -32,8 +32,8 @@ export class NavigationService {
         this.onSaisieReperageDialogClosed$ = new EventEmitter();
     }
 
-    openNewContactDialog(mode: string, contact: IContact): void {
-        this.openNewContactDialog$.emit({ mode: mode, contact: contact });
+    openNewContactDialog(mode: string, contact: IContact, dropdownOrigin?: any): void {
+        this.openNewContactDialog$.emit({ mode: mode, contact: contact, dropdownOrigin: dropdownOrigin });
     }
 
     closeNewContactDialog(needUpdate: boolean = false): void {

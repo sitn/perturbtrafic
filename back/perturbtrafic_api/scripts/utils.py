@@ -722,9 +722,21 @@ class Utils():
                     one_model.set_text_geometry(str(item[0]), settings['srid'])
                     request.dbsession.add(one_model)
 
+        except Exception as error:
+            raise error
 
+    @classmethod
+    def get_contact_organisme(cls, request, organisme_id):
+        try:
 
+            if organisme_id:
+                query = request.dbsession.query(models.Organisme).filter(
+                    models.Organisme.id == organisme_id).first()
 
+                if query:
+                    return query.nom
 
         except Exception as error:
             raise error
+
+        return ""

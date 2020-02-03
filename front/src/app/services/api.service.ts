@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -92,7 +92,6 @@ export class ApiService {
     return this.http.post<IUser>(
       this.wsBaseUrl + 'login', body, { headers: headers, withCredentials: true }).pipe(
         map((user: any) => {
-          console.log(user);
           /* if (user.entites && user.entites.length > 0) {
             user.currentEntity = user.entites[0];
           } */
@@ -158,12 +157,15 @@ export class ApiService {
           return 0;
         });
         return contacts.map((contact: IContact) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
+          let nomComplet = contact.nom;
+          nomComplet = contact.prenom ? nomComplet + ' ' + contact.prenom : nomComplet;
+          contact.nomComplet = nomComplet;
           if (contact.login) {
-            contact.nomCompletEtLogin = `${contact.nom} ${contact.prenom} (${contact.login})`;
+            contact.nomCompletEtLogin = `${nomComplet} (${contact.login})`;
           } else {
-            contact.nomCompletEtLogin = `${contact.nom} ${contact.prenom}`;
+            contact.nomCompletEtLogin = `${nomComplet}`;
           }
+          contact.nomCompletEtOrganisme = contact.nom_organisme ? nomComplet + ' (' + contact.nom_organisme + ')' : nomComplet;
           return contact;
         });
       })
@@ -173,13 +175,12 @@ export class ApiService {
   getContactsByEntity(entityId: number): Observable<IContact[]> {
 
     const params = new HttpParams().set('idEntite', entityId.toString());
-    console.log(params);
     return this.http.get<IContact[]>(this.wsBaseUrl + 'contacts_entite',
       { withCredentials: true, params: params }
     ).pipe(
       map((contacts: IContact[]) => {
         return contacts.map((contact: IContact) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
+          contact.nomComplet = contact.prenom ? contact.nom + ' ' + contact.prenom : contact.nom;
           return contact;
         });
       })
@@ -203,7 +204,9 @@ export class ApiService {
           return 0;
         });
         return users.map(user => {
-          user.nomComplet = user.nom + ' ' + user.prenom;
+          let nomComplet = user.nom;
+          nomComplet = user.prenom ? nomComplet + ' ' + user.prenom : nomComplet;
+          user.nomComplet = nomComplet;
           return user;
         });
       })
@@ -241,6 +244,12 @@ export class ApiService {
     return this.http.post<IUserAD[]>(this.wsBaseUrl + 'nouveaux_contacts_ad', body, { headers: headers, withCredentials: true }).pipe(
       map((res: any) => {
         return res;
+      }),
+      catchError((response) => {
+        if (response.status === 500) {
+          this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+        }
+        return throwError(response.error);
       })
     );
   }
@@ -248,19 +257,23 @@ export class ApiService {
   /*
     Preavis Fermetures / Occupations
   */
-  getContactsPreavis() {
-    return this.http.get<IContactPreavis[]>(this.wsBaseUrl + 'contacts_potentiels_avis_perturbation').pipe(
-      map((contacts: IContactPreavis[]) => {
-        return contacts.map((contact: IContactPreavis) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
-          return contact;
-        });
-      })
-    );
+  getContactsPreavis(entityId: number) {
+    const params = new HttpParams().set('idEntite', entityId.toString());
+    return this.http.get<IContactPreavis[]>(this.wsBaseUrl + 'contacts_potentiels_avis_perturbation',
+      { withCredentials: true, params: params }).pipe(
+        map((contacts: IContactPreavis[]) => {
+          return contacts.map((contact: IContactPreavis) => {
+            const nomComplet: string = contact.nom + ' ' + contact.prenom;
+            contact.nomComplet = nomComplet;
+            contact.nomCompletEtOrganisme = contact.organisme ? nomComplet + ' (' + contact.organisme + ')' : nomComplet;
+            return contact;
+          });
+        })
+      );
   }
 
-  updateContactPreavis(preavisContact: IContactPreavis) {
-    const formatedContact = new ContactPreavisServerSave(preavisContact);
+  updateContactPreavis(preavisContact: IContactPreavis, user: IUser) {
+    const formatedContact = new ContactPreavisServerSave(preavisContact, user.currentEntity.id);
     const body = new FormData();
     Object.keys(formatedContact).forEach(key => {
       if (formatedContact[key]) {
@@ -278,12 +291,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -300,19 +317,23 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
   }
 
-  addNewContactPreavis(preavisContact: IContactPreavis) {
-    const formatedContact = new ContactPreavisServerSave(preavisContact);
+  addNewContactPreavis(preavisContact: IContactPreavis, user: IUser) {
+    const formatedContact = new ContactPreavisServerSave(preavisContact, user.currentEntity.id);
     const body = new FormData();
     Object.keys(formatedContact).forEach(key => {
       if (formatedContact[key]) {
@@ -330,12 +351,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -347,13 +372,14 @@ export class ApiService {
   getAutorisationsAccordees(entityId: number) {
 
     const params = new HttpParams().set('idEntite', entityId.toString());
-    console.log(params);
     return this.http.get<IContactAutorisation[]>(this.wsBaseUrl + 'autorisations_accordees',
       { withCredentials: true, params: params }
     ).pipe(
       map((contacts: IContactAutorisation[]) => {
         return contacts.map((contact: IContactAutorisation) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
+          let nomComplet = contact.nom;
+          nomComplet = contact.prenom ? nomComplet + ' ' + contact.prenom : nomComplet;
+          contact.nomComplet = nomComplet;
           return contact;
         });
       })
@@ -364,7 +390,9 @@ export class ApiService {
     return this.http.get<IContactAutorisation[]>(this.wsBaseUrl + 'autorisations_recues', { withCredentials: true }).pipe(
       map((contacts: IContactAutorisation[]) => {
         return contacts.map((contact: IContactAutorisation) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
+          let nomComplet = contact.nom;
+          nomComplet = contact.prenom ? nomComplet + ' ' + contact.prenom : nomComplet;
+          contact.nomComplet = nomComplet;
           return contact;
         });
       })
@@ -390,12 +418,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -412,12 +444,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
@@ -442,12 +478,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -461,7 +501,9 @@ export class ApiService {
     return this.http.get<IContactPreavisUrgence[]>(this.wsBaseUrl + 'contacts_avis_fermeture_urgence').pipe(
       map((contacts: IContactPreavisUrgence[]) => {
         return contacts.map((contact: IContactPreavisUrgence) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
+          let nomComplet = contact.nom;
+          nomComplet = contact.prenom ? nomComplet + ' ' + contact.prenom : nomComplet;
+          contact.nomComplet = nomComplet;
           return contact;
         });
       })
@@ -481,12 +523,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
@@ -511,19 +557,23 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
   }
 
 
-  saveContact(contact: IContact) {
+  saveContact(contact: IContact, force = false) {
     const formatedContact = new ContactServerSave(contact);
     const body = new FormData();
     Object.keys(formatedContact).forEach(key => {
@@ -531,24 +581,31 @@ export class ApiService {
         body.append(key, formatedContact[key]);
       }
     });
+    if (force) {
+      body.append('forcerAjout', 'true');
+    }
 
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
     headers.append('Accept', '*/*');
 
     return this.http.post<any>(
-      this.wsBaseUrl + 'contacts', body, { headers: headers }).pipe(
+      this.wsBaseUrl + 'contacts', body, { headers: headers, withCredentials: true }).pipe(
         map((resultats: any) => {
           return resultats;
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -573,12 +630,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -597,12 +658,16 @@ export class ApiService {
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
@@ -615,7 +680,9 @@ Avis Pr touches
     return this.http.get<IContactAvisPrTouche[]>(this.wsBaseUrl + 'contact_avis_pr_touche').pipe(
       map((contacts: IContactAvisPrTouche[]) => {
         return contacts.map((contact: IContactAvisPrTouche) => {
-          contact.nomComplet = contact.nom + ' ' + contact.prenom;
+          let nomComplet = contact.nom;
+          nomComplet = contact.prenom ? nomComplet + ' ' + contact.prenom : nomComplet;
+          contact.nomComplet = nomComplet;
           return contact;
         });
       })
@@ -709,12 +776,16 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -757,12 +828,16 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
@@ -829,7 +904,6 @@ Avis Pr touches
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
     headers.append('Accept', '*/*');
-    console.log(body);
     // this.http.request()
     return this.http.post<IResultatEvenementServer[]>(
       this.wsBaseUrl + 'recherche/evenements', body, { headers: headers, withCredentials: true }).pipe(
@@ -870,7 +944,7 @@ Avis Pr touches
         if (error.message) {
           error = error.message;
         }
-        this.navigationService.openErrorDialog(`Une ereur est survenue lors du chargement de l'événement`, `Ereur`);
+        this.navigationService.openErrorDialog(`Une erreur est survenue lors du chargement de l'événement`, `Erreur`);
         return throwError(error);
       })
     );
@@ -879,10 +953,16 @@ Avis Pr touches
   getEvenementImpression(evenementId): Observable<IEvenementImpression> {
     return this.http.get<IEvenementImpression>(this.wsBaseUrl + `evenement_impression/${evenementId}`).pipe(
       map((resultat: IEvenementImpression) => {
+        if (resultat.localisation_impression) {
+          try {
+            resultat.localisationImpressionReperage = JSON.parse(resultat.localisation_impression);
+          } catch (e) {
+          }
+        }
         return resultat;
       }),
       catchError((error) => {
-        this.navigationService.openErrorDialog(`Une ereur est survenue lors du chargement de la perturbation`, `Ereur`);
+        this.navigationService.openErrorDialog(`Une erreur est survenue lors du chargement de la perturbation`, `Erreur`);
         return throwError(error);
       })
     );
@@ -892,32 +972,37 @@ Avis Pr touches
     return this.http.get<{ evenement: IEvenementImpression, perturbations: IPerturbationImpression[] }>
       (this.wsBaseUrl + `evenement_perturbations_impression/${evenementId}`).pipe(
         map((resultat: { evenement: IEvenementImpression, perturbations: IPerturbationImpression[] }) => {
+          try {
+            resultat.evenement.localisationImpressionReperage = JSON.parse(resultat.evenement.localisation_impression);
+          } catch (e) {
+
+          }
           return resultat;
         }),
         catchError((error) => {
-          this.navigationService.openErrorDialog(`Une ereur est survenue lors du chargement du dossier d'impression`, `Ereur`);
+          this.navigationService.openErrorDialog(`Une erreur est survenue lors du chargement du dossier d'impression`, `Erreur`);
           return throwError(error);
         })
       );
   }
 
-  saveEvenement(saveObject: EvenementFormValues, geometries?: any[]): Observable<any> {
+  saveEvenement(saveObject: EvenementFormValues, user: IUser, geometries?: any[]): Observable<any> {
     let serverFormatedEvenement; //  = new EvenementServerForSave(saveObject);
     switch (saveObject.type.type) {
       case 1: {
-        serverFormatedEvenement = new AutreEvenementServerSave(saveObject, geometries);
+        serverFormatedEvenement = new AutreEvenementServerSave(saveObject, user, geometries);
         break;
       }
       case 2: {
-        serverFormatedEvenement = new ChantierServerSave(saveObject, geometries);
+        serverFormatedEvenement = new ChantierServerSave(saveObject, user, geometries);
         break;
       }
       case 3: {
-        serverFormatedEvenement = new FouilleServerSave(saveObject, geometries);
+        serverFormatedEvenement = new FouilleServerSave(saveObject, user, geometries);
         break;
       }
       case 4: {
-        serverFormatedEvenement = new ManifestationServerSave(saveObject, geometries);
+        serverFormatedEvenement = new ManifestationServerSave(saveObject, user, geometries);
         break;
       }
     }
@@ -939,35 +1024,39 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
   }
 
 
-  editEvenement(saveObject: EvenementFormValues, geometries?: any[]): Observable<any> {
+  editEvenement(saveObject: EvenementFormValues, user: IUser, geometries?: any[]): Observable<any> {
     let serverFormatedEvenement; //  = new EvenementServerForSave(saveObject);
     switch (saveObject.type.type) {
       case 1: {
-        serverFormatedEvenement = new AutreEvenementServerSave(saveObject, geometries);
+        serverFormatedEvenement = new AutreEvenementServerSave(saveObject, user, geometries);
         break;
       }
       case 2: {
-        serverFormatedEvenement = new ChantierServerSave(saveObject, geometries);
+        serverFormatedEvenement = new ChantierServerSave(saveObject, user, geometries);
         break;
       }
       case 3: {
-        serverFormatedEvenement = new FouilleServerSave(saveObject, geometries);
+        serverFormatedEvenement = new FouilleServerSave(saveObject, user, geometries);
         break;
       }
       case 4: {
-        serverFormatedEvenement = new ManifestationServerSave(saveObject, geometries);
+        serverFormatedEvenement = new ManifestationServerSave(saveObject, user, geometries);
         break;
       }
     }
@@ -989,12 +1078,16 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -1012,12 +1105,16 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
@@ -1041,22 +1138,23 @@ Avis Pr touches
           if (error.message) {
             error = error.message;
           }
-          this.navigationService.openErrorDialog(`Une ereur est survenue lors du chargement de la perturbation`, `Ereur`);
+          this.navigationService.openErrorDialog(`Une erreur est survenue lors du chargement de la perturbation`, `Erreur`);
           return throwError(error);
         })
       );
   }
 
   getPerturbationImpression(perturbationId): Observable<IPerturbationImpression> {
-    return this.http.get<IPerturbationImpression>(this.wsBaseUrl + `perturbation_impression/${perturbationId}`).pipe(
-      map((resultat: IPerturbationImpression) => {
-        return resultat;
-      }),
-      catchError((error) => {
-        this.navigationService.openErrorDialog(`Une ereur est survenue lors du chargement de la perturbation`, `Ereur`);
-        return throwError(error);
-      })
-    );
+    return this.http.get<IPerturbationImpression>(this.wsBaseUrl + `perturbation_impression/${perturbationId}`, { withCredentials: true })
+      .pipe(
+        map((resultat: IPerturbationImpression) => {
+          return resultat;
+        }),
+        catchError((error) => {
+          this.navigationService.openErrorDialog(`Une erreur est survenue lors du chargement de la perturbation`, `Erreur`);
+          return throwError(error);
+        })
+      );
   }
 
   searchPerturbations(rechercheObject: RecherchePerturbation, user: IUser): Observable<ResultatPerturbation[]> {
@@ -1072,7 +1170,6 @@ Avis Pr touches
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
     headers.append('Accept', '*/*');
-    console.log(body);
     return this.http.post<IResultatPerturbationServer[]>(
       this.wsBaseUrl + 'recherche/perturbations', body, { headers: headers, withCredentials: true }).pipe(
         map((resultats: IResultatPerturbationServer[]) => {
@@ -1136,12 +1233,16 @@ Avis Pr touches
         }),
         catchError((response: HttpErrorResponse) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -1177,12 +1278,16 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la sauvegarde');
           return throwError(response.error);
         })
       );
@@ -1200,12 +1305,16 @@ Avis Pr touches
         }),
         catchError((response) => {
           let message = 'Erreur survenue';
-          if (response.error && response.error.message) {
-            message = response.error.message;
-          } else if (response.error) {
-            message = response.message;
+          if (response.status === 500) {
+            this.navigationService.openErrorDialog('Internal Server Error', 'Erreur lors de la sauvegarde');
+          } else {
+            if (response.error && response.error.message) {
+              message = response.error.message;
+            } else if (response.error) {
+              message = response.message;
+            }
+            this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           }
-          this.navigationService.openErrorDialog(message, 'Erreur lors de la suppression');
           return throwError(response.error);
         })
       );
@@ -1215,8 +1324,12 @@ Avis Pr touches
   API Conflits
   */
 
-  getConflits(): Observable<Conflit[]> {
-    return this.http.get<IConflitServer[]>(this.wsBaseUrl + 'conflits_perturbations').pipe(
+  getConflits(user: IUser): Observable<Conflit[]> {
+    let params = '';
+    if (user && user.currentEntity && user.currentEntity.id) {
+      params = '?idEntite=' + user.currentEntity.id.toString();
+    }
+    return this.http.get<IConflitServer[]>(this.wsBaseUrl + 'conflits_perturbations' + params).pipe(
       map((conflits: IConflitServer[]) => {
         if (conflits && conflits.length > 0) {
           return conflits.map((conflit: IConflitServer) => {
@@ -1230,7 +1343,7 @@ Avis Pr touches
   }
 
   getConflitsByEvenementId(evenementId): Observable<Conflit[]> {
-    return this.http.get<IConflitServer[]>(this.wsBaseUrl + `conflits_perturbations/${evenementId}`).pipe(
+    return this.http.get<IConflitServer[]>(this.wsBaseUrl + `conflits_evenement/${evenementId}`).pipe(
       map((conflits: IConflitServer[]) => {
         if (conflits && conflits.length > 0) {
           return conflits.map((conflit: IConflitServer) => {
@@ -1253,7 +1366,6 @@ Avis Pr touches
 
   getPrByAxeMaintenance(axeMaintenance: IAxeMaintenance): Observable<IPointRepere[]> {
     const params = new HttpParams().set('id', axeMaintenance.nom_complet);
-    console.log(params);
     return this.http.get<IPointRepere[]>(this.wsBaseUrl + `pr_par_axe_routier`, { params: params });
   }
 
@@ -1277,7 +1389,6 @@ Avis Pr touches
           .set('f_ecart_d', '1')
           .set('f_ecart_f', '0')
           .set('f_usaneg', 'false');
-        console.log(params);
         reperagesObservables.push(this.http.get<any>(this.wsBaseUrl + `geometry_reperage`, { params: params }).pipe(
           map(res => {
             if (res && Array.isArray(res)) {

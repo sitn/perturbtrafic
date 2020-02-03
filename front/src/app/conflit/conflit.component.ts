@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { Conflit } from '../models/IConflit';
 import { ApiService } from '../services/api.service';
 import { ConfigService } from '../services/config.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-conflit',
@@ -24,7 +25,8 @@ export class ConflitComponent implements OnInit, OnDestroy {
 
   conflictList: Conflit[] = [];
 
-  constructor(private apiService: ApiService, private configService: ConfigService, private router: Router) {
+  constructor(private apiService: ApiService, private configService: ConfigService, private router: Router,
+    private userService: UserService) {
     this.subscriptions = [];
   }
 
@@ -60,7 +62,7 @@ export class ConflitComponent implements OnInit, OnDestroy {
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.apiService.getConflits().subscribe((conflicts: Conflit[]) => {
+      this.apiService.getConflits(this.userService.currentUser).subscribe((conflicts: Conflit[]) => {
         this.conflictList = [...conflicts];
       })
     );

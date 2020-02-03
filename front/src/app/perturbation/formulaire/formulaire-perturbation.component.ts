@@ -27,7 +27,6 @@ export class FormulairePerturbationComponent implements OnInit {
 
     perturbation: IFormulairePerturbation;
     mode: string;
-    isFirstEvenementSelection: boolean;
 
     mapImageForPDF: any;
 
@@ -60,7 +59,7 @@ export class FormulairePerturbationComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.isFirstEvenementSelection = false;
+        this.perturbationFormService.evenement.setValue(null);
         this.perturbationFormService.perturbationForm.enable();
         this.perturbationFormService.reset();
         this.perturbationFormService.mode = 'NEW';
@@ -88,14 +87,13 @@ export class FormulairePerturbationComponent implements OnInit {
                     this.perturbationFormService.perturbationForm.controls.evenement.disable();
                     this.perturbationFormService.typePerturbation.disable();
                 } else {
-                    this.isFirstEvenementSelection = true;
                     this.perturbationFormService.mode = 'NEW';
                 }
             });
         } else {
-            this.isFirstEvenementSelection = true;
             if (history && history.state && history.state.evenementId) {
                 this.setValuesFromEvenementSelection(history.state.evenementId);
+                this.perturbationFormService.perturbationForm.controls.evenement.disable();
             }
         }
 
@@ -196,6 +194,9 @@ export class FormulairePerturbationComponent implements OnInit {
             perturbation.perturbation = {} as any;
             perturbation.perturbation.type = this.perturbationFormService.typePerturbation.value;
             perturbation.perturbation.id_evenement = eve.evenement.id;
+            if (eve.reperages) {
+                perturbation.reperages = eve.reperages;
+            }
             perturbation.geometries = eve.geometries.filter(geom => {
                 let geometry;
                 try {
@@ -225,8 +226,7 @@ export class FormulairePerturbationComponent implements OnInit {
 
         this.subscriptions.push(
             this.perturbationFormService.evenement.valueChanges.subscribe(val => {
-                if (val && this.perturbationFormService.mode === 'NEW' && this.isFirstEvenementSelection) {
-                    this.isFirstEvenementSelection = false;
+                if (val && this.perturbationFormService.mode === 'NEW') {
                     this.setValuesFromEvenementSelection(val);
                 }
             })

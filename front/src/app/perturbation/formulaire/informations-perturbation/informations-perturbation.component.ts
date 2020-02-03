@@ -27,6 +27,8 @@ export class InformationsPerturbationComponent implements OnInit, OnDestroy {
   etatPerturbationListe: IPerturbationEtat[];
   subscriptions: Subscription[];
 
+  dropdownOriginForNewContact: any;
+
   constructor(private apiService: ApiService, private inputsUtils: InputsUtils, private dropDownService: DropDownService,
     private navigationService: NavigationService, public perturbationFormService: PerturbationFormService) {
     this.subscriptions = [];
@@ -37,7 +39,7 @@ export class InformationsPerturbationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setSubscriptions();
-    console.log(this.perturbationFormService.perturbationForm);
+    this.dropdownOriginForNewContact = null;
   }
 
   ngOnDestroy() {
@@ -47,14 +49,13 @@ export class InformationsPerturbationComponent implements OnInit, OnDestroy {
   filterResponsableTrafic(event) {
     this.filteredResponsableTrafic = [];
     for (const contact of this.contacts) {
-      if (contact.nomComplet.toLowerCase().includes(event.toLowerCase())) {
+      if (contact && contact.nomComplet && contact.nomComplet.toLowerCase().includes(event.toLowerCase())) {
         this.filteredResponsableTrafic.push(contact);
       }
     }
   }
 
   setResponsableTraficValues(contact: IContact) {
-    console.log(contact);
     this.perturbationFormService.responsableTraficContactInfos.controls.nom.setValue(contact.nom);
     this.perturbationFormService.responsableTraficContactInfos.controls.prenom.setValue(contact.prenom);
     this.perturbationFormService.responsableTraficContactInfos.controls.mobile.setValue(contact.mobile);
@@ -63,8 +64,9 @@ export class InformationsPerturbationComponent implements OnInit, OnDestroy {
     this.perturbationFormService.responsableTraficContactInfos.controls.courriel.setValue(contact.courriel);
   }
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   private setSubscriptions(): void {
@@ -75,9 +77,18 @@ export class InformationsPerturbationComponent implements OnInit, OnDestroy {
       })
     );
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
-        this.contacts = [...contacts];
-        this.filteredResponsableTrafic = [...contacts];
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.contacts = [...res.contacts];
+        this.filteredResponsableTrafic = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found);
+          }
+        }
+        this.dropdownOriginForNewContact = null;
       })
     );
 

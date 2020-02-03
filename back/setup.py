@@ -30,8 +30,8 @@ tests_require = [
 
 setup(
     name='perturbtrafic_api',
-    version='1.0-RC',
-    description='API perturbtrafic',
+    version='RC2',
+    description='PerturbTrafic API',
     long_description=README + '\n\n' + CHANGES,
     classifiers=[
         'Programming Language :: Python',
@@ -39,9 +39,9 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
-    author='arx iT',
-    author_email='cko@arxit.com',
-    url='https://arxinfo.arxit.com/',
+    author='',
+    author_email='',
+    url='',
     keywords='web pyramid pylons',
     packages=find_packages(),
     include_package_data=True,
@@ -52,7 +52,7 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = perturbtrafic_api:main',
+            'main = test:main',
         ],
         'console_scripts': [
             'initialize_test_db=test.scripts.initialize_db:main',

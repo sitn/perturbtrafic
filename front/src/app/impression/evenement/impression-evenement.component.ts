@@ -88,7 +88,6 @@ export class ImpressionEvenementComponent implements OnInit, OnChanges, AfterVie
           this.ref.detectChanges();
         });
       }
-      console.log('end');
     });
 
     map.renderSync();

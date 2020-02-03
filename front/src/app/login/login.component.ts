@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
       this.apiService.login(this.user, this.password).subscribe(user => {
         const error = (user as any).error;
         if (!error) {
-          console.log(user);
           if (user.entites && user.entites.length > 0) {
             user.currentEntity = user.entites[0];
             this.cookieService.set('idEntity', user.entites[0].id.toString());

@@ -11,6 +11,7 @@ import { DropDownService } from 'src/app/services/dropdown.service';
 import { EvenementFormService } from 'src/app/services/evenement-form.service';
 import { MapService } from 'src/app/services/map.service';
 import { NavigationService } from 'src/app/services/navigation.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'formulaire-evenement',
@@ -38,7 +39,8 @@ export class FormulaireEvenementComponent implements OnInit, OnDestroy {
 
   constructor(private fb: FormBuilder, public evenementFormService: EvenementFormService, private apiService: ApiService,
     private ref: ChangeDetectorRef, private dropDownService: DropDownService, private router: Router, private loaderService: LoaderService,
-    private route: ActivatedRoute, private mapService: MapService, private navigationService: NavigationService) {
+    private route: ActivatedRoute, private mapService: MapService, private navigationService: NavigationService,
+    private userService: UserService) {
     this.subscriptions = [];
     this.newPerturbationDialogOpened = false;
     this.conflictPerturbationDialogOpened = false;
@@ -48,7 +50,6 @@ export class FormulaireEvenementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('type eve : ', this.evenementFormService.typeEvenement.value);
     this.newPerturbationDialogOpened = false;
     this.newEvenementCreatedId = null;
     this.evenementFormService.evenementForm.enable();
@@ -123,16 +124,17 @@ export class FormulaireEvenementComponent implements OnInit, OnDestroy {
         this.evenementFormService.markAsTouched();
         this.evenementFormService.markAsDirty();
       } else {
-        this.apiService.saveEvenement(this.evenementFormService.evenementForm.getRawValue(), features).subscribe(res => {
-          if (!res.error) {
-            if (res.id) {
-              this.newEvenementCreatedId = res.id;
-              this.newPerturbationDialogOpened = true;
+        this.apiService.saveEvenement(this.evenementFormService.evenementForm.getRawValue(), this.userService.currentUser, features)
+          .subscribe(res => {
+            if (!res.error) {
+              if (res.id) {
+                this.newEvenementCreatedId = res.id;
+                this.newPerturbationDialogOpened = true;
+              }
+            } else {
+              this.navigationService.openErrorDialog(`Une erreur est survenue lors de la sauvegarde : ${res.message}`, 'Erreur');
             }
-          } else {
-            this.navigationService.openErrorDialog(`Une erreur est survenue lors de la sauvegarde : ${res.message}`, 'Erreur');
-          }
-        });
+          });
       }
     }
   }
@@ -157,19 +159,20 @@ export class FormulaireEvenementComponent implements OnInit, OnDestroy {
         this.evenementFormService.markAsTouched();
         this.evenementFormService.markAsDirty();
       } else {
-        this.apiService.editEvenement(this.evenementFormService.evenementForm.getRawValue(), features).subscribe(res => {
-          if (!res.error) {
-            this.apiService.getConflitsByEvenementId(this.evenementFormService.evenementForm.get('id').value)
-              .subscribe((conf: Conflit[]) => {
-                if (conf) {
-                  this.conflictsLength = conf.length;
-                }
-                this.conflictPerturbationDialogOpened = true;
-              });
-          } else {
-            this.navigationService.openErrorDialog(`Une erreur est survenue lors de la sauvegarde : ${res.message}`, 'Erreur');
-          }
-        });
+        this.apiService.editEvenement(this.evenementFormService.evenementForm.getRawValue(), this.userService.currentUser, features)
+          .subscribe(res => {
+            if (!res.error) {
+              this.apiService.getConflitsByEvenementId(this.evenementFormService.evenementForm.get('id').value)
+                .subscribe((conf: Conflit[]) => {
+                  if (conf) {
+                    this.conflictsLength = conf.length;
+                  }
+                  this.conflictPerturbationDialogOpened = true;
+                });
+            } else {
+              this.navigationService.openErrorDialog(`Une erreur est survenue lors de la sauvegarde : ${res.message}`, 'Erreur');
+            }
+          });
       }
     }
   }

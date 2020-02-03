@@ -792,7 +792,7 @@ def add_perturbation_edition(request):
             # Reperages list
             reperages_string = ''
             for reperage_model in reperages_list:
-                reperages_string += '<td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td>'.format(
+                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
                     '???', reperage_model.axe, reperage_model.pr_debut, reperage_model.pr_debut_distance,
                     reperage_model.pr_fin, reperage_model.pr_fin_distance)
 
@@ -1372,7 +1372,7 @@ def update_perturbation_edition(request):
             # Reperages list
             reperages_string = ''
             for reperage_model in reperages_list:
-                reperages_string += '<td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td>'.format(
+                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
                     '???', reperage_model.axe, reperage_model.pr_debut, reperage_model.pr_debut_distance,
                     reperage_model.pr_fin, reperage_model.pr_fin_distance)
 
@@ -1670,6 +1670,52 @@ def search_perturbations_view(request):
 ########################################################
 @view_config(route_name='conflits_perturabations_by_id', request_method='GET', renderer='json')
 def conflits_perturabations_by_id_view(request):
+
+    result = []
+
+    try:
+        settings = request.registry.settings
+        request.dbsession.execute('set search_path to ' + settings['schema_name'])
+
+        id = request.matchdict['id']
+
+        conflicts_date_buffer = settings['conflicts_date_buffer']
+        conflicts_geom_buffer = settings['conflicts_geom_buffer']
+        query_s = 'pt_conflits_by_perturbation_id_json({0}, {1}, {2})'.format(id, conflicts_date_buffer,
+                                                                                    conflicts_geom_buffer)
+        query = request.dbsession.query(query_s).all()
+
+        for item in query:
+            if len(item) > 0:
+                result.append(item[0])
+            else:
+                result.append(item)
+
+        """
+        result = None
+
+        if query and len(query) > 0:
+            result = str(query).replace('(', '').replace(',)', '').replace("{'", '{"').replace("':", '":').replace(
+                ": '", ': "').replace(", '", ', "').replace("',", '",').replace("'}", '"}').replace('\\"', '"').replace(
+                "None", '""')
+            result = json.loads(result)
+        """
+    except Exception as e:
+        log.error(str(e))
+        request.response.status = 500
+        return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
+
+    return result
+
+
+########################################################
+# Conflits evenement by id view
+########################################################
+@view_config(route_name='conflits_evenement_by_id', request_method='GET', renderer='json')
+def conflits_evenement_by_id_view(request):
+
+    result = []
+
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
@@ -1681,6 +1727,13 @@ def conflits_perturabations_by_id_view(request):
                                                                                     conflicts_geom_buffer)
         query = request.dbsession.query(query_s).all()
 
+        for item in query:
+            if len(item) > 0:
+                result.append(item[0])
+            else:
+                result.append(item)
+
+        """
         result = None
 
         if query and len(query) > 0:
@@ -1688,12 +1741,14 @@ def conflits_perturabations_by_id_view(request):
                 ": '", ': "').replace(", '", ', "').replace("',", '",').replace("'}", '"}').replace('\\"', '"').replace(
                 "None", '""')
             result = json.loads(result)
-
+        """
     except Exception as e:
         log.error(str(e))
+        request.response.status = 500
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
+
 
 
 ########################################################
@@ -1702,26 +1757,39 @@ def conflits_perturabations_by_id_view(request):
 @view_config(route_name='conflits_perturabations', request_method='GET', renderer='json')
 @view_config(route_name='conflits_perturabations_slash', request_method='GET', renderer='json')
 def conflits_perturabations_view(request):
+    
+    result = []
+
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
 
+        idEntite = request.params['idEntite'] if 'idEntite' in request.params else None
+
         conflicts_date_buffer = settings['conflicts_date_buffer']
         conflicts_geom_buffer = settings['conflicts_geom_buffer']
-        query_s = 'perturbtrafic.pt_conflits_json({0}, {1})'.format(conflicts_date_buffer, conflicts_geom_buffer)
-        
+        query_s = 'perturbtrafic.pt_conflits_json({0}, {1}, {2})'.format(idEntite, conflicts_date_buffer, conflicts_geom_buffer)
+
         query = request.dbsession.query(query_s).all()
 
-        result = None
+        for item in query:
+            if len(item) > 0:
+                result.append(item[0])
+            else:
+                result.append(item)
 
+        """
+        result = None
+        
         if query and len(query) > 0:
             result = str(query).replace('(', '').replace(',)', '').replace("{'", '{"').replace("':", '":').replace(
                 ": '", ': "').replace(", '", ', "').replace("',", '",').replace("'}", '"}').replace('\\"', '"').replace(
                 "None", '""')
-            result = json.loads(result)
-
+            #result = json.loads(result)
+        """
     except Exception as e:
         log.error(str(e))
+        request.response.status = 500
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result

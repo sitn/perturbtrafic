@@ -14,7 +14,6 @@ export class ConstanteComponent implements OnInit {
   }
 
   onTabSelect(e) {
-    console.log(e);
   }
 
 }

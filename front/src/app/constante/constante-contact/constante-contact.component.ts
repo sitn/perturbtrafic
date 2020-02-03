@@ -120,7 +120,6 @@ export class ConstanteContactComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.navigationService.onNewContactDialogClosed$.subscribe(needUpdate => {
-        console.log('bonjour');
         if (needUpdate) {
           this.apiService.getContacts().subscribe(contacts => {
             this.contacts = contacts;

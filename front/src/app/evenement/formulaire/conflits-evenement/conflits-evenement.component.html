@@ -3,9 +3,18 @@
   <div *ngIf="conflicts.length < 1">
     Pas de conflits en cours
   </div>
-  <div *ngFor="let conflict of conflicts" class="conflict-line">
-    <i class="fas fa-edit" (click)="editPerturbation(conflict.perturbationConflitId)"></i>
-    <i class="fas fa-globe-europe" title="Voir dans le guichet" (click)="showGuichetCarto()"></i>
-    {{conflict.libelleConflit}}
+  <div style="display: flex; width: 100%; flex-wrap: wrap;">
+    <ng-container *ngFor="let conflict of conflicts; let i = index">
+      <div *ngIf="isEven(i)" class="conflict-line left-part">
+        <i class="fas fa-edit" (click)="editPerturbation(conflict.perturbationConflitId)"></i>
+        <i class="fas fa-globe-europe" title="Voir dans le guichet" (click)="showGuichetCarto()"></i>
+        {{conflict.libelleConflit}}
+      </div>
+      <div *ngIf="isOdd(i)" class="conflict-line right-part">
+        <i class="fas fa-edit" (click)="editPerturbation(conflict.perturbationConflitId)"></i>
+        <i class="fas fa-globe-europe" title="Voir dans le guichet" (click)="showGuichetCarto()"></i>
+        {{conflict.libelleConflit}}
+      </div>
+    </ng-container>
   </div>
 </fieldset>

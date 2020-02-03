@@ -87,19 +87,13 @@ export class RecherchePerturbationComponent implements OnInit, OnDestroy {
         this.prFin.enable();
         this.apiService.getPrByAxeMaintenance(this.axeMaintenance.value)
           .subscribe(data => {
-            data.sort((a1, a2) => {
-              return Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
-            });
             this.prDebuts = data;
             this.filteredPrDebuts = data;
+            this.filterPrDebuts('');
+            this.prFins = data;
+            this.filteredPrFins = data;
+            this.filterPrFins('');
           });
-        this.apiService.getPrByAxeMaintenance(this.axeMaintenance.value).subscribe(data => {
-          data.sort((a1, a2) => {
-            return Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
-          });
-          this.prFins = data;
-          this.filteredPrFins = data;
-        });
       } else {
         this.prDebut.disable();
         this.prFin.disable();
@@ -138,7 +132,7 @@ export class RecherchePerturbationComponent implements OnInit, OnDestroy {
   }
 
   filterPrDebuts(event) {
-    if (!this.axeMaintenance && !this.axeMaintenance.value.id) {
+    if (!this.axeMaintenance && !this.axeMaintenance.value.nom) {
       return [];
     }
 
@@ -148,19 +142,39 @@ export class RecherchePerturbationComponent implements OnInit, OnDestroy {
         this.filteredPrDebuts.push(prDebut);
       }
     }
+    this.filteredPrDebuts.sort((a1, a2) => {
+      return Number(a1.segment_sequence) - Number(a2.segment_sequence) || Number(a1.secteur_sequence) - Number(a2.secteur_sequence);
+    });
+  }
+
+  onDebutPrChanged(event) {
+    if (event) {
+      this.prFin.setValue(null);
+      this.filterPrFins('');
+    } else {
+      this.prFin.setValue(null);
+      this.filteredPrFins = this.prFins;
+    }
   }
 
   filterPrFins(event) {
-    if (!this.axeMaintenance.value.id) {
+    if (!this.axeMaintenance.value.nom) {
       return [];
     }
 
     this.filteredPrFins = [];
     for (const prFin of this.prFins) {
       if (prFin.secteur_nom.toLowerCase().includes(event.toLowerCase())) {
-        this.filteredPrFins.push(prFin);
+        if (!this.prDebut.value || Number(prFin.segment_sequence) > Number(this.prDebut.value.segment_sequence) ||
+          (Number(prFin.segment_sequence) === Number(this.prDebut.value.segment_sequence)
+            && Number(prFin.secteur_sequence) >= Number(this.prDebut.value.secteur_sequence))) {
+          this.filteredPrFins.push(prFin);
+        }
       }
     }
+    this.filteredPrFins.sort((a1, a2) => {
+      return (Number(a1.segment_sequence) - Number(a2.segment_sequence) || Number(a1.secteur_sequence) - Number(a2.secteur_sequence));
+    });
   }
 
   filterAjoutePars(event) {
@@ -199,7 +213,6 @@ export class RecherchePerturbationComponent implements OnInit, OnDestroy {
     const recherche = new RecherchePerturbation(this.recherchePerturbationForm.value);
     // this.searchChange.emit(recherche);
     const formModel = this.recherchePerturbationForm.value;
-    console.log('resultat form', recherche);
 
   }
 

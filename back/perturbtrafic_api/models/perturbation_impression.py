@@ -17,6 +17,7 @@ class PerturbationImpression(Base):
     id = Column(BigInteger, primary_key=True)
     type = Column(BigInteger)
     localisation = Column(Text)
+    localisation_impression = Column(Text)
     type_description = Column(Text)
     urgence = Column()
     numero_dossier = Column(Text)
@@ -46,6 +47,7 @@ class PerturbationImpression(Base):
     hauteur_gabarit = Column(Text)
     heure_pointe = Column(Boolean)
     week_end = Column(Boolean)
+    logo_entite = Column(Text)
     nom_entite = Column(Text)
     geometry_point = Column(JSON)
     geometry_ligne = Column(JSON)
@@ -57,6 +59,7 @@ class PerturbationImpression(Base):
             'id': self.id,
             'type': self.type,
             'localisation': self.localisation,
+            'localisation_impression': self.localisation_impression,
             'type_description': self.type_description,
             'urgence': self.urgence,
             'numero_dossier': self.numero_dossier,
@@ -86,6 +89,7 @@ class PerturbationImpression(Base):
             'hauteur_gabarit': self.hauteur_gabarit,
             'heure_pointe': self.heure_pointe,
             'week_end': self.week_end,
+            'logo_entite': self.logo_entite,
             'nom_entite': self.nom_entite,
             'geometry_point': self.geometry_point,
             'geometry_ligne': self.geometry_ligne,

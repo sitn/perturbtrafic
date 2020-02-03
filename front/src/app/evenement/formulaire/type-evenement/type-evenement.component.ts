@@ -30,7 +30,6 @@ export class TypeEvenementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
     this.ref.detectChanges();
   }
 

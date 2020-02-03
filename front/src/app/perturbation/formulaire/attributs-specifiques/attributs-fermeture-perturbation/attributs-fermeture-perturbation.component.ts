@@ -20,6 +20,8 @@ export class AttributsFermeturePerturbationComponent implements OnInit, OnDestro
 
   subscriptions: Subscription[];
 
+  dropdownOriginForNewContact: any;
+
   constructor(
     private dropDownService: DropDownService,
     private navigationService: NavigationService,
@@ -46,16 +48,26 @@ export class AttributsFermeturePerturbationComponent implements OnInit, OnDestro
     }
   }
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   private setSubscriptions(): void {
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
-        this.contacts = [...contacts];
-        this.filteredResponsableFermeture = [...contacts];
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.contacts = [...res.contacts];
+        this.filteredResponsableFermeture = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found.id);
+          }
+        }
+        this.dropdownOriginForNewContact = null;
       })
     );
   }

@@ -1,13 +1,15 @@
 <div class="new-contact">
   <kendo-combobox [data]="filteredContacts" [filterable]="true" (filterChange)="filterContacts($event)"
-    [textField]="'nomComplet'" [valueField]="'id'" [valuePrimitive]=true (selectionChange)="setCurrentContact($event)">
+    [textField]="'nomCompletEtOrganisme'" [valueField]="'id'" [valuePrimitive]=true
+    (selectionChange)="setCurrentContact($event)" width="'400px'">
   </kendo-combobox>
   <button kendoButton (click)="addPreavisContact()" style="margin-left: 10px">Ajouter le contact</button>
 </div>
 
 <kendo-grid [data]="avisPrTouchesList">
   <kendo-grid-column [field]="'nomComplet'" [title]="'Contact'">
-
+  </kendo-grid-column>
+  <kendo-grid-column [field]="'organisme'" [title]="'Organisme'">
   </kendo-grid-column>
   <kendo-grid-column [title]="'Actions'" [width]="'80'">
     <!-- [filterable]="col.filterable"> -->

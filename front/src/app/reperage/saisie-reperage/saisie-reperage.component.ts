@@ -191,7 +191,6 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
       this.reperages[rowIndex].prFins = [];
       this.reperages[rowIndex].filteredPrFins = [];
     }
-    console.log(event);
   }
 
   onDebutPrChanged(event, rowIndex) {
@@ -274,7 +273,6 @@ export class SaisieReperageComponent implements OnInit, OnDestroy {
 
   addReperage(): void {
     this.reperages.push(new ReperageGridLine({ id: this.fakeReperageId } as any, this.axeMaintenances));
-    console.log('add row at index : ', this.reperages.length);
     this.fakeReperageId = this.fakeReperageId - 1;
   }
 

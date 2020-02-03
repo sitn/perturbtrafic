@@ -49,7 +49,6 @@ export class CookieService {
 
         const prefix = `${key}=`;
         for (const pair of pairs) {
-            console.log(key);
             if (pair.indexOf(prefix) === 0) {
                 return pair.substring(prefix.length);
             }

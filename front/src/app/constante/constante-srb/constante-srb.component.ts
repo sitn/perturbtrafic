@@ -98,14 +98,14 @@ export class ConstanteSrbComponent implements OnInit {
     );
 
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
         this.contacts = [];
-        contacts.forEach(contact => {
+        res.contacts.forEach(contact => {
           if (contact.courriel) {
             this.contacts.push(contact);
           }
         });
-        this.filteredContacts = [...contacts];
+        this.filteredContacts = [...res.contacts];
       })
     );
   }

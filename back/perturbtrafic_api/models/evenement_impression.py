@@ -30,6 +30,7 @@ class EvenementImpression(Base):
     prenom_responsable = Column(Text)
     mobile_responsable = Column(Text)
     localisation = Column(Text)
+    localisation_impression = Column(Text)
     nom_maitre_ouvrage = Column(Text)
     nom_direction_locale = Column(Text)
     prenom_direction_locale = Column(Text)
@@ -40,6 +41,7 @@ class EvenementImpression(Base):
     mobile_responsable_travaux = Column(Text)
     date_facture = Column(DateTime)
     date_demande = Column(DateTime)
+    logo_entite = Column(Text)
     nom_entite = Column(Text)
     geometry_point = Column(JSON)
     geometry_ligne = Column(JSON)
@@ -63,6 +65,7 @@ class EvenementImpression(Base):
             'prenom_responsable': self.prenom_responsable,
             'mobile_responsable': self.mobile_responsable,
             'localisation': self.localisation,
+            'localisation_impression': self.localisation_impression,
             'nom_maitre_ouvrage': self.nom_maitre_ouvrage,
             'nom_direction_locale': self.nom_direction_locale,
             'prenom_direction_locale': self.prenom_direction_locale,
@@ -73,6 +76,7 @@ class EvenementImpression(Base):
             'mobile_responsable_travaux': self.mobile_responsable_travaux,
             'date_facture': self.date_facture if not self.date_facture else self.date_facture.isoformat(),
             'date_demande': self.date_demande if not self.date_demande else self.date_demande.isoformat(),
+            'logo_entite': self.logo_entite,
             'nom_entite': self.nom_entite,
             'geometry_point': self.geometry_point,
             'geometry_ligne': self.geometry_ligne,

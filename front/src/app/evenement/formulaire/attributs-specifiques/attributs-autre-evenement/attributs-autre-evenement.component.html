@@ -59,7 +59,7 @@
               [valuePrimitive]=false formControlName="contact">
             </kendo-combobox>
             <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
-              <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+              <i class="fa fa-user-plus" (click)="createNewContact(evenementFormService.autreDirectionLocaleId)"></i>
             </span>
           </label>
           <ng-container formGroupName="contactInfos">
@@ -158,7 +158,7 @@
               [valuePrimitive]=false formControlName="contact">
             </kendo-combobox>
             <span class="new-contact" *ngIf="evenementFormService.mode!='READ_ONLY'">
-              <i class="fa fa-user-plus" (click)="createNewContact()"></i>
+              <i class="fa fa-user-plus" (click)="createNewContact(evenementFormService.autreResponsableTravauxId)"></i>
             </span>
           </label>
           <ng-container formGroupName="contactInfos">

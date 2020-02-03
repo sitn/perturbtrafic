@@ -227,7 +227,6 @@ export class MapService implements OnInit {
     }
 
     setMap(map: OlMap, formType: string) {
-        console.log('set map ');
         this.isDeviation = false;
         this.currentFormType = formType;
         this.drawSource = new OlSourceVector({ wrapX: false });
@@ -407,7 +406,6 @@ export class MapService implements OnInit {
             }
         });
         this.addSelectSingleClickInteraction();
-        console.log('end set map with extent : ', this.map.getView().calculateExtent());
 
     }
 
@@ -551,7 +549,6 @@ export class MapService implements OnInit {
     }
 
     removeFeature() {
-        console.log(this.selectSingleClick);
         if (this.selectSingleClick && this.selectSingleClick.getFeatures()) {
             const features = this.selectSingleClick.getFeatures();
             features.forEach(feature => {
@@ -606,7 +603,6 @@ export class MapService implements OnInit {
             this.selectSingleClick.getFeatures().clear();
             this.isEditing = false;
         } else if (this.selectSingleClick.getFeatures().getLength() > 0) {
-            console.log('add modify interaction', this.modifyInteraction);
             this.isEditing = true;
             this.previousFeatureGeometryEdition = this.selectSingleClick.getFeatures().getArray()[0].clone().getGeometry();
             this.addModifyInteraction();
@@ -700,15 +696,11 @@ export class MapService implements OnInit {
                 if (!this.currentDrawType) {
 
                 }
-                console.log('feature selected');
             } else {
-                console.log('feature selected');
             }
         });
         this.selectSingleClick.on('change', e => {
-            console.log('selection changed');
             if (this.isEditing) {
-                console.log('do not unselect');
             }
         });
         this.map.addInteraction(this.selectSingleClick);
@@ -745,7 +737,6 @@ export class MapService implements OnInit {
     }
 
     getListOfFeatures(): any {
-        console.log(this.drawSource);
         this.prepareFeaturesForSaving();
     }
 
@@ -793,7 +784,6 @@ export class MapService implements OnInit {
             } else {
                 features.push({ geometry: shape });
             }
-            console.log(shape);
         });
 
         /* const features = {
@@ -810,7 +800,6 @@ export class MapService implements OnInit {
             const shape = JSON.parse((new OlFormatGeoJSON()).writeFeature(feature)).geometry;
 
             features.push(shape);
-            console.log(shape);
         });
 
         return features;

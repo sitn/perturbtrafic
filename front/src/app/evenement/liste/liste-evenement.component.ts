@@ -21,7 +21,6 @@ export class ListeEvenementComponent implements OnInit {
 
     ngOnInit() {
         const cookie = this.cookieService.get('show-popup');
-        console.log(cookie);
         if (cookie && cookie === 'yes') {
             this.showPopup = true;
             this.ref.detectChanges();

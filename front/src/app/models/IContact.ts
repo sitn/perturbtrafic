@@ -3,10 +3,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export interface IContact {
     id: number;
     id_organisme?: number;
+    nom_organisme?: string;
     nom: string;
     prenom: string;
     nomComplet: string;
     nomCompletEtLogin: string;
+    nomCompletEtOrganisme?: string;
     login?: string;
     mobile: string;
     telephone: string;
@@ -20,6 +22,7 @@ export interface IContactPreavis {
     nom?: string;
     prenom?: string;
     nomComplet?: string;
+    nomCompletEtOrganisme?: string;
     courriel?: string;
     organisme?: string;
     envoi_auto_occupation: boolean;
@@ -34,12 +37,12 @@ export class ContactPreavisServerSave {
     envoiAutoOccupation: string;
     envoiAutoFermeture: string;
 
-    constructor(contactPreavis: IContactPreavis) {
+    constructor(contactPreavis: IContactPreavis, idEntite: number) {
         this.id = contactPreavis.id;
         this.idContact = contactPreavis.id_contact;
         this.envoiAutoFermeture = contactPreavis.envoi_auto_fermeture ? 'true' : 'false';
         this.envoiAutoOccupation = contactPreavis.envoi_auto_occupation ? 'true' : 'false';
-        this.idEntite = 1;
+        this.idEntite = idEntite;
     }
 }
 
@@ -103,6 +106,7 @@ export class ContactServerSave {
     telephone: string;
     courriel: string;
     login: string;
+    idOrganisme?: number;
 
     constructor(contact: IContact) {
         if (contact.id) {
@@ -114,6 +118,9 @@ export class ContactServerSave {
         this.telephone = contact.telephone;
         this.courriel = contact.courriel;
         this.login = contact.login;
+        if (contact.id_organisme) {
+            this.idOrganisme = contact.id_organisme;
+        }
     }
 
 }
@@ -178,4 +185,5 @@ export class ContactEditionFormGroup {
     fax = new FormControl();
     courriel = new FormControl();
     login = new FormControl();
+    id_organisme = new FormControl(null);
 }

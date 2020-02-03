@@ -38,6 +38,8 @@ export class AttributsFouilleEvenementComponent implements OnInit, OnChanges {
 
   public filteredFacturations: IDestinataireFacturation[];
 
+  dropdownOriginForNewContact: any;
+
 
 
   constructor(private dropDownService: DropDownService, private navigationService: NavigationService,
@@ -68,18 +70,18 @@ export class AttributsFouilleEvenementComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-
+    this.dropdownOriginForNewContact = null;
     this.setSubscriptions();
   }
 
   ngOnChanges() {
-    console.log('salut');
     // this.setSubscriptions();
   }
 
 
-  createNewContact() {
-    this.navigationService.openNewContactDialog('NEW', null);
+  createNewContact(dropdownOrigin: any) {
+    this.dropdownOriginForNewContact = dropdownOrigin;
+    this.navigationService.openNewContactDialog('NEW', null, dropdownOrigin);
   }
 
   createNewOrganisme() {
@@ -96,7 +98,6 @@ export class AttributsFouilleEvenementComponent implements OnInit, OnChanges {
   }
 
   setMaitreOuvrageValues(organisme: IOrganisme) {
-    console.log(organisme);
     this.evenementFormService.fouilleMaitreOuvrageContactInfos.controls.nom.setValue(organisme.nom);
     this.evenementFormService.fouilleMaitreOuvrageContactInfos.controls.adresse.setValue(organisme.adresse);
     this.evenementFormService.fouilleMaitreOuvrageContactInfos.controls.localite.setValue(organisme.localite);
@@ -172,7 +173,7 @@ export class AttributsFouilleEvenementComponent implements OnInit, OnChanges {
   filterFacturation(event) {
     this.filteredFacturations = [];
     for (const facturation of this.facturations) {
-      if (facturation.description.toLowerCase().includes(event.toLowerCase())) {
+      if (facturation.description && facturation.description.toLowerCase().includes(event.toLowerCase())) {
         this.filteredFacturations.push(facturation);
       }
     }
@@ -202,10 +203,19 @@ export class AttributsFouilleEvenementComponent implements OnInit, OnChanges {
       this.organismes = [...organismes];
     });
     this.subscriptions.push(
-      this.dropDownService.contactReceived$.subscribe(contacts => {
-        this.contacts = [...contacts];
-        this.filteredDirectionLocale = [...contacts];
-        this.filteredResponsableTravaux = [...contacts];
+      this.dropDownService.contactReceived$.subscribe((res: { contacts: IContact[], lastUpdatedId?: number }) => {
+        this.contacts = [...res.contacts];
+        this.filteredDirectionLocale = [...res.contacts];
+        this.filteredResponsableTravaux = [...res.contacts];
+        if (this.dropdownOriginForNewContact && res.lastUpdatedId) {
+          const found = this.contacts.find(val => {
+            return val.id === res.lastUpdatedId;
+          });
+          if (found) {
+            this.dropdownOriginForNewContact.setValue(found);
+          }
+        }
+        this.dropdownOriginForNewContact = null;
       })
     );
 

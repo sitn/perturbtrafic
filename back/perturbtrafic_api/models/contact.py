@@ -17,6 +17,7 @@ class Contact(Base):
     telephone = Column(Text)
     mobile = Column(Text)
     courriel = Column(Text)
+    id_organisme = Column(BigInteger)
 
     def format(self):
         return {
@@ -26,7 +27,8 @@ class Contact(Base):
             'prenom': self.prenom,
             'telephone': self.telephone,
             'mobile': self.mobile,
-            'courriel': self.courriel
+            'courriel': self.courriel,
+            'id_organisme': self.id_organisme
         }
 
 #Index('my_index', Contact.nom, unique=True, mysql_length=255)

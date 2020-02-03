@@ -2584,6 +2584,7 @@ def update_evenement_edition(request):
                 chantier_record.lieu_seance = _lieuSeance
                 chantier_record.jour_seance = _jourSeance
                 chantier_record.heure_seance = _heureSeance
+                chantier_record.reperage_effectif = _reperageEffectif
 
                 # Delete old categories
                 request.dbsession.query(models.LienChantierCategorieChantier).filter(
@@ -2661,6 +2662,7 @@ def update_evenement_edition(request):
                 fouille_record.numero_facture = _numeroFacture
                 fouille_record.date_facture = _dateFacture
                 fouille_record.reserve_eventuelle = _reserveEventuelle
+                fouille_record.reperage_effectif = _reperageEffectif
 
                 # Plan types
                 # Delete old plan types
@@ -2845,8 +2847,10 @@ def search_evenements_view(request):
                 conditions.append(
                     func.lower(models.SearchEvenementView.division).like('%' + func.lower(request.params['division']) + '%'))
 
-            if ('idRequerant' in request.params and request.params['idRequerant'] != ""):
-                conditions.append(models.SearchEvenementView.id_requerant == request.params['idRequerant'])
+            if ('nomRequerant' in request.params and request.params['nomRequerant'] != ""):
+                conditions.append(
+                    func.lower(models.SearchEvenementView.nom_requerant).like(
+                        '%' + func.lower(request.params['nomRequerant']) + '%'))
 
 
             if ('idResponsable' in request.params and request.params['idResponsable'] != ""):

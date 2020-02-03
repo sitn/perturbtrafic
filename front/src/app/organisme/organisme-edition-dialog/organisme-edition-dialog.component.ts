@@ -109,12 +109,10 @@ export class OrganismeEditionComponent implements OnInit, OnDestroy {
       this.navigationService.openNewOrganismeDialog$.subscribe((val: { mode: string, organisme: IOrganisme }) => {
         this.organismeEditionFormGroup.reset();
         this.mode = val.mode;
-        console.log(val.organisme);
         this.organisme = val.organisme;
         if (this.organisme) {
           this.organismeEditionFormGroup.patchValue(this.organisme);
         }
-        console.log('formGroup : ', this.organismeEditionFormGroup);
         if (this.mode === 'READ') {
           this.organismeEditionFormGroup.disable();
         } else {

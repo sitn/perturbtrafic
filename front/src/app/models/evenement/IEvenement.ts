@@ -59,7 +59,6 @@ export interface IEvenement {
     utilisateurAjout: any;
     dateModification: Date;
     utilisateurModification: any;
-    srbTouche: boolean;
 }
 
 
@@ -78,12 +77,22 @@ export interface IEvenementImpression {
     id: number;
     libelle: string;
     localisation: string;
+    localisation_impression: string;
+    localisationImpressionReperage?: {
+        id_evenement: string;
+        axe: string;
+        pr_debut: string;
+        pr_debut_distance: string;
+        pr_fin: string;
+        pr_fin_distance: string;
+    }[];
     mobile_direction_locale: string;
     mobile_responsable: string;
     mobile_responsable_travaux: string;
     nom_direction_locale: string;
     nom_entrepreneur: string;
     nom_entite: string;
+    logo_entite: string;
     nom_maitre_ouvrage: string;
     nom_requerant: string;
     nom_responsable: string;

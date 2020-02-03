@@ -60,7 +60,6 @@ export class EvenementForm {
     utilisateurAjout = new FormControl({ value: null, disabled: true });
     dateModification = new FormControl({ value: null, disabled: true });
     utilisateurModification = new FormControl({ value: null, disabled: true });
-    srbTouche = new FormControl();
 
     private dateOrderValidator(g: FormGroup) {
         const valueDebut = g.get('dateDebut').value;
@@ -123,7 +122,6 @@ export class EvenementFormValues {
     utilisateurAjout: string;
     dateModification: Date;
     utilisateurModification: string;
-    srbTouche: string;
 
     constructor(evenementServer: IEvenementServerEdition) {
         const infoEvenement = evenementServer.evenement;
@@ -185,6 +183,5 @@ export class EvenementFormValues {
         this.utilisateurAjout = infoEvenement.nom_utilisateur_ajout;
         this.dateModification = infoEvenement.date_modification ? new Date(infoEvenement.date_modification) : null;
         this.utilisateurModification = infoEvenement.nom_utilisateur_modification;
-        // this.srbTouche = evenementServer.tou;
     }
 }

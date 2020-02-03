@@ -24,6 +24,7 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
   public exportExcel: ExcelExportComponent;
 
   filteredResultats: IResultatEvenement[];
+  excelResultats: IResultatEvenement[];
   totalRecords: number;
   loading = false;
 
@@ -75,6 +76,7 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
   constructor(private apiService: ApiService, private router: Router, private navigationService: NavigationService,
     private loaderService: LoaderService) {
     this.filteredResultats = [];
+    this.excelResultats = [];
     this.totalRecords = 0;
   }
 
@@ -101,7 +103,11 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
 
   public dataStateChange(state: any): void {
     this.state = state;
+    const excelState: State = {
+      sort: state.sort
+    };
     const dataResults = process(this.resultats, this.state);
+    this.excelResultats = process(this.resultats, excelState).data;
     this.filteredResultats = dataResults.data;
     this.totalRecords = dataResults.total;
   }
@@ -112,7 +118,6 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
   }
 
   public onDeleteEvenementClick(event) {
-    console.log(event);
     this.deleteConfirmationOpened = true;
     this.currentEvenement = event;
 
@@ -155,7 +160,6 @@ export class ResultatsEvenementComponent implements OnInit, OnChanges {
   }
 
   public duplicateEvenement(event) {
-    console.log('duplicate Evenement : ', event);
   }
 
   public onExcelExport(): void {
