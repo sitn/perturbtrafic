@@ -3,7 +3,7 @@
 # https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/environment.html
 ###
 
-[app:mypyramidapp]
+[app:main]
 use = egg:perturbtrafic_api
 
 pyramid.reload_templates = false
@@ -16,6 +16,7 @@ pyramid.includes =
     pyramid_debugtoolbar
     pyramid_tm
     pyramid_chameleon
+
 
 #############################################
 # Les informations de connexion à la BD
@@ -31,6 +32,8 @@ schema_name = perturbtrafic
 
 #############################################
 # Les informations de connexion au LDAP
+# Peut être testé avec Apache directory studio
+# ou LDAP Explorer
 #############################################
 
 # L'URL de LDAP et le numéro de port
@@ -51,9 +54,12 @@ ldap_passwd = password
 ldap_login_query_base_dn = DC=ne,DC=ch
 
 # Le filtre de la recherche des logins
-ldap_login_query_filter_tmpl = (sAMAccountName=%%(login)s)
+# memberOf:1.2.840.113556.1.4.1941 est propre à Microsoft et permet la récursion dans les groupes
+# Attention, si le groupe est vide, aucun utilisateur n'est renvoyé et le login est interdit
+ldap_login_query_filter_tmpl = (&(memberOf:1.2.840.113556.1.4.1941:=CN=PERTURBTRAFIC_fonction_evenement_entite_Lecteurs,OU=PERTURBTRAFIC,OU=Applications,DC=ne,DC=ch)(sAMAccountName=%%(login)s))
 
 # Les attributs à retourner
+# sAMAccountName est propore à Microsoft, c'est l'attribut stockant le nom d'utilisateur Windows
 ldap_login_query_attributes = sAMAccountName,givenName,sn,mail,telephoneNumber,mobile
 
 # Le scope de la recherche (LEVEL, SUBTREE)
@@ -99,17 +105,17 @@ ldap_user_attribute_mobile = mobile
 
 # Les attributs qui correspondent au nom et identifiant d'un groupe LDAP
 ldap_group_attribute_name= cn
-ldap_group_attribute_id= ou
+ldap_group_attribute_id= cn
 
 # Les informations de recherche d'un utilisateur LDAP
-ldap_search_user_filter=(objectClass=person)
+ldap_search_user_filter=(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=CN=PERTURBTRAFIC_fonction_evenement_entite_Lecteurs,OU=PERTURBTRAFIC,OU=Applications,DC=ne,DC=ch))
 
 # Les préfixes des groupes entites et fonctions
 ldap_entite_groups_prefix= PERTURBTRAFIC_entite_
-ldap_fonction_groups_prefix= PT_F_
+ldap_fonction_groups_prefix= PERTURBTRAFIC_fonction_
 
 # Le nom du groupe trafic
-ldap_trafic_group_name= PT_F_MODIFIER_ETAT_PERTURBATION
+ldap_trafic_group_name= PERTURBTRAFIC_fonction_perturbation_etat_Users
 id_responsable_entite=359
 
 
@@ -225,15 +231,13 @@ occupation_perturbation_id = 2
 ########################################################################
 conflicts_date_buffer = 3
 
+########################################################################
+# Le buffer géométrique (selon l'unité du système de reférence spatiale) pour retourner les conflits des perturbations
+########################################################################
+conflicts_geom_buffer = 10
+
 retry.attempts = 3
 
-[filter:translogger]
-use = egg:Paste#translogger
-setup_console_handler = False
-
-[pipeline:main]
-pipeline = translogger
-    mypyramidapp
 
 [pshell]
 setup = perturbtrafic_api.pshell.setup
@@ -250,7 +254,7 @@ file_template = %%(year)d%%(month).2d%%(day).2d_%%(rev)s
 
 [server:main]
 use = egg:waitress#main
-listen = *:6543
+listen = localhost:6543
 
 ###
 # logging configuration
@@ -258,7 +262,7 @@ listen = *:6543
 ###
 
 [loggers]
-keys = root, perturbtrafic_api, sqlalchemy, wsgi, waitress
+keys = root, perturbtrafic_api, sqlalchemy, pyramid_ldap
 
 [handlers]
 keys = console, filelog, accesslog
@@ -291,8 +295,16 @@ propagate = 0
 
 [logger_waitress]
 level = WARN
+
+[logger_pyramid_ldap]
+level = WARN
 handlers =
-qualname = waitress
+qualname = pyramid_ldap3
+
+[logger_ldap3]
+level = ERROR
+qualname = ldap3
+handlers =
 
 [handler_console]
 class = StreamHandler
@@ -308,7 +320,7 @@ formatter = generic
 
 [handler_accesslog]
 class = FileHandler
-args = (r'logs/access.log','a')
+args = (r'%(here)s/logs/access.log','a')
 level = INFO
 formatter = accesslog
 
