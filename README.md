@@ -110,6 +110,8 @@ pip install requests
 
 3. Create a scheduled task that runs both files.
 
+4. Run Active Directory once by navigating to /mise_a_jours_groupes_ad
+
 ### Troubleshooting
 
 If this error shows up:
