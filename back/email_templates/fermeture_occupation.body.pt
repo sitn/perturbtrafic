@@ -1,4 +1,4 @@
-<h3>Veuillez donner votre préavis à la signalisation, concernant ${type} ci-dessous :</h3>
+<h3>Veuillez donner votre préavis concernant ${type} ci-dessous :</h3>
 <table style="height: 942px; border-color: #000000;" border="1" width="666" cellspacing="0" cellpadding="5">
     <tbody>
         <tr>
