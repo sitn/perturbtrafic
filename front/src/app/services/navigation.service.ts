@@ -18,6 +18,7 @@ export class NavigationService {
     public onWarningDialogClosed$: EventEmitter<any>;
     public openSaisieReperageDialog$: EventEmitter<any>;
     public onSaisieReperageDialogClosed$: EventEmitter<any>;
+    public onLaunchSearchEvenement$: EventEmitter<any>;
 
     constructor() {
         this.openNewContactDialog$ = new EventEmitter();
@@ -30,6 +31,7 @@ export class NavigationService {
         this.onWarningDialogClosed$ = new EventEmitter();
         this.openSaisieReperageDialog$ = new EventEmitter();
         this.onSaisieReperageDialogClosed$ = new EventEmitter();
+        this.onLaunchSearchEvenement$ = new EventEmitter();
     }
 
     openNewContactDialog(mode: string, contact: IContact, dropdownOrigin?: any): void {
@@ -70,6 +72,10 @@ export class NavigationService {
 
     closeSaisieReperageDialog() {
         this.onSaisieReperageDialogClosed$.emit();
+    }
+
+    launchSearchEvenement() {
+        this.onLaunchSearchEvenement$.emit();
     }
 
 }

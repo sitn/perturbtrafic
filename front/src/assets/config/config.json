@@ -1,5 +1,5 @@
 {
-    "version": "1.0 - RC 2",
+    "version": "1.0 - RC 3",
     "wsPath": "https://perturbtrafic.arxit.com/perturbtrafic/api/",
     "urlGuichetCarto": "https://sitnintra.ne.ch/theme/trafic?lang=fr&baselayer_ref=blank&tree_group_layers_gp_points_interets=&tree_group_layers_gp_main=&tree_enable_osm=false&theme=trafic&tree_groups=gp_mo_cadastre_partiel%2Cgp_rt_perturbations%2Cgp_base_layers",
     "urlConflits": "https://sitnintra.ne.ch/theme/trafic?wfs_layer=pt00_evenement&wfs_id_evenement=",
@@ -32,6 +32,20 @@
                 "axes_cantonaux": "rt11_axes_cantonaux",
                 "axes_communaux": "rt12_axes_communaux"
             }
+        }
+    },
+    "mapStyle": {
+        "deviation": {
+            "color": "rgba(0,230,118, 1.0)",
+            "contour": "rgba(0,0,0, 1.0)",
+            "contourWidth": 6,
+            "width": 4
+        },
+        "perturbation": {
+            "color": "rgba(221,44,0, 1.0)",
+            "contour": "rgba(0,0,0, 1.0)",
+            "contourWidth": 6,
+            "width": 4
         }
     },
     "listeSuggestions": {

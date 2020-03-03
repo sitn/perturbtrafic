@@ -72,7 +72,11 @@ class PTMailer():
             msg['From'] = user
             msg['To'] = ", ".join(recipients)
             msg['Subject'] = subject
+
             html_body = render(template + ".body.pt", context, request=request)
+
+            # Set perturbation view url
+            html_body = html_body.replace('@@url_perturbation@@', request.registry.settings['view_perturbation_url'].replace('{id}', str(context['id'])))
 
             # Inline CSS styles
             html_body = premailer.transform(html_body)

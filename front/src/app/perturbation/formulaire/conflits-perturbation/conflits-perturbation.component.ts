@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Conflit } from 'src/app/models/IConflit';
+import { Conflit, IConflitServer } from 'src/app/models/IConflit';
 import { ApiService } from 'src/app/services/api.service';
 import { ConfigService } from 'src/app/services/config.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
-  selector: 'conflits-evenement',
-  templateUrl: './conflits-evenement.component.html',
-  styleUrls: ['./conflits-evenement.component.less']
+  selector: 'conflits-perturbation',
+  templateUrl: './conflits-perturbation.component.html',
+  styleUrls: ['./conflits-perturbation.component.less']
 })
-export class ConflitsEvenementComponent implements OnInit, OnDestroy {
+export class ConflitsPerturbationComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[];
 
@@ -31,14 +31,13 @@ export class ConflitsEvenementComponent implements OnInit, OnDestroy {
     this.cleanUpSubscriptions();
   }
 
-  public editPerturbation(eventId) {
-    this.router.navigate([`/perturbations/formulaire/edit/${eventId}`]);
+  public editPerturbation(perturbationId) {
+    window.open(`${window.location.origin}/perturbations/formulaire/edit/${perturbationId}`);
   }
 
-  public showGuichetCarto(numeroDossier, numeroDossierConflit) {
-    const evenementId = this.route.snapshot.paramMap.get('id');
+  public showGuichetCarto(perturbationId, evenementId) {
     if (evenementId) {
-      window.open(this.configService.getUrlConflits() + numeroDossier + ',' + numeroDossierConflit, '_blank');
+      window.open(this.configService.getUrlConflits() + evenementId + ',' + perturbationId, '_blank');
     }
   }
 
@@ -50,12 +49,16 @@ export class ConflitsEvenementComponent implements OnInit, OnDestroy {
     return Math.abs(i % 2) === 1;
   }
 
+  setConflits(conflicts: Conflit[]): void {
+    this.conflicts = conflicts;
+  }
+
   private setSubscriptions(): void {
 
-    const evenementId = this.route.snapshot.paramMap.get('id');
-    if (evenementId) {
+    const perturbation = this.route.snapshot.paramMap.get('id');
+    if (perturbation) {
       this.subscriptions.push(
-        this.apiService.getConflitsByEvenementId(evenementId).subscribe(res => {
+        this.apiService.getConflitsByPerturbationId(perturbation).subscribe(res => {
           if (res && res.length > -1) {
             this.conflicts = res;
           }

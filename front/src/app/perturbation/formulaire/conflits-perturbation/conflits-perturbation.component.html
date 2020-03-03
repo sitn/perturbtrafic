@@ -5,17 +5,17 @@
   </div>
   <div style="display: flex; width: 100%; flex-wrap: wrap;">
     <ng-container *ngFor="let conflict of conflicts; let i = index">
-      <div *ngIf="isEven(i)" class="conflict-line left-part">
+      <div *ngIf="isEven(i)" class="conflict-line conflict-left-part">
         <i class="fas fa-edit" (click)="editPerturbation(conflict.perturbationConflitId)"></i>
         <i class="fas fa-globe-europe" title="Voir dans le guichet"
           (click)="showGuichetCarto(conflict.evenementNumeroDossier, conflict.evenementConflitNumeroDossier)"></i>
-        {{conflict.libelleConflit}}
+        {{conflict.descriptionConflit}}
       </div>
-      <div *ngIf="isOdd(i)" class="conflict-line right-part">
+      <div *ngIf="isOdd(i)" class="conflict-line conflict-right-part">
         <i class="fas fa-edit" (click)="editPerturbation(conflict.perturbationConflitId)"></i>
         <i class="fas fa-globe-europe" title="Voir dans le guichet"
           (click)="showGuichetCarto(conflict.evenementNumeroDossier, conflict.evenementConflitNumeroDossier)"></i>
-        {{conflict.libelleConflit}}
+        {{conflict.descriptionConflit}}
       </div>
     </ng-container>
   </div>

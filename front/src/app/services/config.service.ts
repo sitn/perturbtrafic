@@ -51,6 +51,23 @@ export class ConfigService {
     getWsSitnBaseUrl(): string {
         return this._config['wsSitnBaseUrl'];
     }
+
+    getMapStyle(): {
+        deviation: {
+            color: string;
+            contour: string;
+            contourWidth: number;
+            width: number;
+        },
+        perturbation: {
+            color: string;
+            contour: string;
+            contourWidth: number;
+            width: number;
+        }
+    } {
+        return this._config['mapStyle'];
+    }
 }
 
 export function ConfigFactory(config: ConfigService) {

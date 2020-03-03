@@ -86,7 +86,7 @@ export class ImpressionEvenementContainerComponent implements OnInit, AfterViewI
     });
     this.mapService.addFeaturesToPrintMap(map,
       this.evenementImpression.geometry_point, this.evenementImpression.geometry_ligne,
-      this.evenementImpression.geometry_polygone);
+      this.evenementImpression.geometry_polygone, null);
     this.ref.detectChanges();
 
     let counter = 0;

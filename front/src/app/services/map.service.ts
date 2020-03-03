@@ -71,6 +71,21 @@ export class MapService implements OnInit {
     public isSnapping = false;
     public previousFeatureGeometryEdition;
 
+    public mapStyle: {
+        deviation: {
+            color: string;
+            contour: string;
+            contourWidth: number;
+            width: number;
+        },
+        perturbation: {
+            color: string;
+            contour: string;
+            contourWidth: number;
+            width: number;
+        }
+    };
+
     private printRenderCounter = 0;
 
     constructor(private loaderService: LoaderService, private configService: ConfigService) {
@@ -88,12 +103,6 @@ export class MapService implements OnInit {
         this.drawVector = new OlLayerVector({
             source: this.drawSource,
             name: 'draw_layer',
-            style: new OlStyleStyle({
-                stroke: new OlStyleStroke({
-                    color: 'rgba(255, 0, 0, 1.0)',
-                    width: 3
-                })
-            }),
             zIndex: 999
         });
 
@@ -101,17 +110,12 @@ export class MapService implements OnInit {
         this.deviationDrawVector = new OlLayerVector({
             source: this.deviationDrawSource,
             name: 'deviation_draw_layer',
-            style: new OlStyleStyle({
-                stroke: new OlStyleStroke({
-                    color: 'rgba(255, 0, 0, 1.0)',
-                    width: 3
-                })
-            }),
             zIndex: 999
         });
 
         this.selectSingleClick = new Select({
             wrapX: false,
+            hitTolerance: 5,
             condition: function (evt) {
                 return false;
             }
@@ -122,6 +126,7 @@ export class MapService implements OnInit {
 
         this.config = this.configService.getConfig();
         this.perturbationsPrintMap = [];
+        this.mapStyle = this.configService.getMapStyle();
     }
 
     ngOnInit() {
@@ -132,8 +137,9 @@ export class MapService implements OnInit {
         this.printMap.addLayer(this.drawVector); */
     }
 
-    addFeaturesToPrintMap(map: OlMap, geometry_point: any, geometry_ligne: any, geometry_polygone: any): void {
+    addFeaturesToPrintMap(map: OlMap, geometry_point: any, geometry_ligne: any, geometry_polygone: any, geometry_deviation: any): void {
         let geometries = [];
+        let deviations = [];
         if (geometry_point && geometry_point.length > 0) {
             geometries = geometries.concat(geometry_point);
         }
@@ -143,25 +149,36 @@ export class MapService implements OnInit {
         if (geometry_polygone && geometry_polygone.length > 0) {
             geometries = geometries.concat(geometry_polygone);
         }
+        if (geometry_deviation && geometry_deviation.length > 0) {
+            deviations = deviations.concat(geometry_deviation);
+        }
         const drawSource = new OlSourceVector({ wrapX: false });
         const drawVector = new OlLayerVector({
             source: drawSource,
             name: 'draw_layer',
-            style: new OlStyleStyle({
-                stroke: new OlStyleStroke({
-                    color: 'rgba(255, 0, 0, 1.0)',
-                    width: 3
-                }),
-                image: new OlStyleCircle({
-                    radius: 5,
-                    fill: new OlStyleFill({
-                        color: 'rgba(255, 0, 0, 1.0)'
-                    }),
+            style: [
+                new OlStyleStyle({
                     stroke: new OlStyleStroke({
-                        color: 'rgba(0, 0, 255, 1.0)'
+                        color: this.mapStyle.perturbation.contour,
+                        width: this.mapStyle.perturbation.contourWidth
+                    }),
+                    image: new OlStyleCircle({
+                        radius: 5,
+                        fill: new OlStyleFill({
+                            color: this.mapStyle.perturbation.color
+                        }),
+                        stroke: new OlStyleStroke({
+                            color: this.mapStyle.perturbation.contour
+                        })
+                    })
+                }),
+                new OlStyleStyle({
+                    stroke: new OlStyleStroke({
+                        color: this.mapStyle.perturbation.color,
+                        width: this.mapStyle.perturbation.width
                     })
                 })
-            }),
+            ],
             zIndex: 999
         });
 
@@ -169,17 +186,37 @@ export class MapService implements OnInit {
         const deviationDrawVector = new OlLayerVector({
             source: deviationDrawSource,
             name: 'deviation_draw_layer',
-            style: new OlStyleStyle({
-                stroke: new OlStyleStroke({
-                    color: 'rgba(255, 0, 0, 1.0)',
-                    width: 3
+            style: [
+                new OlStyleStyle({
+                    stroke: new OlStyleStroke({
+                        color: this.mapStyle.deviation.contour,
+                        width: this.mapStyle.deviation.contourWidth
+                    })
+                }),
+                new OlStyleStyle({
+                    stroke: new OlStyleStroke({
+                        color: this.mapStyle.deviation.color,
+                        width: this.mapStyle.deviation.width
+                    })
                 })
-            }),
+            ],
             zIndex: 999
         });
 
+        let extent = OlExtent.createEmpty();
+        if (deviations && deviations.length > 0) {
+            deviations.forEach((deviation, index) => {
+                const olGeometry = (new OlFormatGeoJSON()).readGeometry(deviation);
+                const feature = new OlFeature({
+                    geometry: olGeometry,
+                    id: deviation.id
+                });
+                extent = OlExtent.extend(extent, olGeometry.getExtent());
+                deviationDrawVector.getSource().addFeature(feature);
+            });
+        }
+
         if (geometries && geometries.length > 0) {
-            let extent = OlExtent.createEmpty();
             geometries.forEach((geometry, index) => {
                 const olGeometry = (new OlFormatGeoJSON()).readGeometry(geometry);
                 const id_rep = geometry.id_reperage;
@@ -197,11 +234,12 @@ export class MapService implements OnInit {
                     });
                 }
                 drawVector.getSource().addFeature(feature);
-                if (index === 0) {
+                extent = OlExtent.extend(extent, olGeometry.getExtent());
+                /* if (index === 0) {
                     extent = olGeometry.getExtent();
                 } else {
                     extent = OlExtent.extend(extent, olGeometry.getExtent());
-                }
+                } */
             });
             map.addLayer(drawVector);
             map.addLayer(deviationDrawVector);
@@ -233,21 +271,29 @@ export class MapService implements OnInit {
         this.drawVector = new OlLayerVector({
             source: this.drawSource,
             name: 'draw_layer',
-            style: new OlStyleStyle({
-                stroke: new OlStyleStroke({
-                    color: 'rgba(255, 0, 0, 1.0)',
-                    width: 4
-                }),
-                image: new OlStyleCircle({
-                    radius: 5,
-                    fill: new OlStyleFill({
-                        color: 'rgba(255, 0, 0, 1.0)'
-                    }),
+            style: [
+                new OlStyleStyle({
                     stroke: new OlStyleStroke({
-                        color: 'rgba(0, 0, 255, 1.0)'
+                        color: this.mapStyle.perturbation.contour,
+                        width: this.mapStyle.perturbation.contourWidth
+                    }),
+                    image: new OlStyleCircle({
+                        radius: 5,
+                        fill: new OlStyleFill({
+                            color: this.mapStyle.perturbation.color
+                        }),
+                        stroke: new OlStyleStroke({
+                            color: this.mapStyle.perturbation.contour
+                        })
+                    })
+                }),
+                new OlStyleStyle({
+                    stroke: new OlStyleStroke({
+                        color: this.mapStyle.perturbation.color,
+                        width: this.mapStyle.perturbation.width
                     })
                 })
-            }),
+            ],
             zIndex: 999
         });
         const fondCartoWMSSource = new OlTileWMS({
@@ -280,21 +326,20 @@ export class MapService implements OnInit {
         this.deviationDrawVector = new OlLayerVector({
             source: this.deviationDrawSource,
             name: 'deviation_draw_layer',
-            style: new OlStyleStyle({
-                stroke: new OlStyleStroke({
-                    color: 'rgba(255, 255, 20, 1.0)',
-                    width: 4
-                }),
-                image: new OlStyleCircle({
-                    radius: 5,
-                    fill: new OlStyleFill({
-                        color: 'rgba(255, 0, 0, 1.0)'
-                    }),
+            style: [
+                new OlStyleStyle({
                     stroke: new OlStyleStroke({
-                        color: 'rgba(0, 0, 255, 1.0)'
+                        color: this.mapStyle.deviation.contour,
+                        width: this.mapStyle.deviation.contourWidth
+                    })
+                }),
+                new OlStyleStyle({
+                    stroke: new OlStyleStroke({
+                        color: this.mapStyle.deviation.color,
+                        width: this.mapStyle.deviation.width
                     })
                 })
-            }),
+            ],
             zIndex: 999
         });
         this.map = map;
@@ -645,14 +690,7 @@ export class MapService implements OnInit {
 
     addSelectSingleClickInteraction() {
         this.selectSingleClick = new Select({
-            /* filter: (e) => {
-                if (this.isEditing) {
-                    return false;
-                } else {
-                    return true;
-                }
-                // return !this.isEditing && this.selectSingleClick.getFeatures().getLength() < 1;
-            }, */
+            hitTolerance: 5,
             condition: (e) => {
                 if (e.type === 'singleclick') {
                     if (!this.isEditing) {
@@ -679,6 +717,7 @@ export class MapService implements OnInit {
             } */
         });
         this.selectSingleClick.on('select', e => {
+            console.log('clicked');
             if (this.selectSingleClick.getFeatures().getLength() > 0) {
                 this.isFeatureSelected = true;
             } else {

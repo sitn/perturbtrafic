@@ -308,11 +308,15 @@ def perturbation_edition_by_id_view(request):
 @view_config(route_name='perturbation_edition', request_method='POST', renderer='json')
 @view_config(route_name='perturbation_edition_slash', request_method='POST', renderer='json')
 def add_perturbation_edition(request):
+
+    max_perturb_id = None
+
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         evenement_record = None
         contacts_a_aviser_ids_array = []
+
 
         # Check authorization
         auth_tkt = request.cookies.get('auth_tkt', default=None)
@@ -792,8 +796,8 @@ def add_perturbation_edition(request):
             # Reperages list
             reperages_string = ''
             for reperage_model in reperages_list:
-                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
-                    '???', reperage_model.axe, reperage_model.pr_debut, reperage_model.pr_debut_distance,
+                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
+                    reperage_model.proprietaire + ':' + reperage_model.axe + ':' + reperage_model.sens, reperage_model.pr_debut, reperage_model.pr_debut_distance,
                     reperage_model.pr_fin, reperage_model.pr_fin_distance)
 
             # Envoi email si fermeture d'urgence
@@ -871,7 +875,7 @@ def add_perturbation_edition(request):
         log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
-    return {'message': 'Data successfully saved'}
+    return {'message': 'Data successfully saved', 'id': max_perturb_id}
 
 
 ########################################################
@@ -1372,8 +1376,8 @@ def update_perturbation_edition(request):
             # Reperages list
             reperages_string = ''
             for reperage_model in reperages_list:
-                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
-                    '???', reperage_model.axe, reperage_model.pr_debut, reperage_model.pr_debut_distance,
+                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
+                    reperage_model.proprietaire + ':' + reperage_model.axe + ':' + reperage_model.sens, reperage_model.pr_debut, reperage_model.pr_debut_distance,
                     reperage_model.pr_fin, reperage_model.pr_fin_distance)
 
             # Envoi email si fermeture d'urgence

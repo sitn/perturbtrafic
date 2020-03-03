@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -14,6 +14,7 @@ import { PerturbationFormService } from 'src/app/services/perturbation-form.serv
 
 import { AvisPerturbationComponent } from './avis-perturbation/avis-perturbation.component';
 import { UserService } from 'src/app/services/user.service';
+import { Conflit } from 'src/app/models/IConflit';
 
 @Component({
     selector: 'formulaire-perturbation',
@@ -25,8 +26,14 @@ export class FormulairePerturbationComponent implements OnInit {
     @ViewChild('preavisComponent', { static: false })
     public preavisComponent: AvisPerturbationComponent;
 
+    @ViewChild('conflictSection', { static: false })
+    conflictSection: ElementRef;
+
     perturbation: IFormulairePerturbation;
     mode: string;
+
+    onSavedDialogOpened: boolean;
+    conflictsLength: number;
 
     mapImageForPDF: any;
 
@@ -41,6 +48,8 @@ export class FormulairePerturbationComponent implements OnInit {
         private navigationService: NavigationService, private configService: ConfigService, private userService: UserService) {
 
         this.subscriptions = [];
+        this.onSavedDialogOpened = false;
+        this.conflictsLength = 0;
 
         /* const nouvelEvenement: IEvenement = <IEvenement>{};
         nouvelEvenement.type = { id: '-', value: null };
@@ -59,6 +68,8 @@ export class FormulairePerturbationComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.onSavedDialogOpened = false;
+        this.conflictsLength = 0;
         this.perturbationFormService.evenement.setValue(null);
         this.perturbationFormService.perturbationForm.enable();
         this.perturbationFormService.reset();
@@ -82,6 +93,11 @@ export class FormulairePerturbationComponent implements OnInit {
                     this.perturbationFormService.mode = 'EDIT';
                     this.perturbationFormService.perturbationForm.controls.evenement.disable();
                     this.perturbationFormService.typePerturbation.disable();
+                    if (history && history.state && history.state.showConflictSection) {
+                        setTimeout(() => {
+                            this.conflictSection.nativeElement.scrollIntoView();
+                        }, 1200);
+                    }
                 } else if (clonePath > -1) {
                     this.perturbationFormService.mode = 'NEW';
                     this.perturbationFormService.perturbationForm.controls.evenement.disable();
@@ -138,10 +154,15 @@ export class FormulairePerturbationComponent implements OnInit {
                     this.perturbationFormService.perturbationForm.getRawValue(), this.userService.currentUser,
                     features, deviations, avisContact)
                     .subscribe(res => {
-                        if (!res.error) {
-                            this.navigationService.openErrorDialog(
-                                `La perturbation a été enregistrée correctement`, 'Perturbation enregistrée');
-                            this.router.navigate([`/perturbations`]);
+                        if (!res.error && res.id) {
+                            this.perturbationFormService.perturbationForm.controls.id.setValue(res.id);
+                            this.apiService.getConflitsByPerturbationId(res.id)
+                                .subscribe((conf: Conflit[]) => {
+                                    if (conf) {
+                                        this.conflictsLength = conf.length;
+                                    }
+                                    this.onSavedDialogOpened = true;
+                                });
                         } else {
                             this.navigationService.openErrorDialog(
                                 `Une erreur est survenue lors de la sauvegarde : ${res.message}`, 'Erreur');
@@ -168,9 +189,16 @@ export class FormulairePerturbationComponent implements OnInit {
                 this.apiService.editPerturbation(
                     this.perturbationFormService.perturbationForm.getRawValue(), features, deviations, avisContact).subscribe(res => {
                         if (!res.error) {
-                            this.router.navigate([`/perturbations`]);
+                            this.apiService.getConflitsByPerturbationId(this.perturbationFormService.perturbationForm.get('id').value)
+                                .subscribe((conf: Conflit[]) => {
+                                    if (conf) {
+                                        this.conflictsLength = conf.length;
+                                    }
+                                    this.onSavedDialogOpened = true;
+                                });
+                            /* this.router.navigate([`/perturbations`]);
                             this.navigationService.openErrorDialog(
-                                `La perturbation a été enregistrée correctement`, 'Perturbation enregistrée');
+                                `La perturbation a été enregistrée correctement`, 'Perturbation enregistrée'); */
                         } else {
                             this.navigationService.openErrorDialog(
                                 `Une erreur est survenue lors de la sauvegarde : ${res.message}`, 'Erreur');
@@ -186,6 +214,23 @@ export class FormulairePerturbationComponent implements OnInit {
             `${window.location.origin}/perturbations/formulaire/print/${this.perturbationFormService.perturbationForm.controls.id.value}`,
             '_blank'
         );
+    }
+
+    showConflictsSection(el: HTMLElement) {
+        this.onSavedDialogOpened = false;
+        el.scrollIntoView();
+    }
+
+    routeToPerturbationsListe() {
+        this.router.navigate([`/perturbations`]);
+    }
+
+    reloadPerturbationFormulaire() {
+        // Force reload : https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate([`/perturbations/formulaire/edit/${this.perturbationFormService.perturbationForm.controls.id.value}`],
+                { state: { showConflictSection: true } });
+        });
     }
 
     setValuesFromEvenementSelection(evenementId: number) {

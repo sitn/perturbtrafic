@@ -80,7 +80,7 @@ export class ImpressionPerturbationComponent implements OnInit, OnChanges, After
     });
     this.mapService.addFeaturesToPrintMap(map,
       this.perturbationImpression.geometry_point, this.perturbationImpression.geometry_ligne,
-      this.perturbationImpression.geometry_polygone);
+      this.perturbationImpression.geometry_polygone, this.perturbationImpression.geometry_deviation);
     this.ref.detectChanges();
 
     let counter = 0;
