@@ -51,6 +51,7 @@ class PerturbationImpression(Base):
     nom_entite = Column(Text)
     geometry_point = Column(JSON)
     geometry_ligne = Column(JSON)
+    geometry_deviation = Column(JSON)
     preavis_contacts = Column(JSON)
     reperages = Column(JSON)
 
@@ -93,6 +94,7 @@ class PerturbationImpression(Base):
             'nom_entite': self.nom_entite,
             'geometry_point': self.geometry_point,
             'geometry_ligne': self.geometry_ligne,
+            'geometry_deviation': self.geometry_deviation,
             'preavis_contacts': self.preavis_contacts,
             'reperages': self.reperages
         }

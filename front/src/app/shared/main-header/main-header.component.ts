@@ -7,6 +7,7 @@ import { ConfigService } from 'src/app/services/config.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Router } from '@angular/router';
 import { version } from '../../../../package.json';
+import { NavigationService } from 'src/app/services/navigation.service';
 
 @Component({
     selector: 'main-header',
@@ -19,7 +20,6 @@ export class MainHeaderComponent implements OnInit {
     @ViewChild('popup', { read: ElementRef, static: false }) public popup: ElementRef;
 
     items: any[];
-    userEntities: any[];
     show: boolean;
     subscriptions: Subscription[];
     currentUser: IUser;
@@ -36,7 +36,7 @@ export class MainHeaderComponent implements OnInit {
     }
 
     constructor(private router: Router, private configService: ConfigService, private userService: UserService,
-        private apiService: ApiService) {
+        private apiService: ApiService, private navigationService: NavigationService) {
         this.show = false;
         this.items = [
             {
@@ -77,19 +77,6 @@ export class MainHeaderComponent implements OnInit {
         this.version = this.configService.getConfig().version;
         this.buildMenu();
 
-        this.userEntities = [
-            {
-                text: 'Nicolas Isabey',
-                cssClass: 'active',
-                items: [
-                    { text: 'Entité 1' },
-                    { text: 'Entité 2' },
-                    { text: 'Déconnexion' }
-                ]
-            }
-        ];
-
-
         this.subscriptions.push(this.userService.userState
             .subscribe((user: IUser) => {
                 this.currentUser = user;
@@ -113,11 +100,19 @@ export class MainHeaderComponent implements OnInit {
                 { text: 'Événements', path: '/evenements' },
                 { text: 'Nouvel événement', path: '/evenements/formulaire' }
             ];
+        } else {
+            evenementSubItems = [
+                { text: 'Événements', path: '/evenements' }
+            ];
         }
         if (this.userService.canAddPerturbation()) {
             perturbationSubItems = [
                 { text: 'Perturbations', path: '/perturbations' },
                 { text: 'Nouvelle perturbation', path: '/perturbations/formulaire' }
+            ];
+        } else {
+            perturbationSubItems = [
+                { text: 'Perturbations', path: '/perturbations' }
             ];
         }
         this.items = [
@@ -152,7 +147,11 @@ export class MainHeaderComponent implements OnInit {
 
     updateUserEntity(entity: any) {
         this.userService.setCurrentEntity(entity);
-        this.router.navigate(['/evenements']);
+        if (this.router.url !== '/evenements') {
+            this.router.navigate(['/evenements']);
+        } else {
+            this.navigationService.launchSearchEvenement();
+        }
     }
 
     onMenuSelect({ item }): void {

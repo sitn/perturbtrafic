@@ -6,6 +6,7 @@ import { IAutorisations } from '../models/IAutorisations';
 import { IUser } from '../models/IUser';
 import { ApiService } from './api.service';
 import { CookieService } from './cookie.service';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,7 @@ export class UserService {
 
     userState = this.userSubject.asObservable();
 
-    constructor(private cookieService: CookieService, private apiService: ApiService) {
+    constructor(private cookieService: CookieService, private apiService: ApiService, private router: Router) {
     }
 
     setUser(user: IUser) {

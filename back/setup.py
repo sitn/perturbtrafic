@@ -52,7 +52,7 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = perturbtrafic_api:main',
+            'main = test:main',
         ],
         'console_scripts': [
             'initialize_test_db=test.scripts.initialize_db:main',

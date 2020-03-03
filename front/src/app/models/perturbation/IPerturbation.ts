@@ -329,6 +329,7 @@ export interface IPerturbationImpression {
     geometry_point: any;
     geometry_ligne: any;
     geometry_polygone: any;
+    geometry_deviation: any;
     preavis_contacts: {
         date_envoi: any;
         nom: string;

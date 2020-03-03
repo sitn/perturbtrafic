@@ -17,6 +17,9 @@
     <avis-perturbation #preavisComponent [perturbationPreavis]="perturbationFormService.avisContacts"
       [hidden]="!(perturbationFormService.typePerturbation?.value && perturbationFormService.evenement?.value)">
     </avis-perturbation>
+    <div #conflictSection>
+      <conflits-perturbation [hidden]="!(perturbationFormService.typePerturbation?.value)"></conflits-perturbation>
+    </div>
     <remarque-perturbation
       *ngIf="perturbationFormService.typePerturbation?.value && perturbationFormService.evenement?.value">
     </remarque-perturbation>
@@ -33,6 +36,26 @@
 </form>
 
 <contact-edition-dialog></contact-edition-dialog>
+
+<kendo-dialog title="Perturbation enregistrée" *ngIf="onSavedDialogOpened" [minWidth]="450" [width]="600">
+  <ng-container *ngIf="conflictsLength > 0">
+    Attention, la perturbation a été enregistrée correctement mais celle-ci entre en conflits avec des perturbations
+    existantes
+  </ng-container>
+
+  <ng-container *ngIf="conflictsLength==0">
+    La perturbation a été enregistrée correctement.
+    <!-- <br>
+    Il n'y a pas de conflits en cours pour cet événement. -->
+  </ng-container>
+
+  <kendo-dialog-actions>
+    <button *ngIf="conflictsLength > 0" kendoButton [iconClass]="'far fa-eye fa-fw'"
+      (click)="reloadPerturbationFormulaire()">Voir</button>
+    <button kendoButton [iconClass]="'fas fa-check fa-fw'" [primary]="true"
+      (click)="routeToPerturbationsListe()">OK</button>
+  </kendo-dialog-actions>
+</kendo-dialog>
 
 <saisie-reperage [reperages]="perturbationFormService.reperages">
 </saisie-reperage>

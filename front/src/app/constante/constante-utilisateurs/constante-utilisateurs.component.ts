@@ -44,11 +44,15 @@ export class ConstanteUtilisateursComponent implements OnInit {
 
   registerNewUsers(): void {
 
-    this.apiService.updateNewUsers(this.newUsers).subscribe(res => {
-      if (!res.error) {
-        this.closeNewUsersDialog();
-      }
-    });
+    if (this.newUsers && this.newUsers.length > 0) {
+      this.apiService.updateNewUsers(this.newUsers).subscribe(res => {
+        if (!res.error) {
+          this.closeNewUsersDialog();
+        }
+      });
+    } else {
+      this.closeNewUsersDialog();
+    }
   }
 
   private setSubscriptions(): void {

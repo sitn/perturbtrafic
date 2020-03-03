@@ -34,6 +34,20 @@ export interface IConfig {
             }
         }
     };
+    mapStyle: {
+        deviation: {
+            color: string;
+            contour: string;
+            contourWidth: number;
+            width: number;
+        },
+        perturbation: {
+            color: string;
+            contour: string;
+            contourWidth: number;
+            width: number;
+        }
+    };
     listeSuggestions: {
         occupation: string;
         voieCondamnee: string;

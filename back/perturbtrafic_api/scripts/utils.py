@@ -107,9 +107,9 @@ class Utils():
                                     settings['ldap_group_attribute_name']]
 
                                 # Entite group
-                                if one_contact_ldap_group_name.startswith(settings['ldap_entite_groups_prefix']):
+                                if one_contact_ldap_group_id.startswith(settings['ldap_entite_groups_prefix']):
                                     id_entite = entites[
-                                        one_contact_ldap_group_name] if one_contact_ldap_group_name in entites else None
+                                        one_contact_ldap_group_id] if one_contact_ldap_group_id in entites else None
 
                                     # If entite AD group does not exist is in DB, add it
                                     if id_entite is None:
@@ -136,19 +136,26 @@ class Utils():
 
 
                                 # Fonction group
-                                elif one_contact_ldap_group_name.startswith(settings['ldap_fonction_groups_prefix']):
+                                elif one_contact_ldap_group_id.startswith(settings['ldap_fonction_groups_prefix']):
                                     fonction_contact_model = models.FonctionContact(
                                         id_contact=one_contact_bd_id,
-                                        fonction=one_contact_ldap_group_name
+                                        fonction=one_contact_ldap_group_id
                                     )
                                     request.dbsession.add(fonction_contact_model)
 
                 # If the user is not in the LDAP, clear db relationships
-
                 for bd_contact_login in contacts_bd_logins:
                     if bd_contact_login not in contacts_ad_logins:
                         bd_contact_id = contacts_bd_logins_ids[bd_contact_login]
 
+                        # Set login=null for the contact
+                        one_contact_record = request.dbsession.query(models.Contact).filter(
+                            models.Contact.id == bd_contact_id).first()
+
+                        if one_contact_record:
+                            one_contact_record.login = None
+
+                        # Delete all AD groups relationships of the contact
                         request.dbsession.query(models.FonctionContact).filter(
                             models.FonctionContact.id_contact == bd_contact_id).delete(synchronize_session=False)
                         request.dbsession.query(models.LienContactEntite).filter(
@@ -570,7 +577,8 @@ class Utils():
             concerne += ' (' + evenement_record.numero_dossier + ')'
 
         mail_dict = {
-            'type': 'la fermeture' if int(perturbation_model.type) == int(settings['fermeture_perturbation_id']) else "L'occupation" if int(perturbation_model.type) == int(settings['occupation_perturbation_id']) else '',
+            'id': perturbation_model.id,
+            'type': 'la fermeture' if int(perturbation_model.type) == int(settings['fermeture_perturbation_id']) else "l'occupation" if int(perturbation_model.type) == int(settings['occupation_perturbation_id']) else '',
             'etat': 'Acceptée' if int(perturbation_model.etat) == int(
                 settings['perturbation_etat_acceptee_code']) else 'Réfusée' if int(perturbation_model.etat) == int(
                 settings['perturbation_etat_refusee_code']) else 'En attente',

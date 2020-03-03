@@ -15,6 +15,7 @@ import { ApiService } from '../../../services/api.service';
 import { UserService } from 'src/app/services/user.service';
 import { DropDownService } from 'src/app/services/dropdown.service';
 import { ISuggestion } from 'src/app/models/ISuggestion';
+import { NavigationService } from 'src/app/services/navigation.service';
 
 @Component({
   selector: 'recherche-evenement',
@@ -69,7 +70,7 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
   }
 
   constructor(private fb: FormBuilder, private apiService: ApiService, private dropdownService: DropDownService,
-    private inputsUtils: InputsUtils, private userService: UserService) {
+    private inputsUtils: InputsUtils, private userService: UserService, private navigationService: NavigationService) {
     this.form = this.fb.group(
       new RechercheEvenementForm()
     );
@@ -263,6 +264,12 @@ export class RechercheEvenementComponent implements OnInit, OnDestroy {
       this.apiService.getContacts().subscribe(data => {
         this.responsables = data;
         this.filteredResponsables = data;
+      })
+    );
+
+    this.subscriptions.push(
+      this.navigationService.onLaunchSearchEvenement$.subscribe(data => {
+        this.searchEvenement();
       })
     );
   }

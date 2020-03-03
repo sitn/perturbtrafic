@@ -27,6 +27,7 @@ import { MapService } from '../services/map.service';
 import { PerturbationFormService } from '../services/perturbation-form.service';
 import { ImpressionPerturbationComponent } from '../impression/perturbation/impression-perturbation.component';
 import { OuiNonPipe } from '../app.pipes';
+import { ConflitsPerturbationComponent } from './formulaire/conflits-perturbation/conflits-perturbation.component';
 
 
 @NgModule({
@@ -49,6 +50,7 @@ import { OuiNonPipe } from '../app.pipes';
         AttributsFermeturePerturbationComponent,
         AttributsOccupationPerturbationComponent,
         CartePerturbationComponent,
+        ConflitsPerturbationComponent,
         RemarquePerturbationComponent,
     ],
     exports: [

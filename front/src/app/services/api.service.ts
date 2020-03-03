@@ -1356,6 +1356,20 @@ Avis Pr touches
     );
   }
 
+  getConflitsByPerturbationId(perturationId): Observable<Conflit[]> {
+    return this.http.get<IConflitServer[]>(this.wsBaseUrl + `conflits_perturbations/${perturationId}`).pipe(
+      map((conflits: IConflitServer[]) => {
+        if (conflits && conflits.length > 0) {
+          return conflits.map((conflit: IConflitServer) => {
+            return new Conflit(conflit);
+          });
+        } else {
+          return [];
+        }
+      })
+    );
+  }
+
   /*
   API Autres
   */

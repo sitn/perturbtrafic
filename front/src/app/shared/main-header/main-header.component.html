@@ -29,7 +29,7 @@
         </div>
         <kendo-popup [anchor]="anchor" (mouseleave)="show = false" [anchorAlign]="anchorAlign"
             [popupAlign]="popupAlign" [margin]="popupMargin" *ngIf="show">
-            <div class='popup-content' [ngStyle]="{'width.px': userNameSpan.offsetWidth + entitySpan.offsetWidth + 40}">
+            <div class='popup-content'>
                 <span *ngFor="let entity of currentUser.entites" class="user-entity" (click)="updateUserEntity(entity)">
                     <span>
                         <i *ngIf="entity === currentUser.currentEntity" class="fas fa-check"></i>
