@@ -1,3 +1,4 @@
 /apache/app.wsgi
 /apache/wsgi.conf
 /import_xml/*
+/.vs

@@ -37,6 +37,14 @@ class EvenementXML():
             raise Exception(str(error))
         return []
 
+    @classmethod
+    def move_file_to_success_folder(cls, request, file_name):
+        try:
+            os.rename(request.registry.settings['evenements_xml_files_folder'] + '/' + file_name, request.registry.settings['evenements_xml_files_success_folder'] + '/' + file_name)
+
+        except Exception as error:
+            raise Exception(str(error))
+        return []
 
     @classmethod
     def xml_to_json(cls, file):
