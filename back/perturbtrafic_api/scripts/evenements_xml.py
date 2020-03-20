@@ -232,7 +232,7 @@ class EvenementXML():
                 # Coordonnee Y : id 95
                 coordonnee_y = None
 
-                # Geometry collection : id 223
+                # Geometry collection : id 213 & 222
                 geometry_collection = None
 
                 # Cadastre : id 96
