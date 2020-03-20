@@ -1621,6 +1621,7 @@ def update_evenement_edition(request):
         faxContact = None
         courrielContact = None
         remarque = None
+        refCamac = None
         dateDemande = None
         dateOctroi = None
         # ajoutePar = None
@@ -1898,6 +1899,9 @@ def update_evenement_edition(request):
 
         if 'remarque' in request.params:
             remarque = request.params['remarque']
+
+        if 'refCamac' in request.params:
+            remarque = request.params['refCamac']
 
         if 'dateDemande' in request.params:
             dateDemande = request.params['dateDemande']
@@ -2484,6 +2488,7 @@ def update_evenement_edition(request):
             evenement_record.fax_contact = faxContact
             evenement_record.courriel_contact = courrielContact
             evenement_record.remarque = remarque
+            evenement_record.ref_camac = refCamac
             evenement_record.date_demande = dateDemande
             evenement_record.date_octroi = dateOctroi
             # evenement_record.id_utilisateur_ajout = ajoutePar

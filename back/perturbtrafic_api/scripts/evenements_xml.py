@@ -95,6 +95,9 @@ class EvenementXML():
                     'descr_lib'] if 'descriptions' in dossier and 'descr_lib' in dossier[
                     'descriptions'] else None
 
+                # Reférence CAMAC
+                ref_camac = dossier['instance_id'] if 'instance_id' in dossier else None
+
                 # Date debut
                 date_debut = None
 
@@ -764,6 +767,7 @@ class EvenementXML():
                             type=int(cls.settings['autre_evenement_id']),
                             libelle=title,
                             description=description,
+                            ref_camac=ref_camac,
                             date_debut=datetime.datetime.strptime(date_debut,cls.settings['xml_date_template']) if date_debut else None,
                             heure_debut=heure_debut,
                             date_fin=datetime.datetime.strptime(date_fin,cls.settings['xml_date_template']) if date_fin else None,
@@ -1067,6 +1071,9 @@ class EvenementXML():
                 description = dossier['descriptions'][
                     'descr_lib'] if 'descriptions' in dossier and 'descr_lib' in dossier[
                     'descriptions'] else None
+
+                # Reférence CAMAC
+                ref_camac = dossier['instance_id'] if 'instance_id' in dossier else None
 
                 # Date debut
                 date_debut = None
@@ -1918,6 +1925,7 @@ class EvenementXML():
                             type=int(cls.settings['fouille_evenement_id']),
                             libelle=title,
                             description=description_fouille,
+                            ref_camac=ref_camac,
                             date_debut=datetime.datetime.strptime(date_debut,cls.settings['xml_date_template']) if date_debut else None,
                             heure_debut=heure_debut,
                             date_fin=datetime.datetime.strptime(date_fin,cls.settings['xml_date_template']) if date_fin else None,

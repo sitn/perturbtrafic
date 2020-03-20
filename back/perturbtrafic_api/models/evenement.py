@@ -45,6 +45,7 @@ class Evenement(Base):
     fax_contact = Column(Text)
     courriel_contact = Column(Text)
     remarque = Column(Text)
+    ref_camac = Column(BigInteger)
     date_demande = Column(DateTime)
     date_octroi = Column(DateTime)
     id_utilisateur_ajout = Column(BigInteger)
@@ -87,6 +88,7 @@ class Evenement(Base):
             'fax_contact': self.fax_contact,
             'courriel_contact': self.courriel_contact,
             'remarque': self.remarque,
+            'ref_camac': self.ref_camac,
             'date_demande': self.date_demande if not self.date_demande else self.date_demande.isoformat(),
             'date_octroi': self.date_octroi if not self.date_octroi else self.date_octroi.isoformat(),
             'id_utilisateur_ajout': self.id_utilisateur_ajout,
