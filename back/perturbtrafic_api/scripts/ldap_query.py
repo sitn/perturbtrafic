@@ -7,6 +7,9 @@ from pyramid.security import remember, forget
 from pyramid.response import Response
 import json
 
+import logging  # log.info('Debug_GL: ')
+log = logging.getLogger(__name__)  # log.info('Debug_GL: ')
+
 class LDAPQuery():
 
     @classmethod
@@ -264,6 +267,12 @@ class LDAPQuery():
     @classmethod
     def get_users_belonging_to_two_groups(cls, request, group_name1, group_name2):
         users = []
+
+        log.info('Debug_GL: entree dans get_users_belonging_to_two_groups, param cls:{}'.format(cls))
+        log.info('Debug_GL: entree dans get_users_belonging_to_two_groups, param request:{}'.format(request))
+        log.info('Debug_GL: entree dans get_users_belonging_to_two_groups, param group_name1:{}'.format(group_name1))
+        log.info('Debug_GL: entree dans get_users_belonging_to_two_groups, param group_name2:{}'.format(group_name2))
+
         try:
             connector = get_ldap_connector(request)
             gr_name_attr = request.registry.settings['ldap_group_attribute_name']
@@ -276,6 +285,9 @@ class LDAPQuery():
                     search_base=request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
+
+                log.info('Debug_GL: methode get_users_belonging_to_two_groups, variable ret:{}'.format(ret))
+
                 result, ret = conn.get_response(ret)
 
             if result is not None:
