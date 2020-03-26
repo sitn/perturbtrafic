@@ -37,15 +37,6 @@ class EvenementXML():
             raise Exception(str(error))
         return []
 
-    @classmethod
-    def move_file_to_success_folder(cls, request, file_name):
-        try:
-            os.rename(request.registry.settings['evenements_xml_files_folder'] + '/' + file_name,
-            request.registry.settings['evenements_xml_files_success_folder'] + '/' + file_name)
-
-        except Exception as error:
-            raise Exception(str(error))
-        return []
 
     @classmethod
     def xml_to_json(cls, file):
@@ -81,7 +72,7 @@ class EvenementXML():
 
 
         except exc.ResourceClosedError as e:
-            log.error(str(e))#, exc_info=True)
+            log.error(str(e), exc_info=True)
             return False
 
         return True
@@ -290,7 +281,7 @@ class EvenementXML():
                                     date_debut = date_debut.replace(".", "-") if date_debut else None
 
                                     if date_debut == None:
-                                        log.error('date_debut is null')
+                                        log.error('date_debut is null', exc_info=True)
                                         return False
 
                                 # heure_debut
@@ -307,7 +298,7 @@ class EvenementXML():
                                         heure_debut) == 3 else heure_debut
 
                                     if heure_debut == None:
-                                        log.error('heure_debut is null')
+                                        log.error('heure_debut is null', exc_info=True)
                                         return False
 
 
@@ -1282,7 +1273,7 @@ class EvenementXML():
                                     date_debut = date_debut.replace(".", "-") if date_debut else None
 
                                     if date_debut == None:
-                                        log.error('date_debut is null')
+                                        log.error('date_debut is null', exc_info=True)
                                         return False
 
 
@@ -1300,7 +1291,7 @@ class EvenementXML():
                                         heure_debut) == 3 else heure_debut
 
                                     if heure_debut == None:
-                                        log.error('heure_debut is null')
+                                        log.error('heure_debut is null', exc_info=True)
                                         return False
 
 
