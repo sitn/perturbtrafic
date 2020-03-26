@@ -2946,8 +2946,8 @@ def evenements_xml_view(request):
                 if is_added:
                     successful_files.append(file)
 
-                    # Remove file if is added
-                    EvenementXML.remove_file(request, file)
+                    # Move file if is added
+                    EvenementXML.move_file_to_success_folder(request, file)
 
                 else:
                     failed_files.append(file)
