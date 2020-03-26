@@ -81,7 +81,7 @@ class EvenementXML():
 
 
         except exc.ResourceClosedError as e:
-            log.error(str(e))#, exc_info=True)
+            log.error(str(e), exc_info=True)
             return False
 
         return True
@@ -290,7 +290,7 @@ class EvenementXML():
                                     date_debut = date_debut.replace(".", "-") if date_debut else None
 
                                     if date_debut == None:
-                                        log.error('date_debut is null')
+                                        log.error('date_debut is null', exc_info=True)
                                         return False
 
                                 # heure_debut
@@ -307,7 +307,7 @@ class EvenementXML():
                                         heure_debut) == 3 else heure_debut
 
                                     if heure_debut == None:
-                                        log.error('heure_debut is null')
+                                        log.error('heure_debut is null', exc_info=True)
                                         return False
 
 
@@ -1282,7 +1282,7 @@ class EvenementXML():
                                     date_debut = date_debut.replace(".", "-") if date_debut else None
 
                                     if date_debut == None:
-                                        log.error('date_debut is null')
+                                        log.error('date_debut is null', exc_info=True)
                                         return False
 
 
@@ -1300,7 +1300,7 @@ class EvenementXML():
                                         heure_debut) == 3 else heure_debut
 
                                     if heure_debut == None:
-                                        log.error('heure_debut is null')
+                                        log.error('heure_debut is null', exc_info=True)
                                         return False
 
 

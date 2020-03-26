@@ -32,10 +32,8 @@ def type_perturbation_by_id_view(request):
         if not result:
             raise Exception(CustomError.id_not_found_exception)
 
-
-
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -89,7 +87,7 @@ def delete_perturbation_by_id_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -109,9 +107,8 @@ def types_perturbations_view(request):
 
         query = request.dbsession.query(models.TypePerturbation).all()
 
-
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return query
@@ -137,7 +134,7 @@ def perturbation_by_id_view(request):
             raise Exception(CustomError.id_not_found_exception)
 
     except (exc.SQLAlchemyError, exc.DBAPIError, Exception) as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -162,9 +159,8 @@ def perturbations_view(request):
         for perturbation in query:
             formattedResult.append(perturbation.format())
 
-
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return formattedResult
@@ -244,8 +240,8 @@ def perturbation_edition_by_id_view(request):
         contacts_a_aviser = []
 
         for ap, c in request.dbsession.query(models.AvisPerturbation, models.Contact).filter(
-                models.AvisPerturbation.id_perturbation == id).filter(
-            models.AvisPerturbation.id_contact == models.Contact.id).all():
+            models.AvisPerturbation.id_perturbation == id).filter(
+                models.AvisPerturbation.id_contact == models.Contact.id).all():
             contacts_a_aviser.append(c)
 
         # Reperage
@@ -292,7 +288,7 @@ def perturbation_edition_by_id_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -316,7 +312,6 @@ def add_perturbation_edition(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         evenement_record = None
         contacts_a_aviser_ids_array = []
-
 
         # Check authorization
         auth_tkt = request.cookies.get('auth_tkt', default=None)
@@ -829,7 +824,6 @@ def add_perturbation_edition(request):
                     if not connected_user_mail in contacts_a_aviser_mails_array:
                         contacts_a_aviser_mails_array.append(connected_user_mail)
 
-
             # If En attente → Envoi à l’approbateur = rôle trafic (and belonging to current entite)
             elif int(etat) == int(settings['perturbation_etat_attente_code']):
                 query_entite_group_ad = request.dbsession.query(models.Entite).filter(
@@ -872,7 +866,8 @@ def add_perturbation_edition(request):
     except Exception as e:
         # tm.abort()
         request.dbsession.rollback()
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
+
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved', 'id': max_perturb_id}
@@ -1268,7 +1263,6 @@ def update_perturbation_edition(request):
                 fermeture_record.deviation = _deviation
                 fermeture_record.id_responsable = _idResponsable
 
-
             # Type perturbation : Occupation
             elif int(type) == int(settings['occupation_perturbation_id']):
 
@@ -1409,7 +1403,6 @@ def update_perturbation_edition(request):
                     if not connected_user_mail in contacts_a_aviser_mails_array:
                         contacts_a_aviser_mails_array.append(connected_user_mail)
 
-
             # If En attente → Envoi à l’approbateur = rôle trafic
             elif etat_updated and int(etat) == int(settings['perturbation_etat_attente_code']):
                 contacts_a_aviser_mails_array += Utils.get_mails_of_contacts_belonging_to_a_group(request, settings[
@@ -1444,14 +1437,15 @@ def update_perturbation_edition(request):
         raise HTTPForbidden()
 
     except CustomError as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
-
 
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e))
+
+        log.error(str(e), exc_info=True)
+
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -1472,9 +1466,8 @@ def etat_perturbation_by_id_view(request):
         if not result:
             raise Exception(CustomError.id_not_found_exception)
 
-
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -1495,7 +1488,7 @@ def etats_perturbations_view(request):
         query = request.dbsession.query(models.EtatPerturbation).all()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return query
@@ -1535,7 +1528,7 @@ def perturbation_impression_by_id_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -1576,7 +1569,6 @@ def search_perturbations_view(request):
         if ('numeroDossierEvenement' in request.params and request.params['numeroDossierEvenement'] != ""):
             conditions.append(func.lower(models.SearchPerturbationView.numero_dossier_evenement).like(
                 '%' + func.lower(request.params['numeroDossierEvenement']) + '%'))
-
 
         else:
             if 'type' in request.params and request.params['type'] != "":
@@ -1663,7 +1655,7 @@ def search_perturbations_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return formattedResult
@@ -1686,7 +1678,7 @@ def conflits_perturabations_by_id_view(request):
         conflicts_date_buffer = settings['conflicts_date_buffer']
         conflicts_geom_buffer = settings['conflicts_geom_buffer']
         query_s = 'pt_conflits_by_perturbation_id_json({0}, {1}, {2})'.format(id, conflicts_date_buffer,
-                                                                                    conflicts_geom_buffer)
+                                                                              conflicts_geom_buffer)
         query = request.dbsession.query(query_s).all()
 
         for item in query:
@@ -1705,7 +1697,7 @@ def conflits_perturabations_by_id_view(request):
             result = json.loads(result)
         """
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         request.response.status = 500
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -1728,7 +1720,7 @@ def conflits_evenement_by_id_view(request):
         conflicts_date_buffer = settings['conflicts_date_buffer']
         conflicts_geom_buffer = settings['conflicts_geom_buffer']
         query_s = 'perturbtrafic.pt_conflits_by_evenement_id_json({0}, {1}, {2})'.format(id, conflicts_date_buffer,
-                                                                                    conflicts_geom_buffer)
+                                                                                         conflicts_geom_buffer)
         query = request.dbsession.query(query_s).all()
 
         for item in query:
@@ -1747,12 +1739,11 @@ def conflits_evenement_by_id_view(request):
             result = json.loads(result)
         """
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         request.response.status = 500
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
-
 
 
 ########################################################
@@ -1761,7 +1752,7 @@ def conflits_evenement_by_id_view(request):
 @view_config(route_name='conflits_perturabations', request_method='GET', renderer='json')
 @view_config(route_name='conflits_perturabations_slash', request_method='GET', renderer='json')
 def conflits_perturabations_view(request):
-    
+
     result = []
 
     try:
@@ -1792,7 +1783,7 @@ def conflits_perturabations_view(request):
             #result = json.loads(result)
         """
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         request.response.status = 500
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 

@@ -8,6 +8,7 @@ from ..scripts.ldap_query import LDAPQuery
 from geoalchemy2 import Geometry
 import json
 
+
 class Utils():
 
     @classmethod
@@ -52,7 +53,6 @@ class Utils():
 
         return None
 
-
     @classmethod
     def mise_a_jour_groupes_ad(cls, request):
         try:
@@ -84,7 +84,7 @@ class Utils():
             with transaction.manager as tm:
                 for one_contact_ad_json in contacts_ad_json:
                     if one_contact_ad_json and login_attr in one_contact_ad_json:
-                        one_contact_ad_login = one_contact_ad_json[login_attr];
+                        one_contact_ad_login = one_contact_ad_json[login_attr]
                         contacts_ad_logins.append(one_contact_ad_login.upper())
 
                         # Login exists in BD logins
@@ -121,6 +121,7 @@ class Utils():
                                         request.dbsession.add(entite_model)
                                         request.dbsession.flush()
                                         id_entite = entite_model.id
+                                        entites[one_contact_ldap_group_id] = id_entite
 
                                     # Else, if exists, replace name (if changed in AD)
                                     entite_record = request.dbsession.query(models.Entite).filter(models.Entite.nom_groupe_ad == one_contact_ldap_group_id).first()
@@ -133,7 +134,6 @@ class Utils():
                                         id_entite=id_entite
                                     )
                                     request.dbsession.add(lien_entite_contact_model)
-
 
                                 # Fonction group
                                 elif one_contact_ldap_group_id.startswith(settings['ldap_fonction_groups_prefix']):
@@ -180,7 +180,8 @@ class Utils():
             contacts_query = request.dbsession.query(models.Contact.courriel).filter(models.Contact.id.in_(ids)).all()
 
             for c in contacts_query:
-                contacts_mails.append(c.courriel)
+                if c.courriel:
+                    contacts_mails.append(c.courriel)
 
         except Exception as error:
             raise error
@@ -191,17 +192,17 @@ class Utils():
     def send_mail_to_contacts_belonging_to_a_group(cls, request, group_name, subject, body):
         try:
 
-            users = LDAPQuery.get_users_belonging_to_a_group(request, group_name);
+            users = LDAPQuery.get_users_belonging_to_a_group(request, group_name)
             mail_att_name = request.registry.settings['ldap_user_attribute_mail']
             recipients = [x[mail_att_name] for x in users if mail_att_name in x]
 
-            if recipients and len(recipients) > 0 :
+            if recipients and len(recipients) > 0:
                 return PTMailer.send_mail(request, recipients, subject, body)
 
         except Exception as error:
             raise error
 
-        return  False
+        return False
 
     @classmethod
     def get_mails_of_contacts_belonging_to_a_group(cls, request, group_name):
@@ -209,9 +210,29 @@ class Utils():
 
         try:
 
-            users = LDAPQuery.get_users_belonging_to_a_group(request, group_name);
-            mail_att_name = request.registry.settings['ldap_user_attribute_mail']
-            recipients = [x[mail_att_name] for x in users if mail_att_name in x]
+            # Entite
+            if group_name.startswith(request.registry.settings['ldap_entite_groups_prefix']):
+                query = request.dbsession.query(models.Contact, models.Entite, models.LienContactEntite).filter(
+                    models.Entite.nom_groupe_ad == group_name).filter(
+                    models.Entite.id == models.LienContactEntite.id_entite).filter(
+                    models.Contact.id == models.LienContactEntite.id_contact).all()
+
+                if query:
+                    for c, e, le in query:
+                        if c.courriel:
+                            recipients.append(c.courriel)
+
+
+            # Fonction
+            elif group_name.startswith(request.registry.settings['ldap_fonction_groups_prefix']):
+                query = request.dbsession.query(models.Contact, models.FonctionContact).filter(
+                    models.FonctionContact.fonction == group_name).filter(
+                    models.Contact.id == models.FonctionContact.id_contact).all()
+
+                if query:
+                    for c, fc in query:
+                        if c.courriel:
+                            recipients.append(c.courriel)
 
         except Exception as error:
             raise error
@@ -224,9 +245,10 @@ class Utils():
 
         try:
 
-            users = LDAPQuery.get_users_belonging_to_two_groups(request, group_name1, group_name2);
-            mail_att_name = request.registry.settings['ldap_user_attribute_mail']
-            recipients = [x[mail_att_name] for x in users if mail_att_name in x]
+            list1 = Utils.get_mails_of_contacts_belonging_to_a_group(request, group_name1);
+            list2 = Utils.get_mails_of_contacts_belonging_to_a_group(request, group_name2);
+
+            recipients = [value for value in list1 if value in list2]
 
         except Exception as error:
             raise error
@@ -237,67 +259,67 @@ class Utils():
     def compare_perturbation_geometries(cls, request, id_perturbation, input_geometries):
         try:
 
-           points_query = request.dbsession.query(func.public.st_asgeojson(models.PerturbationPoint.geometry)).filter(
+            points_query = request.dbsession.query(func.public.st_asgeojson(models.PerturbationPoint.geometry)).filter(
                 models.PerturbationPoint.id_perturbation == id_perturbation).all()
 
-           lignes_query = request.dbsession.query(func.public.st_asgeojson(models.PerturbationLigne.geometry)).filter(
+            lignes_query = request.dbsession.query(func.public.st_asgeojson(models.PerturbationLigne.geometry)).filter(
                 models.PerturbationLigne.id_perturbation == id_perturbation).all()
 
-           count_points_db = len(points_query)
-           count_lignes_db = len(lignes_query)
+            count_points_db = len(points_query)
+            count_lignes_db = len(lignes_query)
 
-           if (input_geometries is None or input_geometries == '') and (count_points_db > 0 or count_lignes_db > 0):
-               return False
+            if (input_geometries is None or input_geometries == '') and (count_points_db > 0 or count_lignes_db > 0):
+                return False
 
-           elif input_geometries is None or  input_geometries == '':
-               return True
+            elif input_geometries is None or input_geometries == '':
+                return True
 
-           count_points_input_geom = 0
-           count_lignes_input_geom = 0
+            count_points_input_geom = 0
+            count_lignes_input_geom = 0
 
-           json_geometries = json.loads(input_geometries)
+            json_geometries = json.loads(input_geometries)
 
-           # 1) Check geometries number
-           for onegeojson in json_geometries:
-               if 'geometry' in onegeojson:
-                   geometry = onegeojson['geometry']
+            # 1) Check geometries number
+            for onegeojson in json_geometries:
+                if 'geometry' in onegeojson:
+                    geometry = onegeojson['geometry']
 
-                   if 'type' in geometry:
-                       type_geom = geometry['type']
+                    if 'type' in geometry:
+                        type_geom = geometry['type']
 
-                       if type_geom == 'Point':
-                           count_points_input_geom += 1
+                        if type_geom == 'Point':
+                            count_points_input_geom += 1
 
-                       # Line
-                       elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
-                           count_lignes_input_geom += 1
+                        # Line
+                        elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
+                            count_lignes_input_geom += 1
 
-           if (count_points_input_geom + count_lignes_input_geom) != (count_points_db + count_lignes_db):
-               return False
+            if (count_points_input_geom + count_lignes_input_geom) != (count_points_db + count_lignes_db):
+                return False
 
-           # 2) Check geometries are the same
-           else:
+            # 2) Check geometries are the same
+            else:
 
-               for one_geom in points_query:
-                   for onegeojson in json_geometries:
-                       if 'geometry' in onegeojson:
-                           geometry = onegeojson['geometry']
+                for one_geom in points_query:
+                    for onegeojson in json_geometries:
+                        if 'geometry' in onegeojson:
+                            geometry = onegeojson['geometry']
 
-                           if 'type' in geometry:
-                               type_geom = geometry['type']
+                            if 'type' in geometry:
+                                type_geom = geometry['type']
 
-                               if type_geom == 'Point':
-                                   is_equal = cls.geometry_exists_in_array_of_geometries(request, geometry, points_query)
+                                if type_geom == 'Point':
+                                    is_equal = cls.geometry_exists_in_array_of_geometries(request, geometry, points_query)
 
-                                   if is_equal == False:
-                                       return False
+                                    if is_equal == False:
+                                        return False
 
-                               # Line
-                               elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
-                                   is_equal = cls.geometry_exists_in_array_of_geometries(request, geometry, lignes_query)
+                                # Line
+                                elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
+                                    is_equal = cls.geometry_exists_in_array_of_geometries(request, geometry, lignes_query)
 
-                                   if is_equal == False:
-                                       return False
+                                    if is_equal == False:
+                                        return False
 
         except Exception as error:
             raise error
@@ -332,7 +354,8 @@ class Utils():
             if current_user_id is None:
                 return False
 
-            query_permission = request.dbsession.query(models.EvenementPourUtilisateurLecture).filter(models.EvenementPourUtilisateurLecture.id_utilisateur == current_user_id).filter(models.EvenementPourUtilisateurLecture.id_evenement == id_evenement).first()
+            query_permission = request.dbsession.query(models.EvenementPourUtilisateurLecture).filter(models.EvenementPourUtilisateurLecture.id_utilisateur ==
+                                                                                                      current_user_id).filter(models.EvenementPourUtilisateurLecture.id_evenement == id_evenement).first()
 
             if not query_permission:
                 return False
@@ -468,7 +491,7 @@ class Utils():
                 return False
 
             query_permission = request.dbsession.query(models.PerturbationPourUtilisateurModificationEtat).filter(
-                    models.PerturbationPourUtilisateurModificationEtat.id_utilisateur == current_user_id).filter(models.PerturbationPourUtilisateurModificationEtat.id_perturbation == id_perturbation).first()
+                models.PerturbationPourUtilisateurModificationEtat.id_utilisateur == current_user_id).filter(models.PerturbationPourUtilisateurModificationEtat.id_perturbation == id_perturbation).first()
 
             if not query_permission:
                 return False
@@ -522,7 +545,6 @@ class Utils():
                 if c.courriel and not c.courriel in mails:
                     mails.append(c.courriel)
 
-
         except Exception as error:
             raise error
 
@@ -539,7 +561,6 @@ class Utils():
                 if c.courriel and not c.courriel in mails:
                     mails.append(c.courriel)
 
-
         except Exception as error:
             raise error
 
@@ -554,7 +575,6 @@ class Utils():
 
             if query:
                 return True
-
 
         except Exception as error:
             raise error
@@ -599,7 +619,6 @@ class Utils():
             'deviation': deviation if deviation else ''
         }
 
-
         return mail_dict
 
     @classmethod
@@ -607,7 +626,7 @@ class Utils():
         try:
             return float(string)
         except Exception:
-            return string;
+            return string
 
     @classmethod
     def generate_numero_dossier(cls, request, type):
@@ -645,10 +664,10 @@ class Utils():
         try:
             session = request.dbsession
             with session.no_autoflush:
-                #return  request.dbsession.execute("SELECT public.ST_AsText(public.ST_GeomFromWKB((public.ST_Dump(public.ST_CollectionExtract(public.ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(2553935.7897053463 1218112.2472952164,2553995.3326233597 1218167.3796267102),POLYGON((2553987.246548074 1218189.4325593077,2554001.2134053856 1218173.260408736,2554029.147120009 1218196.7835368402,2554013.7100671907 1218212.9556874116,2553987.246548074 1218189.4325593077)),POINT(2553947.5512693985 1218149.7372806321),POINT(2553972.544593009 1218178.4060930088),POINT(2553919.617554775 1218128.419445788),POINT(2554009.2994806715 1218167.3796267102),POINT(2554029.147120009 1218210.7503941518),POINT(2554025.471631243 1218185.021972788),LINESTRING(2554015.1802626974 1218155.6180626582,2554032.8226087755 1218171.0551154765))'),2))).geom))")
+                # return  request.dbsession.execute("SELECT public.ST_AsText(public.ST_GeomFromWKB((public.ST_Dump(public.ST_CollectionExtract(public.ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(2553935.7897053463 1218112.2472952164,2553995.3326233597 1218167.3796267102),POLYGON((2553987.246548074 1218189.4325593077,2554001.2134053856 1218173.260408736,2554029.147120009 1218196.7835368402,2554013.7100671907 1218212.9556874116,2553987.246548074 1218189.4325593077)),POINT(2553947.5512693985 1218149.7372806321),POINT(2553972.544593009 1218178.4060930088),POINT(2553919.617554775 1218128.419445788),POINT(2554009.2994806715 1218167.3796267102),POINT(2554029.147120009 1218210.7503941518),POINT(2554025.471631243 1218185.021972788),LINESTRING(2554015.1802626974 1218155.6180626582,2554032.8226087755 1218171.0551154765))'),2))).geom))")
                 settings = request.registry.settings
                 request.dbsession.execute('SET search_path TO public')
-                #return request.dbsession.query(func.public.ST_AsText(func.public.ST_GeomFromWKB((func.ST_Dump(func.public.ST_CollectionExtract(func.public.ST_GeomFromText(geometry_collection), type))).geom)).label("geometry")).all()
+                # return request.dbsession.query(func.public.ST_AsText(func.public.ST_GeomFromWKB((func.ST_Dump(func.public.ST_CollectionExtract(func.public.ST_GeomFromText(geometry_collection), type))).geom)).label("geometry")).all()
                 return session.query(func.public.ST_AsText(func.public.ST_GeomFromWKB((func.ST_Dump(
                     func.public.ST_CollectionExtract(func.public.ST_GeomFromText(geometry_collection), type))).geom)).label(
                     "geometry")).all()
@@ -665,9 +684,9 @@ class Utils():
             polygon_geom = cls.get_geometries_from_collection(request, geometry_collection_geom, 3)
 
             request.dbsession.execute('set search_path to ' + settings['schema_name'])
-            #Points
+            # Points
             for item in points_geom:
-                if item and len(item)>0:
+                if item and len(item) > 0:
                     one_model = models.EvenementPoint(
                         id_evenement=ev_id
                     )
@@ -694,9 +713,6 @@ class Utils():
 
                     one_model.set_text_geometry(str(item[0]), settings['srid'])
                     request.dbsession.add(one_model)
-
-
-
 
         except Exception as error:
             raise error

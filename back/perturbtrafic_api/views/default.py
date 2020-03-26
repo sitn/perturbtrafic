@@ -45,7 +45,7 @@ def destinataire_facturation_by_id_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -66,7 +66,7 @@ def destinataires_facturation_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return query
@@ -89,7 +89,7 @@ def categorie_chantier_by_id_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -110,7 +110,7 @@ def categories_chantiers_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return query
@@ -134,7 +134,7 @@ def type_reperage_by_id_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -155,7 +155,7 @@ def types_reperages_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -177,7 +177,7 @@ def organisme_by_id_view(request):
             raise Exception(CustomError.id_not_found_exception)
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -205,7 +205,7 @@ def suggestion_by_liste_name_view(request):
             return array
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -225,7 +225,7 @@ def organismes_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return query
@@ -304,7 +304,7 @@ def add_organisme_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -371,7 +371,7 @@ def update_organisme_view(request):
     except Exception as e:
         tm.abort()
         request.dbsession.rollback()
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -401,7 +401,7 @@ def delete_organisme_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -421,7 +421,7 @@ def axes_routiers_view(request):
         return request.dbsession.query(models.Axe).all()
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return []
@@ -449,7 +449,7 @@ def pr_par_axe_routier_view(request):
                 return result
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return []
@@ -469,7 +469,7 @@ def plans_types_fouille_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -509,7 +509,7 @@ def login_view(request):
             response = LDAPQuery.do_login(request, login, password, contact, entites)
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         request.response.status = 403
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
@@ -526,7 +526,7 @@ def logout_view(request):
         response = LDAPQuery.do_logout(request)
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return response
@@ -576,7 +576,7 @@ def logged_user_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return contact_json
@@ -610,7 +610,7 @@ def entites_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return entites
@@ -644,7 +644,7 @@ def delete_autorisation_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -673,7 +673,7 @@ def autorisations_fonctions_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {}
@@ -693,7 +693,7 @@ def ldap_users_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return "okkkk"
@@ -716,7 +716,7 @@ def localites_npa_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return query
@@ -746,7 +746,7 @@ def localites_view(request):
             return []
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -776,7 +776,7 @@ def cadastre_view(request):
             return []
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -806,7 +806,7 @@ def communes_view(request):
             return []
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -889,7 +889,7 @@ def geometry_reperage_view(request):
             result = json.loads(result)
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'sitn_error': false, 'code': 500, 'message': CustomError.general_exception}
     return result
 
@@ -934,7 +934,7 @@ def options_response_view(request):
 ########################################################
 @view_config(context=exc.IntegrityError, renderer='json')
 def integrity_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 200
     return {'error': 'true', 'code': 50, 'message': CustomError.general_exception}
 
@@ -944,7 +944,7 @@ def integrity_error(exc, request):
 ########################################################
 @view_config(context=exc.StatementError, renderer='json')
 def statement_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -954,7 +954,7 @@ def statement_error(exc, request):
 ########################################################
 @view_config(context=exc.ResourceClosedError, renderer='json')
 def resource_closed_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -964,7 +964,7 @@ def resource_closed_error(exc, request):
 ########################################################
 @view_config(context=exc.InternalError, renderer='json')
 def internal_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -974,7 +974,7 @@ def internal_error(exc, request):
 ########################################################
 @view_config(context=exc.NoReferenceError, renderer='json')
 def noreference_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -985,7 +985,7 @@ def noreference_error(exc, request):
 ########################################################
 @view_config(context=exc.InvalidRequestError, renderer='json')
 def invalidrequest_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -995,7 +995,7 @@ def invalidrequest_error(exc, request):
 ########################################################
 @view_config(context=exc.DBAPIError, renderer='json')
 def dbaapierror_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -1005,7 +1005,7 @@ def dbaapierror_error(exc, request):
 ########################################################
 @view_config(context=exc.SQLAlchemyError, renderer='json')
 def sqlalchemyerror_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 500
     return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -1016,7 +1016,7 @@ def sqlalchemyerror_error(exc, request):
 ########################################################
 @view_config(context=HTTPForbidden, renderer='json')
 def http_forbidden_error(exc, request):
-    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc))
+    log.error(str(exc.orig) if hasattr(exc, 'orig') else str(exc), exc_info=True)
     request.response.status = 403
     return {'error': 'true', 'code': 403, 'message': CustomError.not_authorized_exception}
 

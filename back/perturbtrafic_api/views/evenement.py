@@ -34,7 +34,7 @@ def type_evenement_by_id_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -55,7 +55,7 @@ def types_evenements_view(request):
         query = request.dbsession.query(models.TypeEvenement).all()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -79,7 +79,7 @@ def get_evenement_by_id_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -136,7 +136,7 @@ def delete_evenement_by_id_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -163,7 +163,7 @@ def evenements_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return formattedResult
 
@@ -197,7 +197,7 @@ def libelles_evenements_view(request):
 
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -236,7 +236,7 @@ def evenements_echeance_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return evenements_array
@@ -258,7 +258,7 @@ def evenement_impression_by_id_view(request):
             raise Exception(CustomError.id_not_found_exception)
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -299,7 +299,7 @@ def evenement_perturbations_impression_by_id_view(request):
                 perturbations_impression.append(item.format())
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -435,7 +435,7 @@ def evenement_edition_by_id_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(
                     e) == CustomError.id_not_found_exception else CustomError.general_exception}
@@ -1555,7 +1555,7 @@ def add_evenement_edition(request):
     except Exception as e:
         # transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'id': max_event_id, 'message': 'Data successfully saved'}
@@ -2778,13 +2778,13 @@ def update_evenement_edition(request):
         raise HTTPForbidden()
 
     except CustomError as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -2919,7 +2919,7 @@ def search_evenements_view(request):
         raise HTTPForbidden()
 
     except Exception as e:
-        log.error(str(e))
+        log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return formattedResult
@@ -2946,7 +2946,7 @@ def evenements_xml_view(request):
                 if is_added:
                     successful_files.append(file)
 
-                    # Remove file if is added
+                    # Move file if is added
                     EvenementXML.move_file_to_success_folder(request, file)
 
                 else:
@@ -2954,7 +2954,7 @@ def evenements_xml_view(request):
 
 
     except Exception as error:
-        log.error(str(error))
+        log.error(str(error), exc_info=True)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'successful_files': successful_files, 'failed_files': failed_files}
