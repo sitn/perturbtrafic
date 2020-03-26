@@ -1,5 +1,5 @@
 import requests
-url_ws = "http://localhost/perturbtrafic_api/perturbtrafic/api/mise_a_jours_groupes_ad"
+url_ws = "http://localhost:6543/perturbtrafic/api/mise_a_jours_groupes_ad"
 
 try:
 	r = requests.get(url_ws)
