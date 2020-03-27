@@ -104,130 +104,144 @@ class EvenementXML():
                     'descr_lib'] if 'descriptions' in dossier and 'descr_lib' in dossier[
                     'descriptions'] else None
 
-                # Date debut
+                # Section_evenement entrave : id 51
+
+                # Date debut : id 121
                 date_debut = None
 
-                # Heure debut
+                # Heure debut : id 122
                 heure_debut = None
 
-                # Date fin
+                # Date fin : id 123
                 date_fin = None
 
-                # Heure fin
+                # Heure fin : id 124
                 heure_fin = None
 
-                # Surface
+                # Surface : id 15
                 surface = None
 
-                # Longueur_etape
+                # Longueur_etape : id 16
                 longueur_etape = None
 
-                # Cause de la fouille
+                # Cause_entrave  : id 134
                 cause_entrave = None
 
-                # Description entrave
+                # Description_entrave : id 135
                 description_entrave = None
 
-                # Adresse de la fouille
+                # Adresse de la fouille  : id 201
                 adresse_fouille = None
 
-                # Rue requerant entreprise
+                # Section_requerant_entreprise entrave : id 1
+
+                # Rue requerant entreprise : id 2
                 rue_requerant_entreprise = None
 
-                # Localite requerant entreprise
+                # Localite requerant entreprise : id 3
                 localite_requerant_entreprise = None
 
-                # Telephone requerant entreprise
+                # Telephone requerant entreprise : id 4
                 telephone_requerant_entreprise = None
 
-                # Fax requerant entreprise
+                # Fax requerant entreprise : id 5
                 fax_requerant_entreprise = None
 
-                # Courriel requerant entreprise
+                # Courriel requerant entreprise : id 6
                 courriel_requerant_entreprise = None
 
-                # Nom requerant entreprise
+                # Nom requerant entreprise : id 1
                 nom_requerant_entreprise = None
 
-                # Nom requerant personne
+                # Section_requerant_personne entrave : id 32
+                
+                # Nom requerant personne : id 100
                 nom_requerant_personne = None
 
-                # Prenom requerant personne
+                # Prenom requerant personne : id 101
                 prenom_requerant_personne = None
 
-                # Mobile requerant personne
+                # Mobile requerant personne : id 102
                 mobile_requerant_personne = None
 
-                # Telephone requerant personne
+                # Telephone requerant personne : id 103
                 telephone_requerant_personne = None
 
-                # Fax requerant personne
+                # Fax requerant personne : id 104
                 fax_requerant_personne = None
 
-                # Courriel requerant personne
+                # Courriel requerant personne : id 105
                 courriel_requerant_personne = None
 
-                # Nom maitre ouvrage direction locale
+                # Section_maitre_ouvrage_dir_loc entrave : id 33
+
+                # Nom maitre ouvrage direction locale : id 106
                 nom_maitre_ouvrage_dir_loc = None
 
-                # Prenom maitre ouvrage direction locale
+                # Prenom maitre ouvrage direction locale : id 107
                 prenom_maitre_ouvrage_dir_loc = None
 
-                # Mobile maitre ouvrage direction locale
+                # Mobile maitre ouvrage direction locale : id 108
                 mobile_maitre_ouvrage_dir_loc = None
 
-                # Telephone maitre ouvrage direction locale
+                # Telephone maitre ouvrage direction locale : id 109
                 telephone_maitre_ouvrage_dir_loc = None
 
-                # Fax maitre ouvrage direction locale
+                # Fax maitre ouvrage direction locale : id 110
                 fax_maitre_ouvrage_dir_loc = None
 
-                # Courriel maitre ouvrage direction locale
+                # Courriel maitre ouvrage direction locale : id 111
                 courriel_maitre_ouvrage_dir_loc = None
 
-                # Rue maitre ouvrage entreprise
+                # section_maitre_ouvrage_entreprise entrave : id 2
+
+                # Rue maitre ouvrage entreprise : id 2
                 rue_maitre_ouvrage_entreprise = None
 
-                # Localite maitre ouvrage entreprise
+                # Localite maitre ouvrage entreprise : id 3
                 localite_maitre_ouvrage_entreprise = None
 
-                # Telephone maitre ouvrage entreprise
+                # Telephone maitre ouvrage entreprise : id 4
                 telephone_maitre_ouvrage_entreprise = None
 
-                # Fax maitre ouvrage entreprise
+                # Fax maitre ouvrage entreprise : id 5
                 fax_maitre_ouvrage_entreprise = None
 
-                # Courriel maitre ouvrage entreprise
+                # Courriel maitre ouvrage entreprise : id 6
                 courriel_maitre_ouvrage_entreprise = None
 
-                # Nom maitre ouvrage entreprise
+                # Nom maitre ouvrage entreprise : id 1
                 nom_maitre_ouvrage_entreprise = None
 
-                # Adresse facturation
+                # section_facturation entrave : id 4
+            
+                # Adresse facturation : id 10
                 adresse_facturation = None
 
-                # Num bien-fonds
+                # section_loc_periode entrave : id 52
+
+                # Num bien-fonds : id 97
                 num_bien_fonds = None
 
-                # Commune
+                # Commune : id 12
                 commune = None
 
-                # Coordonnee X
+                # Coordonnee X : id 94
                 coordonnee_x = None
 
-                # Coordonnee Y
+                # Coordonnee Y : id 95
                 coordonnee_y = None
 
-                # Geometry collection
+                # Geometry collection : id 213 & 222
                 geometry_collection = None
 
-                # Cadastre
+                # Cadastre : id 96
                 cadastre = None
 
-                # Lieu dit
+                # Lieu dit : id 99
                 lieu_dit = None
 
-                # Service à appliquer
+                # Service à appliquer : id 242
                 service_a_appliquer = None
 
                 form = dossier['forms']['form'] if 'forms' in dossier and 'form' in dossier[
@@ -706,7 +720,7 @@ class EvenementXML():
                                                             'answers'] and 'value' in \
                                                         one_loc_periode_question['answers'][
                                                             'answer'] else None
-
+                                # coordonnee_y
                                 elif id == '95':
                                     coordonnee_y = \
                                         one_loc_periode_question['answers']['answer'][
@@ -715,7 +729,7 @@ class EvenementXML():
                                                             'answers'] and 'value' in \
                                                         one_loc_periode_question['answers'][
                                                             'answer'] else None
-
+                                # cadastre
                                 elif id == '96':
                                     cadastre = \
                                         one_loc_periode_question['answers']['answer'][
@@ -745,8 +759,18 @@ class EvenementXML():
                                                         one_loc_periode_question['answers'][
                                                             'answer'] else None
 
-                                # geometry_collection
+                                # geometry_collection 213
                                 elif id == '213':
+                                    geometry_collection = \
+                                        one_loc_periode_question['answers']['answer'][
+                                            'value'] if 'answers' in one_loc_periode_question and 'answer' in \
+                                                        one_loc_periode_question[
+                                                            'answers'] and 'value' in \
+                                                        one_loc_periode_question['answers'][
+                                                            'answer'] else None
+
+                                # geometry_collection 222
+                                elif id == '222':
                                     geometry_collection = \
                                         one_loc_periode_question['answers']['answer'][
                                             'value'] if 'answers' in one_loc_periode_question and 'answer' in \
@@ -1077,168 +1101,180 @@ class EvenementXML():
                     'descr_lib'] if 'descriptions' in dossier and 'descr_lib' in dossier[
                     'descriptions'] else None
 
-                # Date debut
+                # Section_evenement fouille : id 44
+
+                # Date debut : id 121
                 date_debut = None
 
-                # Heure debut
+                # Heure debut : id 122
                 heure_debut = None
 
-                # Date fin
+                # Date fin : id 123
                 date_fin = None
 
-                # Heure fin
+                # Heure fin : id 124
                 heure_fin = None
 
-                # Surface
-                surface = None
+                # Cause_fouille  : id 134
+                cause_entrave = None
 
-                # Longueur_etape
-                longueur_etape = None
+                # Description_fouille : id 135
+                description_entrave = None
 
-                # Cause de la fouille
-                cause_fouille = None
-
-                # Description fouille
-                description_fouille = None
-
-                # Adresse de la fouille
+                # Adresse de la fouille  : id 201
                 adresse_fouille = None
 
-                # Rue requerant entreprise
+                # Section_requerant_entreprise fouille : id 1
+
+                # Rue requerant entreprise : id 2
                 rue_requerant_entreprise = None
 
-                # Localite requerant entreprise
+                # Localite requerant entreprise : id 3
                 localite_requerant_entreprise = None
 
-                # Telephone requerant entreprise
+                # Telephone requerant entreprise : id 4
                 telephone_requerant_entreprise = None
 
-                # Fax requerant entreprise
+                # Fax requerant entreprise : id 5
                 fax_requerant_entreprise = None
 
-                # Courriel requerant entreprise
+                # Courriel requerant entreprise : id 6
                 courriel_requerant_entreprise = None
 
-                # Nom requerant entreprise
+                # Nom requerant entreprise : id 1
                 nom_requerant_entreprise = None
 
-                # Nom requerant personne
+                # Section_requerant_personne fouille : id 32
+                
+                # Nom requerant personne : id 100
                 nom_requerant_personne = None
 
-                # Prenom requerant personne
+                # Prenom requerant personne : id 101
                 prenom_requerant_personne = None
 
-                # Mobile requerant personne
+                # Mobile requerant personne : id 102
                 mobile_requerant_personne = None
 
-                # Telephone requerant personne
+                # Telephone requerant personne : id 103
                 telephone_requerant_personne = None
 
-                # Fax requerant personne
+                # Fax requerant personne : id 104
                 fax_requerant_personne = None
 
-                # Courriel requerant personne
+                # Courriel requerant personne : id 105
                 courriel_requerant_personne = None
 
-                # Nom maitre ouvrage direction locale
-                nom_maitre_ouvrage_dir_loc = None
+                # section_maitre_ouvrage_entreprise fouille : id 2
 
-                # Prenom maitre ouvrage direction locale
-                prenom_maitre_ouvrage_dir_loc = None
-
-                # Mobile maitre ouvrage direction locale
-                mobile_maitre_ouvrage_dir_loc = None
-
-                # Telephone maitre ouvrage direction locale
-                telephone_maitre_ouvrage_dir_loc = None
-
-                # Fax maitre ouvrage direction locale
-                fax_maitre_ouvrage_dir_loc = None
-
-                # Courriel maitre ouvrage direction locale
-                courriel_maitre_ouvrage_dir_loc = None
-
-                # Rue maitre ouvrage entreprise
+                # Rue maitre ouvrage entreprise : id 2
                 rue_maitre_ouvrage_entreprise = None
 
-                # Localite maitre ouvrage entreprise
+                # Localite maitre ouvrage entreprise : id 3
                 localite_maitre_ouvrage_entreprise = None
 
-                # Telephone maitre ouvrage entreprise
+                # Telephone maitre ouvrage entreprise : id 4
                 telephone_maitre_ouvrage_entreprise = None
 
-                # Fax maitre ouvrage entreprise
+                # Fax maitre ouvrage entreprise : id 5
                 fax_maitre_ouvrage_entreprise = None
 
-                # Courriel maitre ouvrage entreprise
+                # Courriel maitre ouvrage entreprise : id 6
                 courriel_maitre_ouvrage_entreprise = None
 
-                # Nom maitre ouvrage entreprise
+                # Nom maitre ouvrage entreprise : id 1
                 nom_maitre_ouvrage_entreprise = None
 
-                # Nom / Raison sociale entrepreneur entreprise
+                # Section_maitre_ouvrage_dir_loc fouille : id 33
+
+                # Nom maitre ouvrage direction locale : id 106
+                nom_maitre_ouvrage_dir_loc = None
+
+                # Prenom maitre ouvrage direction locale : id 107
+                prenom_maitre_ouvrage_dir_loc = None
+
+                # Mobile maitre ouvrage direction locale : id 108
+                mobile_maitre_ouvrage_dir_loc = None
+
+                # Telephone maitre ouvrage direction locale : id 109
+                telephone_maitre_ouvrage_dir_loc = None
+
+                # Fax maitre ouvrage direction locale : id 110
+                fax_maitre_ouvrage_dir_loc = None
+
+                # Courriel maitre ouvrage direction locale : id 111
+                courriel_maitre_ouvrage_dir_loc = None
+
+                # Section_entrepreneur_entreprise fouille : id 3
+
+                # Nom / Raison sociale entrepreneur entreprise : id 1
                 nom_entrepreneur_entreprise = None
 
-                # Rue et numéro sociale entrepreneur entreprise
+                # Rue et numéro sociale entrepreneur entreprise : id 2
                 rue_entrepreneur_entreprise = None
 
-                # NPA et localité entrepreneur entreprise
+                # NPA et localité entrepreneur entreprise : id 3
                 npa_localite_entrepreneur_entreprise = None
 
-                # N° de téléphonee entrepreneur entreprise
+                # N° de téléphonee entrepreneur entreprise : id 4
                 telephone_entrepreneur_entreprise = None
 
-                # N° de fax entrepreneur entreprise
+                # N° de fax entrepreneur entreprise : id 5
                 fax_entrepreneur_entreprise = None
 
-                # Courriel entrepreneur entreprise
+                # Courriel entrepreneur entreprise : id 6
                 courriel_entrepreneur_entreprise = None
 
-                # Nom entrepreneur responsable travaux
+                # Section_entrepreneur_resp_travaux fouille : id 34
+
+                # Nom entrepreneur responsable travaux : id 112
                 nom_entrepreneur_responsable_travaux = None
 
-                # Prenom entrepreneur responsable travaux
+                # Prenom entrepreneur responsable travaux : id 113
                 prenom_entrepreneur_responsable_travaux = None
 
-                # Mobile entrepreneur responsable travaux
+                # Mobile entrepreneur responsable travaux : id 114
                 mobile_entrepreneur_responsable_travaux = None
 
-                # Telephone entrepreneur responsable travaux
+                # Telephone entrepreneur responsable travaux : id 115
                 telephone_entrepreneur_responsable_travaux = None
 
-                # Fax entrepreneur responsable travaux
+                # Fax entrepreneur responsable travaux : id 116
                 fax_entrepreneur_responsable_travaux = None
 
-                # Courriel entrepreneur responsable travaux
+                # Courriel entrepreneur responsable travaux : id 117
                 courriel_entrepreneur_responsable_travaux = None
 
-
-                # Adresse facturation
+                # section_facturation fouille : id 4
+            
+                # Adresse facturation : id 10
                 adresse_facturation = None
 
-                # Num bien-fonds
+                # section_loc_periode fouille : id 5
+
+                # Num bien-fonds : id 97
                 num_bien_fonds = None
 
-                # Commune
+                # Commune : id 12
                 commune = None
 
-                # Coordonnee X
+                # Coordonnee X : id 94
                 coordonnee_x = None
 
-                # Coordonnee Y
+                # Coordonnee Y : id 95
                 coordonnee_y = None
 
-                # Geometry collection
+                # Geometry collection : id 223
                 geometry_collection = None
 
-                # Cadastre
+                # Cadastre : id 96
                 cadastre = None
 
-                # Lieu dit
+                # Lieu dit : id 99
                 lieu_dit = None
 
-                # Service à appliquer
+                # Service à appliquer : id 93
                 service_a_appliquer = None
+
 
                 form = dossier['forms']['form'] if 'forms' in dossier and 'form' in dossier[
                     'forms'] else None
@@ -1909,8 +1945,8 @@ class EvenementXML():
                                                             one_loc_periode_question['answers'][
                                                                 'answer'] else None
 
-                                    # geometry_collection
-                                    elif id == '213':
+                                    # geometry_collection 223
+                                    elif id == '223':
                                         geometry_collection = \
                                             one_loc_periode_question['answers']['answer'][
                                                 'value'] if 'answers' in one_loc_periode_question and 'answer' in \
