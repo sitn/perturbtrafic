@@ -1901,7 +1901,7 @@ def update_evenement_edition(request):
             remarque = request.params['remarque']
 
         if 'refCamac' in request.params:
-            remarque = request.params['refCamac']
+            refCamac = request.params['refCamac']
 
         if 'dateDemande' in request.params:
             dateDemande = request.params['dateDemande']
