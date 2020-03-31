@@ -7,6 +7,9 @@ from pyramid.security import remember, forget
 from pyramid.response import Response
 import json
 
+import logging  # log.info('Debug_GL: ')
+log = logging.getLogger(__name__)  # log.info('Debug_GL: ')
+
 class LDAPQuery():
 
     @classmethod
@@ -41,7 +44,6 @@ class LDAPQuery():
 
         return response
 
-
     @classmethod
     def do_logout(cls, request):
         response = None
@@ -57,6 +59,10 @@ class LDAPQuery():
 
     @classmethod
     def get_connected_user(cls, request):
+
+        log.debug('Debug_GL: entree dans get_connected_user, param cls:{}'.format(cls))
+        log.debug('Debug_GL: entree dans get_connected_user, param request:{}'.format(request))
+
         try:
             user_id = request.authenticated_userid
 
@@ -69,7 +75,13 @@ class LDAPQuery():
                     search_base=user_id,#request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
+
+                log.info('Debug_GL: methode get_connected_user, variable ret:{}'.format(ret))
+
                 result, ret = conn.get_response(ret)
+
+                log.info('Debug_GL: methode get_connected_user, variable result:{}'.format(result))
+                log.info('Debug_GL: methode get_connected_user, variable ret:{}'.format(ret))
 
             if result is None:
                 result = []
@@ -168,9 +180,14 @@ class LDAPQuery():
             raise error
 
         return output_json
+
     @classmethod
     def get_users(cls, request):
         users = []
+
+        log.debug('Debug_GL: entree dans get_users, param cls:{}'.format(cls))
+        log.debug('Debug_GL: entree dans get_users, param request:{}'.format(request))
+
         try:
             connector = get_ldap_connector(request)
 
@@ -182,8 +199,13 @@ class LDAPQuery():
                     search_base=request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
+
+                log.info('Debug_GL: methode get_users, variable ret:{}'.format(ret))
+
                 result, ret = conn.get_response(ret)
 
+                log.info('Debug_GL: methode get_users, variable result:{}'.format(result))
+                log.info('Debug_GL: methode get_users, variable ret:{}'.format(ret))
 
             if result is not None:
                  for r in result:
@@ -200,6 +222,10 @@ class LDAPQuery():
     @classmethod
     def get_users_belonging_to_group_entites(cls, request):
         users = []
+
+        log.debug('Debug_GL: entree dans get_users_belonging_to_group_entites, param cls:{}'.format(cls))
+        log.debug('Debug_GL: entree dans get_users_belonging_to_group_entites, param request:{}'.format(request))
+
         try:
             connector = get_ldap_connector(request)
 
@@ -210,7 +236,13 @@ class LDAPQuery():
                     search_base=request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
+
+                log.info('Debug_GL: methode get_users_belonging_to_group_entites, variable ret:{}'.format(ret))
+
                 result, ret = conn.get_response(ret)
+
+                log.info('Debug_GL: methode get_users_belonging_to_group_entites, variable result:{}'.format(result))
+                log.info('Debug_GL: methode get_users_belonging_to_group_entites, variable ret:{}'.format(ret))
 
             if result is not None:
                 for r in result:
@@ -228,6 +260,11 @@ class LDAPQuery():
     @classmethod
     def get_users_belonging_to_a_group(cls, request, group_name):
         users = []
+
+        log.debug('Debug_GL: entree dans get_users_belonging_to_a_group, param cls:{}'.format(cls))
+        log.debug('Debug_GL: entree dans get_users_belonging_to_a_group, param request:{}'.format(request))
+        log.debug('Debug_GL: entree dans get_users_belonging_to_a_group, param group_name:{}'.format(group_name))
+
         try:
             connector = get_ldap_connector(request)
             gr_name_attr = request.registry.settings['ldap_group_attribute_name']
@@ -240,7 +277,13 @@ class LDAPQuery():
                     search_base=request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
+
+                log.info('Debug_GL: methode get_users_belonging_to_a_group, variable ret:{}'.format(ret))
+
                 result, ret = conn.get_response(ret)
+
+                log.info('Debug_GL: methode get_users_belonging_to_a_group, variable result:{}'.format(result))
+                log.info('Debug_GL: methode get_users_belonging_to_a_group, variable ret:{}'.format(ret))
 
             if result is not None:
                 for r in result:
@@ -264,6 +307,12 @@ class LDAPQuery():
     @classmethod
     def get_users_belonging_to_two_groups(cls, request, group_name1, group_name2):
         users = []
+
+        log.debug('Debug_GL: entree dans get_users_belonging_to_two_groups, param cls:{}'.format(cls))
+        log.debug('Debug_GL: entree dans get_users_belonging_to_two_groups, param request:{}'.format(request))
+        log.debug('Debug_GL: entree dans get_users_belonging_to_two_groups, param group_name1:{}'.format(group_name1))
+        log.debug('Debug_GL: entree dans get_users_belonging_to_two_groups, param group_name2:{}'.format(group_name2))
+
         try:
             connector = get_ldap_connector(request)
             gr_name_attr = request.registry.settings['ldap_group_attribute_name']
@@ -276,6 +325,9 @@ class LDAPQuery():
                     search_base=request.registry.settings['ldap_login_query_base_dn'],
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
+
+                log.info('Debug_GL: methode get_users_belonging_to_two_groups, variable ret:{}'.format(ret))
+
                 result, ret = conn.get_response(ret)
 
             if result is not None:

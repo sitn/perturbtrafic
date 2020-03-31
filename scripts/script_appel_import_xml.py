@@ -1,5 +1,5 @@
 import requests
-url_ws = "http://localhost/perturbtrafic_api/perturbtrafic/api/evenements_xml"
+url_ws = "http://localhost:6543/perturbtrafic/api/evenements_xml"
 
 try:
 	r = requests.get(url_ws)

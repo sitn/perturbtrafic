@@ -157,6 +157,12 @@ perturbation_etat_attente_code= 3
 # Le répertoire à partir duquel sont importés les fichiers XML
 evenements_xml_files_folder = C:\TEMP
 
+# Le répertoire vers lequel sont exportés les fichiers XML
+evenements_xml_files_success_folder = C:\TEMP
+
+# Le répertoire vers lequel sont exportés les fichiers XML
+evenements_xml_files_success_folder = C:\TEMP
+
 # Les identifiants nécessaires pour l'import XML
 id_responsable_xml_import = 359
 id_user_ajout_xml_import = 359
