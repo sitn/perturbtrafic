@@ -1088,7 +1088,11 @@ def mise_a_jours_groupes_ad_view(request):
             raise HTTPForbidden()
         """
 
+        log.info('Debug_GL: contact.mise_a_jours_groupes_ad_view, juste avant Utils.mise_a_jour_groupes_ad')
+
         is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
+
+        log.info('Debug_GL: contact.mise_a_jours_groupes_ad_view, juste après Utils.mise_a_jour_groupes_ad: is_groupes_ad_mis_a_jour:{}'.format(is_groupes_ad_mis_a_jour))
 
         if not is_groupes_ad_mis_a_jour:
             raise Exception('An error occured while updating AD groups')
