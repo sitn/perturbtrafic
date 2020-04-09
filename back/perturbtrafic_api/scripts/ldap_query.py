@@ -7,8 +7,8 @@ from pyramid.security import remember, forget
 from pyramid.response import Response
 import json
 
-import logging  # log .info('Debug_GL: ')
-log = logging.getLogger(__name__)  # log .info('Debug_GL: ')
+import logging  # log.info('Debug_GL: ')
+log = logging.getLogger(__name__)  # log.info('Debug_GL: ')
 
 class LDAPQuery():
 
