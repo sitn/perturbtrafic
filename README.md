@@ -8,6 +8,62 @@
 - Apache + mod_wsgi
 - NodeJs with Microsoft Build Tools (option of NodeJs installer)
 
+## Getting Started
+
+1. Cloner le dépôt
+
+```powershell
+git clone https://tfs.ne.ch/tfs/SIEN/SPCH/_git/perturbtrafic
+cd perturbtrafic
+```
+
+2. Configurer le fichier development.ini. Attention à ne pas simplement copier-coller un production.ini car les options de debug y sont désactivées. Toutefois les sections ldap, mail et dossiers XML peuvent être copiées telles quelles. Il est conseillé d'avoir une base de données de developpement. Pour cela, un dump et retore peuvent être faits depuis pgAdmin. Des dumps sont faits chaque jour de la base de prod (pas la prepub!) et disponibles sur le disque `d:\postgres_backups` du serveur.
+
+3. Installer le webservice
+
+```powershell
+cd back
+$env:PIPENV_VENV_IN_PROJECT="true"
+pipenv install
+pipenv shell
+pip install -e .
+```
+
+4. Tester si le service fonctionne
+
+```powershell
+pserve --reload development.ini
+```
+
+Cette commande devrait répondre `Serving on http://<votre_poste.ne.ch:####>`. Vous pouvez tester la connexion à la base de données en rajoutant `/perturbtrafic/api/types_evenements` devant cette url sur un navigateur dont la réponse ressemble à ça:
+
+```JSON
+[
+    {
+        "id": 1,
+        "description": "Autre"
+    },
+    {
+        "id": 2,
+        "description": "Chantier"
+    }
+```
+
+La debug toolbar de pyramid est accessible à l'adresse `/_debug_toolbar/`
+
+6. Aller dans `front/src/assets/config/config.json` et remplacer l'adresse du wsPath pour la faire pointer sur votre pserve. Par exemple:
+
+```JSON
+    "wsPath": "http://localhost:6543/perturbtrafic/api/",
+```
+
+5. Ouvrir un nouveau shell à la racine du projet (laisser l'autre ouvert avec pserve) puis:
+
+```powershell
+cd front
+npm install
+npm run start
+```
 
 ## Deploy
 
