@@ -35,7 +35,7 @@ def contact_by_id_view(request):
 
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -63,7 +63,7 @@ def contacts_view(request):
             result.append(item)
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -198,7 +198,7 @@ def add_contact_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved', 'id': max_contact_id}
@@ -290,7 +290,7 @@ def update_contact_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -338,7 +338,7 @@ def delete_contact_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -386,7 +386,7 @@ def contacts_having_login_view(request):
 
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -428,7 +428,7 @@ def contacts_entite_view(request):
                 result.append(c.format())
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': entite_err_msg if str(e) == entite_err_msg else CustomError.general_exception}
 
@@ -458,7 +458,7 @@ def contact_potentiel_avis_perturbation_view(request):
             result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -517,7 +517,7 @@ def add_contact_potentiel_avis_perturbation_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -585,7 +585,7 @@ def update_contact_potentiel_avis_perturbation_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -615,7 +615,7 @@ def delete_contact_potentiels_avis_perturbation_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -640,7 +640,7 @@ def contact_avis_fermeture_urgence_view(request):
             result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return str(e)
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
@@ -682,7 +682,7 @@ def add_avis_fermeture_urgence_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -725,7 +725,7 @@ def update_avis_fermeture_urgence_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -755,7 +755,7 @@ def delete_avis_fermeture_urgence_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -779,7 +779,7 @@ def contact_avis_pr_touche_view(request):
             result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -820,7 +820,7 @@ def add_contact_avis_pr_touche_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -863,7 +863,7 @@ def update_avis_fermeture_urgence_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -893,7 +893,7 @@ def delete_contact_avis_pr_touche_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
@@ -951,7 +951,7 @@ def get_nouveaux_contacts_ad_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return result
@@ -1063,7 +1063,7 @@ def add_nouveaux_contacts_ad_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -1099,7 +1099,7 @@ def mise_a_jours_groupes_ad_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -1145,7 +1145,7 @@ def autorisations_accordees_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 500,
                 'message': entite_err_msg if str(error) == entite_err_msg else CustomError.general_exception}
 
@@ -1181,7 +1181,7 @@ def autorisations_recues_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return result
@@ -1275,7 +1275,7 @@ def add_autorisations_view(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.delegation_exists_exception if str(
             e) == CustomError.delegation_exists_exception else CustomError.general_exception}
 
@@ -1365,7 +1365,7 @@ def update_autorisations_view(request):
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return {'message': 'Data successfully saved'}
