@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-from sqlalchemy import *
+from sqlalchemy import func
 from .. import models
 from ..scripts.utils import Utils
 from ..scripts.pt_mailer import PTMailer
@@ -31,8 +31,6 @@ def type_evenement_by_id_view(request):
         if not result:
             raise Exception(CustomError.id_not_found_exception)
 
-
-
     except Exception as e:
         log.error(str(e), exc_info=True)
         return {'error': 'true', 'code': 500,
@@ -56,6 +54,7 @@ def types_evenements_view(request):
 
     except Exception as e:
         log.error(str(e), exc_info=True)
+        log.info('Debug_GL: types_evenements_view')
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
     return query
 
@@ -76,7 +75,6 @@ def get_evenement_by_id_view(request):
 
         if not result:
             raise Exception(CustomError.id_not_found_exception)
-
 
     except Exception as e:
         log.error(str(e), exc_info=True)
@@ -132,7 +130,7 @@ def delete_evenement_by_id_view(request):
             # Commit transaction
             transaction.commit()
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -160,7 +158,6 @@ def evenements_view(request):
 
         for evenement in query:
             formattedResult.append(evenement.format())
-
 
     except Exception as e:
         log.error(str(e), exc_info=True)
@@ -193,8 +190,6 @@ def libelles_evenements_view(request):
         query = request.dbsession.query(models.PerturbationPourUtilisateurAjout).filter(
             models.PerturbationPourUtilisateurAjout.id_utilisateur == current_user_id).filter(
             models.PerturbationPourUtilisateurAjout.id_entite == id_entite).all()
-
-
 
     except Exception as e:
         log.error(str(e), exc_info=True)
@@ -232,7 +227,7 @@ def evenements_echeance_view(request):
         for evenement in query:
             evenements_array.append(evenement.format())
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -361,12 +356,10 @@ def evenement_edition_by_id_view(request):
             related_type = query.filter(models.Chantier.id_evenement == id).first()
 
             # Categories chatier
-            for lcc, cc in request.dbsession.query(models.LienChantierCategorieChantier,
-                                                   models.CategorieChantier).filter(
-                models.LienChantierCategorieChantier.id_chantier == related_type.id).filter(
-                models.CategorieChantier.id == models.LienChantierCategorieChantier.categorie).all():
+            for lcc, cc in request.dbsession.query(models.LienChantierCategorieChantier, models.CategorieChantier).filter(
+                    models.LienChantierCategorieChantier.id_chantier == related_type.id).filter(
+                    models.CategorieChantier.id == models.LienChantierCategorieChantier.categorie).all():
                 categories_chantiers.append(cc)
-
 
         # Type evenement : Fouille
         elif evenement.type == int(settings['fouille_evenement_id']):
@@ -374,10 +367,9 @@ def evenement_edition_by_id_view(request):
             related_type = query.filter(models.Fouille.id_evenement == id).first()
 
             # Plan type
-            for lfp, pf in request.dbsession.query(models.LienFouillePlanType,
-                                                   models.PlanTypeFouille).filter(
-                models.LienFouillePlanType.id_evenement == id).filter(
-                models.PlanTypeFouille.id == models.LienFouillePlanType.id_plan_type).all():
+            for lfp, pf in request.dbsession.query(models.LienFouillePlanType, models.PlanTypeFouille).filter(
+                    models.LienFouillePlanType.id_evenement == id).filter(
+                    models.PlanTypeFouille.id == models.LienFouillePlanType.id_plan_type).all():
                 plans_types_fouille.append(pf)
 
         # Type evenement : Manifestation
@@ -424,21 +416,20 @@ def evenement_edition_by_id_view(request):
         evenement = evenement.format()
 
         if contact_utilisateur_ajout:
-            evenement[
-                'nom_utilisateur_ajout'] = contact_utilisateur_ajout.prenom + ' ' + contact_utilisateur_ajout.nom
+            evenement['nom_utilisateur_ajout'] = \
+                contact_utilisateur_ajout.prenom + ' ' + contact_utilisateur_ajout.nom
 
         if contact_utilisateur_modification:
-            evenement[
-                'nom_utilisateur_modification'] = contact_utilisateur_modification.prenom + ' ' + contact_utilisateur_modification.nom
+            evenement['nom_utilisateur_modification'] = \
+                 contact_utilisateur_modification.prenom + ' ' + contact_utilisateur_modification.nom
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
         log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(
-                    e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'evenement': evenement, 'reperages': reperages,
             'infos': {} if not related_type else related_type.format(), 'categories_chantiers': categories_chantiers,
@@ -1465,7 +1456,7 @@ def add_evenement_edition(request):
                     parcours=_parcours)
 
             # Geometries_reperages
-            if geometries_reperages != None:
+            if geometries_reperages is not None:
                 json_geometries_reperages = json.loads(geometries_reperages)
 
                 for onegeojson in json_geometries_reperages:
@@ -1484,7 +1475,8 @@ def add_evenement_edition(request):
                                 request.dbsession.add(evenement_point_model)
 
                             # Line
-                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
+                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' \
+                                    or type_geom == 'GeometryCollection':
                                 evenement_ligne_model = models.EvenementLigne(id_evenement=max_event_id)
                                 evenement_ligne_model.set_json_geometry(str(geometry), settings['srid'])
                                 request.dbsession.add(evenement_ligne_model)
@@ -1535,7 +1527,6 @@ def add_evenement_edition(request):
                         )
                         request.dbsession.add(lien_categ_chant)
 
-
             # Type evenement : Fouille
             elif int(type) == int(settings['fouille_evenement_id']):
                 if plan_types_array and len(plan_types_array) > 0:
@@ -1549,7 +1540,7 @@ def add_evenement_edition(request):
             # Commit transaction
             transaction.commit()
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -2537,7 +2528,7 @@ def update_evenement_edition(request):
                 autre_evenement_record.fax_responsable_travaux = _faxResponsableTravaux
                 autre_evenement_record.courriel_responsable_travaux = _courrielResponsableTravaux
                 autre_evenement_record.facturation = _facturation
-                '''               
+                '''
                 autre_evenement_record.coordonnes_x = _coordonnesX
                 autre_evenement_record.coordonnes_y = _coordonnesY
                 autre_evenement_record.commune = _commune
@@ -2603,7 +2594,6 @@ def update_evenement_edition(request):
                             categorie=category_id
                         )
                         request.dbsession.add(lien_categ_chant)
-
 
             # Type evenement : Fouille
             elif int(type) == int(settings['fouille_evenement_id']):
@@ -2711,7 +2701,7 @@ def update_evenement_edition(request):
                 models.EvenementPolygone.id_evenement == idEvenement).delete()
 
             # Add new geometries
-            if geometries_reperages != None:
+            if geometries_reperages is not None:
                 json_geometries_reperages = json.loads(geometries_reperages)
 
                 for onegeojson in json_geometries_reperages:
@@ -2730,7 +2720,8 @@ def update_evenement_edition(request):
                                 request.dbsession.add(evenement_point_model)
 
                             # Line
-                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
+                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' \
+                                    or type_geom == 'GeometryCollection':
                                 evenement_ligne_model = models.EvenementLigne(id_evenement=idEvenement)
                                 evenement_ligne_model.set_json_geometry(str(geometry), settings['srid'])
                                 request.dbsession.add(evenement_ligne_model)
@@ -2757,7 +2748,6 @@ def update_evenement_edition(request):
                                     )
                                     request.dbsession.add(reperage_model)
 
-
                             # Polygon
                             elif type_geom == 'Polygon':
                                 evenement_polygon_model = models.EvenementPolygone(id_evenement=idEvenement)
@@ -2779,7 +2769,7 @@ def update_evenement_edition(request):
                 contact_mails = Utils.get_contacts_mails_by_ids(request, conatct_ids)
                 PTMailer.send_mail(request, contact_mails, subject, body)
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except CustomError as e:
@@ -2825,10 +2815,10 @@ def search_evenements_view(request):
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         search_limit = int(settings['search_limit'])
 
-
         # Read params
         if ('numeroDossier' in request.params and request.params['numeroDossier'] != ""):
-            conditions.append(func.lower(models.SearchEvenementView.numero_dossier).like('%' + func.lower(request.params['numeroDossier']) + '%'))
+            conditions.append(func.lower(models.SearchEvenementView.numero_dossier).like(
+                '%' + func.lower(request.params['numeroDossier']) + '%'))
         else:
             if ('type' in request.params and request.params['type'] != ""):
                 conditions.append(models.SearchEvenementView.type == request.params['type'])
@@ -2843,32 +2833,25 @@ def search_evenements_view(request):
             if ('dateDebut' in request.params and request.params['dateDebut'] != ""):
                 conditions.append(func.DATE(models.SearchEvenementView.date_fin) >= func.DATE(request.params['dateDebut']))
 
-
             if ('dateFin' in request.params and request.params['dateFin'] != ""):
                 conditions.append(func.DATE(models.SearchEvenementView.date_debut) <= func.DATE(request.params['dateFin']))
-
 
             if ('division' in request.params and request.params['division'] != ""):
                 conditions.append(
                     func.lower(models.SearchEvenementView.division).like('%' + func.lower(request.params['division']) + '%'))
 
             if ('nomRequerant' in request.params and request.params['nomRequerant'] != ""):
-                conditions.append(
-                    func.lower(models.SearchEvenementView.nom_requerant).like(
-                        '%' + func.lower(request.params['nomRequerant']) + '%'))
-
+                conditions.append(func.lower(models.SearchEvenementView.nom_requerant).like(
+                    '%' + func.lower(request.params['nomRequerant']) + '%'))
 
             if ('idResponsable' in request.params and request.params['idResponsable'] != ""):
                 conditions.append(models.SearchEvenementView.id_responsable == request.params['idResponsable'])
 
-
             if ('axe' in request.params and request.params['axe'] != ""):
                 conditions.append(models.SearchEvenementView.axe == request.params['axe'])
 
-
             if ('prDebut' in request.params and request.params['prDebut'] != ""):
                 conditions.append(models.SearchEvenementView.pr_debut >= request.params['prDebut'])
-
 
             if ('prFin' in request.params and request.params['prFin'] != ""):
                 conditions.append(models.SearchEvenementView.pr_fin <= request.params['prFin'])
@@ -2876,22 +2859,17 @@ def search_evenements_view(request):
             if ('prDebutSegSeq' in request.params and request.params['prDebutSegSeq'] != ""):
                 conditions.append(models.SearchEvenementView.pr_debut_seg_seq >= request.params['prDebutSegSeq'])
 
-
             if ('prDebutSecSeq' in request.params and request.params['prDebutSecSeq'] != ""):
                 conditions.append(models.SearchEvenementView.pr_debut_sec_seq >= request.params['prDebutSecSeq'])
-
 
             if ('prFinSegSeq' in request.params and request.params['prFinSegSeq'] != ""):
                 conditions.append(models.SearchEvenementView.pr_fin_seg_seq <= request.params['prFinSegSeq'])
 
-
             if ('prFinSecSeq' in request.params and request.params['prFinSecSeq'] != ""):
                 conditions.append(models.SearchEvenementView.pr_fin_sec_seq <= request.params['prFinSecSeq'])
 
-
             if ('ajoutePar' in request.params and request.params['ajoutePar'] != ""):
                 conditions.append(models.SearchEvenementView.id_utilisateur_ajout == request.params['ajoutePar'])
-
 
             if ('prTouche' in request.params and request.params['prTouche'] != ""):
                 conditions.append(models.SearchEvenementView.pr_touches == request.params['prTouche'])
@@ -2917,10 +2895,10 @@ def search_evenements_view(request):
         formattedResult = []
 
         for evenement in result:
-            if evenement != None:
+            if evenement is not None:
                 formattedResult.append(evenement.format())
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -2938,14 +2916,17 @@ def search_evenements_view(request):
 def evenements_xml_view(request):
     try:
         files_array = EvenementXML.list_folder_files(request)
+        if len(files_array) == 0:
+            return {'Information': 'No XML files to inport'}
+
         successful_files = []
         failed_files = []
 
         for file in files_array:
+            log.info('Importing file: ' + file)
             file_json = EvenementXML.xml_to_json(file)
 
             if file_json:
-                log.info('Importing file: ' + file)
                 is_added = EvenementXML.add_file_data(file_json)
 
                 if is_added:
@@ -2953,14 +2934,21 @@ def evenements_xml_view(request):
 
                     # Move file if is added
                     EvenementXML.move_file_to_success_folder(request, file)
+                    log.warning('Debug_GL: Importing file successfully : ' + file)
 
                 else:
                     failed_files.append(file)
+                    EvenementXML.move_file_to_failure_folder(request, file)
+                    log.critical('Debug_GL: Importing file error(is_added): ' + file)
 
+            else:
+                failed_files.append(file)
+                EvenementXML.move_file_to_failure_folder(request, file)
+                log.info('Debug_GL: Importing file error(file_json): ' + file)
 
     except Exception as error:
         log.error(str(error), exc_info=True)
+        log.info("Debug_GL: evenements_xml_view: Exception !!! failed_files': {}".format(failed_files))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'successful_files': successful_files, 'failed_files': failed_files}
-

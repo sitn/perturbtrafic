@@ -30,7 +30,7 @@ tests_require = [
 
 setup(
     name='perturbtrafic_api',
-    version='RC4',
+    version='1.0rc4',
     description='PerturbTrafic API',
     long_description=README + '\n\n' + CHANGES,
     classifiers=[

@@ -1,21 +1,16 @@
-from pyramid.view import view_config
-from sqlalchemy import exc
-from sqlalchemy import *
-from .. import models
-from ..scripts.ldap_query import LDAPQuery
-from ..scripts.utils import Utils
-from ..scripts.pt_mailer import PTMailer
-from ..exceptions.custom_error import CustomError
-from datetime import datetime, date, timedelta
 import transaction
 import json
 import logging
-import datetime
 from pyramid.httpexceptions import HTTPForbidden
+from pyramid.view import view_config
+from sqlalchemy import false, func, null
+from .. import models
+from ..scripts.ldap_query import LDAPQuery
+from ..scripts.utils import Utils
+from ..exceptions.custom_error import CustomError
 
 
 log = logging.getLogger(__name__)
-
 
 
 ########################################################
@@ -33,11 +28,10 @@ def contact_by_id_view(request):
         if not result:
             raise Exception(CustomError.id_not_found_exception)
 
-
     except Exception as e:
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return result
 
@@ -58,12 +52,12 @@ def contacts_view(request):
         query = request.dbsession.query(models.Contact).all()
 
         for item in query:
-            item = item.format();
+            item = item.format()
             item['nom_organisme'] = Utils.get_contact_organisme(request, item['id_organisme'])
             result.append(item)
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -88,12 +82,13 @@ def add_contact_view(request):
         current_user_id = Utils.get_connected_user_id(request)
         current_user_id = int(current_user_id) if current_user_id else None
 
-        #Check if the user has permission to add contact
+        # Check if the user has permission to add contact
         if current_user_id:
-            query_permission = request.dbsession.query(models.AutorisationFonction).filter(models.AutorisationFonction.id_utilisateur == current_user_id and models.AutorisationFonction.ajouter_contact == True).first()
+            query_permission = request.dbsession.query(models.AutorisationFonction).filter(
+                models.AutorisationFonction.id_utilisateur == current_user_id and
+                models.AutorisationFonction.ajouter_contact is True).first()
             if not query_permission:
                 raise HTTPForbidden()
-
 
         # Default params value
         nom = None
@@ -166,17 +161,15 @@ def add_contact_view(request):
                 forcerAjout = False
 
         # Check if contact already exists
-        if forcerAjout is None or forcerAjout == False:
+        if forcerAjout is None or forcerAjout is False:
 
             if len(conditions) > 0 and check_exist:
                 query = request.dbsession.query(models.Contact).filter(*conditions).all()
 
             if len(query) > 0:
-
                 return {'error': 'true', 'code': 500, 'message': 'Contact already exists'}
 
-
-        with transaction.manager as tm:
+        with transaction.manager:
             model = models.Contact(
                 login=login,
                 nom=nom,
@@ -192,13 +185,13 @@ def add_contact_view(request):
 
             transaction.commit()
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved', 'id': max_contact_id}
@@ -230,10 +223,10 @@ def update_contact_view(request):
 
         # Check if the user has permission to modify contact
         query_permission = request.dbsession.query(models.AutorisationFonction).filter(
-            models.AutorisationFonction.id_utilisateur == current_user_id and models.AutorisationFonction.modifier_contact == True).first()
+            models.AutorisationFonction.id_utilisateur == current_user_id and
+            models.AutorisationFonction.modifier_contact is True).first()
         if not query_permission:
             raise HTTPForbidden()
-
 
         # Default params value
         id = None
@@ -270,7 +263,7 @@ def update_contact_view(request):
         if ('idOrganisme' in request.params):
             idOrganisme = request.params['idOrganisme']
 
-        with transaction.manager as tm:
+        with transaction.manager:
             contact_query = request.dbsession.query(models.Contact).filter(models.Contact.id == id)
 
             if contact_query.count() > 0:
@@ -279,6 +272,7 @@ def update_contact_view(request):
                 contact_record.nom = nom
                 contact_record.prenom = prenom
                 contact_record.telephone = telephone
+                contact_record.mobile = mobile
                 contact_record.courriel = courriel
                 contact_record.id_organisme = idOrganisme
 
@@ -286,13 +280,12 @@ def update_contact_view(request):
             else:
                 raise Exception(CustomError.id_not_found_exception)
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -319,10 +312,10 @@ def delete_contact_by_id_view(request):
 
         # Check if the user has permission to delete contact
         query_permission = request.dbsession.query(models.AutorisationFonction).filter(
-            models.AutorisationFonction.id_utilisateur == current_user_id and models.AutorisationFonction.supprimer_contact == True).first()
+            models.AutorisationFonction.id_utilisateur == current_user_id and
+            models.AutorisationFonction.supprimer_contact is True).first()
         if not query_permission:
             raise HTTPForbidden()
-
 
         id = request.matchdict['id']
 
@@ -338,9 +331,9 @@ def delete_contact_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -360,19 +353,19 @@ def contacts_having_login_view(request):
         result = []
 
         for contact in query:
-            contact_json = contact.format();
+            contact_json = contact.format()
             contact_json['nom_organisme'] = Utils.get_contact_organisme(request, contact_json['id_organisme'])
 
-
             # Entites
-            query_entites = request.dbsession.query(models.LienContactEntite, models.Entite).filter(models.LienContactEntite.id_contact == contact.id).filter(models.LienContactEntite.id_entite == models.Entite.id).all()
+            query_entites = request.dbsession.query(models.LienContactEntite, models.Entite).filter(
+                models.LienContactEntite.id_contact == contact.id).filter(
+                models.LienContactEntite.id_entite == models.Entite.id).all()
 
             entites = []
             for le, e in query_entites:
                 entites.append(e.nom)
 
-
-            #Roles
+            # Roles
             query_roles = request.dbsession.query(models.FonctionContact.fonction).filter(
                 models.FonctionContact.id_contact == contact.id).all()
 
@@ -384,9 +377,8 @@ def contacts_having_login_view(request):
             contact_json['roles'] = roles
             result.append(contact_json)
 
-
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -428,7 +420,7 @@ def contacts_entite_view(request):
                 result.append(c.format())
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500,
                 'message': entite_err_msg if str(e) == entite_err_msg else CustomError.general_exception}
 
@@ -454,11 +446,11 @@ def contact_potentiel_avis_perturbation_view(request):
                                                 models.Organisme).filter(
                 models.ContactPotentielAvisPerturbation.id_entite == idEntite).filter(
                 models.ContactPotentielAvisPerturbation.id_contact == models.Contact.id).filter(
-            models.Contact.id_organisme == models.Organisme.id).all():
+                models.Contact.id_organisme == models.Organisme.id).all():
             result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -503,7 +495,7 @@ def add_contact_potentiel_avis_perturbation_view(request):
             elif envoiAutoFermeture == 'false':
                 envoiAutoFermeture = False
 
-        with transaction.manager as tm:
+        with transaction.manager:
             model = models.ContactPotentielAvisPerturbation(
                 id_entite=idEntite,
                 id_contact=idContact,
@@ -513,11 +505,10 @@ def add_contact_potentiel_avis_perturbation_view(request):
             request.dbsession.add(model)
             transaction.commit()
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -566,7 +557,7 @@ def update_contact_potentiel_avis_perturbation_view(request):
             elif envoiAutoFermeture == 'false':
                 envoiAutoFermeture = False
 
-        with transaction.manager as tm:
+        with transaction.manager:
             contact_query = request.dbsession.query(models.ContactPotentielAvisPerturbation).filter(
                 models.ContactPotentielAvisPerturbation.id == id)
 
@@ -581,13 +572,12 @@ def update_contact_potentiel_avis_perturbation_view(request):
             else:
                 raise Exception(CustomError.id_not_found_exception)
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -615,9 +605,9 @@ def delete_contact_potentiels_avis_perturbation_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -636,12 +626,12 @@ def contact_avis_fermeture_urgence_view(request):
         for cp, c, o in request.dbsession.query(models.ContactAvisFermetureUrgence, models.Contact,
                                                 models.Organisme).filter(
                 models.ContactAvisFermetureUrgence.id_contact == models.Contact.id).filter(
-            models.Contact.id_organisme == models.Organisme.id).all():
+                models.Contact.id_organisme == models.Organisme.id).all():
             result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
-        return str(e)
+        log.error(str(e))
+
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -664,25 +654,24 @@ def add_avis_fermeture_urgence_view(request):
         if ('idContact' in request.params):
             idContact = request.params['idContact']
 
-        #Check if contact already exists
+        # Check if contact already exists
         contact_query = request.dbsession.query(models.ContactAvisFermetureUrgence).filter(
             models.ContactAvisFermetureUrgence.id_contact == idContact)
 
         if contact_query.count() > 0:
             return {'message': 'Data successfully saved'}
 
-        with transaction.manager as tm:
+        with transaction.manager:
             model = models.ContactAvisFermetureUrgence(
                 id_contact=idContact)
 
             request.dbsession.add(model)
             transaction.commit()
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -709,7 +698,7 @@ def update_avis_fermeture_urgence_view(request):
         if ('idContact' in request.params):
             idContact = request.params['idContact']
 
-        with transaction.manager as tm:
+        with transaction.manager:
             contact_query = request.dbsession.query(models.ContactAvisFermetureUrgence).filter(
                 models.ContactAvisFermetureUrgence.id == id)
 
@@ -721,13 +710,12 @@ def update_avis_fermeture_urgence_view(request):
             else:
                 raise Exception(CustomError.id_not_found_exception)
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -755,9 +743,9 @@ def delete_avis_fermeture_urgence_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -775,11 +763,11 @@ def contact_avis_pr_touche_view(request):
 
         for cp, c, o in request.dbsession.query(models.ContactAvisPrTouche, models.Contact, models.Organisme).filter(
                 models.ContactAvisPrTouche.id_contact == models.Contact.id).filter(
-            models.Contact.id_organisme == models.Organisme.id).all():
+                models.Contact.id_organisme == models.Organisme.id).all():
             result.append(cp.format(c.nom, c.prenom, o.nom))
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -809,18 +797,17 @@ def add_contact_avis_pr_touche_view(request):
         if contact_query.count() > 0:
             return {'message': 'Data successfully saved'}
 
-        with transaction.manager as tm:
+        with transaction.manager:
             model = models.ContactAvisPrTouche(
                 id_contact=idContact)
 
             request.dbsession.add(model)
             transaction.commit()
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -831,7 +818,7 @@ def add_contact_avis_pr_touche_view(request):
 ########################################################
 @view_config(route_name='contact_avis_pr_touche', request_method='PUT', renderer='json')
 @view_config(route_name='contact_avis_pr_touche_slash', request_method='PUT', renderer='json')
-def update_avis_fermeture_urgence_view(request):
+def update_contact_avis_pr_touche_view(request):
     try:
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
@@ -847,7 +834,7 @@ def update_avis_fermeture_urgence_view(request):
         if ('idContact' in request.params):
             idContact = request.params['idContact']
 
-        with transaction.manager as tm:
+        with transaction.manager:
             contact_query = request.dbsession.query(models.ContactAvisPrTouche).filter(
                 models.ContactAvisPrTouche.id == id)
 
@@ -859,13 +846,12 @@ def update_avis_fermeture_urgence_view(request):
             else:
                 raise Exception(CustomError.id_not_found_exception)
 
-
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -893,9 +879,9 @@ def delete_contact_avis_pr_touche_by_id_view(request):
             transaction.commit()
 
     except Exception as e:
-        log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        log.error(str(e))
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
 
@@ -946,12 +932,11 @@ def get_nouveaux_contacts_ad_view(request):
                     one_contact_ad_json['roles'] = roles
                     result.append(one_contact_ad_json)
 
-
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return result
@@ -967,7 +952,7 @@ def add_nouveaux_contacts_ad_view(request):
         settings = request.registry.settings
         request.dbsession.execute('set search_path to ' + settings['schema_name'])
         auth_tkt = request.cookies.get('auth_tkt', default=None)
-        login_attr = settings['ldap_user_attribute_login']
+        # login_attr = settings['ldap_user_attribute_login']
 
         if not auth_tkt:
             raise HTTPForbidden()
@@ -995,7 +980,7 @@ def add_nouveaux_contacts_ad_view(request):
 
             for one_contact_ad_json in contacts_ad_json:
 
-                with transaction.manager as tm:
+                with transaction.manager:
                     # Add contact to DB
                     contact_model = models.Contact(
                         id_organisme=one_contact_ad_json['id_organisme'] if 'id_organisme' in one_contact_ad_json else None,
@@ -1056,14 +1041,13 @@ def add_nouveaux_contacts_ad_view(request):
 
                     transaction.commit()
 
-
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -1088,22 +1072,18 @@ def mise_a_jours_groupes_ad_view(request):
             raise HTTPForbidden()
         """
 
-        log.info('Debug_GL: contact.mise_a_jours_groupes_ad_view, juste avant Utils.mise_a_jour_groupes_ad')
-
         is_groupes_ad_mis_a_jour = Utils.mise_a_jour_groupes_ad(request)
-
-        log.info('Debug_GL: contact.mise_a_jours_groupes_ad_view, juste après Utils.mise_a_jour_groupes_ad: is_groupes_ad_mis_a_jour:{}'.format(is_groupes_ad_mis_a_jour))
 
         if not is_groupes_ad_mis_a_jour:
             raise Exception('An error occured while updating AD groups')
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return result
@@ -1139,17 +1119,17 @@ def autorisations_accordees_view(request):
 
             for d, c, lce in request.dbsession.query(models.Delegation, models.Contact,
                                                      models.LienContactEntite).filter(
-                models.Delegation.id_delegant == current_user_id).filter(
-                models.Contact.id == models.Delegation.id_delegataire).filter(
-                models.LienContactEntite.id_entite == idEntite).filter(
-                models.Delegation.id_delegataire == models.LienContactEntite.id_contact).all():
+                    models.Delegation.id_delegant == current_user_id).filter(
+                    models.Contact.id == models.Delegation.id_delegataire).filter(
+                    models.LienContactEntite.id_entite == idEntite).filter(
+                    models.Delegation.id_delegataire == models.LienContactEntite.id_contact).all():
                 result.append(d.format(c.nom, c.prenom, Utils.get_contact_organisme(request, c.id_organisme)))
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 500,
                 'message': entite_err_msg if str(error) == entite_err_msg else CustomError.general_exception}
 
@@ -1178,14 +1158,14 @@ def autorisations_recues_view(request):
 
             for d, c in request.dbsession.query(models.Delegation, models.Contact).filter(
                     models.Delegation.id_delegataire == current_user_id).filter(
-                models.Contact.id == models.Delegation.id_delegant).all():
+                    models.Contact.id == models.Delegation.id_delegant).all():
                 result.append(d.format(c.nom, c.prenom, Utils.get_contact_organisme(request, c.id_organisme)))
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return result
@@ -1271,15 +1251,13 @@ def add_autorisations_view(request):
 
                 transaction.commit()
 
-
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
-
 
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-        log.error(str(e), exc_info=True)
+        log.error(str(e))
         return {'error': 'true', 'code': 500, 'message': CustomError.delegation_exists_exception if str(
             e) == CustomError.delegation_exists_exception else CustomError.general_exception}
 
@@ -1318,7 +1296,7 @@ def update_autorisations_view(request):
                 delegation_record = request.dbsession.query(models.Delegation).filter(
                     models.Delegation.id == idDelegation).first()
 
-                if delegation_record == None:
+                if delegation_record is None:
                     raise Exception(CustomError.id_not_found_exception)
 
                 with transaction.manager:
@@ -1365,12 +1343,11 @@ def update_autorisations_view(request):
 
                     transaction.commit()
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as error:
-        log.error(str(error), exc_info=True)
+        log.error(str(error))
         return {'error': 'true', 'code': 403, 'message': str(error)}
 
     return {'message': 'Data successfully saved'}
-
