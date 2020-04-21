@@ -1,6 +1,5 @@
 from sqlalchemy import (
     Column,
-    Index,
     BigInteger,
     Float,
     Numeric,
@@ -12,9 +11,10 @@ from sqlalchemy import (
 from .meta import Base
 import json
 
+
 class Fouille(Base):
     __tablename__ = 'fouille'
-    id = Column(BigInteger, primary_key=True,autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     id_evenement = Column(Numeric)
     id_maitre_ouvrage = Column(Numeric)
     id_direction_locale = Column(Numeric)
@@ -112,6 +112,3 @@ class Fouille(Base):
             'reserve_eventuelle': self.reserve_eventuelle,
             'reperage_effectif': self.reperage_effectif
         }
-
-
-#Index('my_index', Fouille.nom, unique=True, mysql_length=255)

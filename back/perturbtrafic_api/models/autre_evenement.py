@@ -1,8 +1,6 @@
 from sqlalchemy import (
     Column,
-    Index,
     BigInteger,
-    Float,
     Numeric,
     Text,
     DateTime
@@ -13,7 +11,7 @@ from .meta import Base
 
 class AutreEvenement(Base):
     __tablename__ = 'autre_evenement'
-    id = Column(BigInteger, primary_key=True,autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     id_evenement = Column(Numeric)
     id_maitre_ouvrage = Column(Numeric)
     id_direction_locale = Column(Numeric)
@@ -93,5 +91,3 @@ class AutreEvenement(Base):
             'date_facture': self.date_facture if not self.date_facture else self.date_facture.isoformat(),
             'reserve_eventuelle': self.reserve_eventuelle
         }
-
-#Index('my_index', AutreEvenement.nom, unique=True, mysql_length=255)

@@ -1,6 +1,5 @@
 from sqlalchemy import (
     Column,
-    Index,
     BigInteger,
     Numeric,
     Text,
@@ -14,7 +13,7 @@ from .meta import Base
 
 class Perturbation(Base):
     __tablename__ = 'perturbation'
-    id = Column(BigInteger, primary_key=True,autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     id_evenement = Column(Numeric)
     id_responsable_trafic = Column(Numeric)
     type = Column(Numeric)
@@ -77,7 +76,6 @@ class Perturbation(Base):
             'date_suppression': self.date_suppression if not self.date_suppression else self.date_suppression.isoformat()
         }
 
-
     def format_with_type_evenement(self, type_evenement):
         return {
             'id': self.id,
@@ -111,6 +109,3 @@ class Perturbation(Base):
             'date_suppression': self.date_suppression if not self.date_suppression else self.date_suppression.isoformat(),
             'type_evenement': type_evenement
         }
-
-
-#Index('my_index', Perturbation.etat, unique=True, mysql_length=255)
