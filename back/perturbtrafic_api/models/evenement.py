@@ -40,7 +40,6 @@ class Evenement(Base):
     fax_contact = Column(Text)
     courriel_contact = Column(Text)
     remarque = Column(Text)
-    ref_camac = Column(BigInteger)
     date_demande = Column(DateTime)
     date_octroi = Column(DateTime)
     id_utilisateur_ajout = Column(BigInteger)
