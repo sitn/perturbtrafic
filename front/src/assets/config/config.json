@@ -1,6 +1,6 @@
 {
     "version": "1.0 - RC 3",
-    "wsPath": "https://perturbtrafic.arxit.com/perturbtrafic/api/",
+    "wsPath": "http://localhost:6543/perturbtrafic/api/",
     "urlGuichetCarto": "https://sitnintra.ne.ch/theme/trafic?lang=fr&baselayer_ref=blank&tree_group_layers_gp_points_interets=&tree_group_layers_gp_main=&tree_enable_osm=false&theme=trafic&tree_groups=gp_mo_cadastre_partiel%2Cgp_rt_perturbations%2Cgp_base_layers",
     "urlConflits": "https://sitnintra.ne.ch/theme/trafic?wfs_layer=pt00_evenement&wfs_id_evenement=",
     "sitnWS": {
