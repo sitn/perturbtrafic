@@ -1,16 +1,14 @@
 from pyramid.view import view_config
-from sqlalchemy import exc
-from sqlalchemy import *
+from sqlalchemy import exc, func
 from .. import models
 from ..scripts.ldap_query import LDAPQuery
 from ..scripts.utils import Utils
 from ..scripts.pt_mailer import PTMailer
 from ..exceptions.custom_error import CustomError
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 import transaction
 import json
 import logging
-import datetime
 from pyramid.httpexceptions import HTTPForbidden
 
 
@@ -83,7 +81,7 @@ def delete_perturbation_by_id_view(request):
             # Commit transaction
             transaction.commit()
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -240,7 +238,7 @@ def perturbation_edition_by_id_view(request):
         contacts_a_aviser = []
 
         for ap, c in request.dbsession.query(models.AvisPerturbation, models.Contact).filter(
-            models.AvisPerturbation.id_perturbation == id).filter(
+                models.AvisPerturbation.id_perturbation == id).filter(
                 models.AvisPerturbation.id_contact == models.Contact.id).all():
             contacts_a_aviser.append(c)
 
@@ -273,25 +271,24 @@ def perturbation_edition_by_id_view(request):
         perturbation = perturbation.format()
 
         if contact_utilisateur_ajout:
-            perturbation[
-                'nom_utilisateur_ajout'] = contact_utilisateur_ajout.prenom + ' ' + contact_utilisateur_ajout.nom
+            perturbation['nom_utilisateur_ajout'] = \
+                contact_utilisateur_ajout.prenom + ' ' + contact_utilisateur_ajout.nom
 
         if contact_utilisateur_modification:
-            perturbation[
-                'nom_utilisateur_modification'] = contact_utilisateur_modification.prenom + ' ' + contact_utilisateur_modification.nom
+            perturbation['nom_utilisateur_modification'] = \
+                contact_utilisateur_modification.prenom + ' ' + contact_utilisateur_modification.nom
 
         if contact_utilisateur_validation:
-            perturbation[
-                'nom_utilisateur_validation'] = contact_utilisateur_validation.prenom + ' ' + contact_utilisateur_validation.nom
+            perturbation['nom_utilisateur_validation'] = \
+                contact_utilisateur_validation.prenom + ' ' + contact_utilisateur_validation.nom
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
         log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(
-                    e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception
+                if str(e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return {'perturbation': perturbation, 'reperages': reperages,
             'infos': {} if not relatedtype else relatedtype, 'contacts_a_aviser': contacts_a_aviser,
@@ -466,21 +463,9 @@ def add_perturbation_edition(request):
         if 'remarque' in request.params:
             remarque = request.params['remarque']
 
-        """
-        if 'urgence' in request.params:
-            urgence = request.params['urgence']
-
-            if urgence == 'true':
-                urgence = True
-            elif urgence == 'false':
-                urgence = False
-            else:
-                urgence = None
-        """
-
         # Check date_debut, if less than 24h, urgence=true
         urgence = False
-        if dateDebut != None and heureDebut != None:
+        if dateDebut is not None and heureDebut is not None:
             date_time_str = str(dateDebut) + ' ' + str(heureDebut)
             date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
             now = datetime.datetime.now()
@@ -490,10 +475,10 @@ def add_perturbation_edition(request):
 
         if 'etat' in request.params:
             etat = request.params['etat']
-            etat = int(etat) if etat != None and etat != '' else int(settings['perturbation_etat_attente_code'])
+            etat = int(etat) if etat is not None and etat != '' else int(settings['perturbation_etat_attente_code'])
 
         # If urgence == true, etat = accepté
-        if urgence == True:
+        if urgence is True:
             etat = settings['perturbation_etat_acceptee_code']
 
         # If urgence == False, Check role Trafic
@@ -686,7 +671,7 @@ def add_perturbation_edition(request):
             Utils.add_historique_etat_perturbation(request, current_user_id, max_perturb_id, etat)
 
             # Contacts à aviser
-            if contacts_a_aviser != None:
+            if contacts_a_aviser is not None:
 
                 json_contacts_a_aviser = json.loads(contacts_a_aviser)
 
@@ -726,7 +711,7 @@ def add_perturbation_edition(request):
 
             # Geometries_reperages
             reperages_list = []
-            if geometries_reperages != None:
+            if geometries_reperages is not None:
                 json_geometries_reperages = json.loads(geometries_reperages)
 
                 for onegeojson in json_geometries_reperages:
@@ -745,7 +730,8 @@ def add_perturbation_edition(request):
                                 request.dbsession.add(perturbation_point_model)
 
                             # Line
-                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
+                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' \
+                                    or type_geom == 'GeometryCollection':
                                 perturbation_ligne_model = models.PerturbationLigne(id_perturbation=max_perturb_id)
                                 perturbation_ligne_model.set_json_geometry(str(geometry), settings['srid'])
                                 request.dbsession.add(perturbation_ligne_model)
@@ -774,7 +760,7 @@ def add_perturbation_edition(request):
                                     reperages_list.append(reperage_model)
 
             # Geometries_deviations
-            if geometries_deviations != None:
+            if geometries_deviations is not None:
                 json_geometries_deviations = json.loads(geometries_deviations)
 
                 for onegeojson in json_geometries_deviations:
@@ -791,12 +777,14 @@ def add_perturbation_edition(request):
             # Reperages list
             reperages_string = ''
             for reperage_model in reperages_list:
-                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
-                    reperage_model.proprietaire + ':' + reperage_model.axe + ':' + reperage_model.sens, reperage_model.pr_debut, reperage_model.pr_debut_distance,
-                    reperage_model.pr_fin, reperage_model.pr_fin_distance)
+                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td> \
+                    <td><p>{}</p></td></tr>'.format(reperage_model.proprietaire + ':' + reperage_model.axe + ':' +
+                                                    reperage_model.sens, reperage_model.pr_debut,
+                                                    reperage_model.pr_debut_distance, reperage_model.pr_fin,
+                                                    reperage_model.pr_fin_distance)
 
             # Envoi email si fermeture d'urgence
-            #	Envoi à la liste des personnes concernées par les fermetures d’urgence
+            # Envoi à la liste des personnes concernées par les fermetures d’urgence
             if perturbation_model.urgence:
                 mails_contacts_mails_fermeture_urgence = Utils.get_mails_contacts_mails_fermeture_urgence(
                     request)
@@ -821,7 +809,7 @@ def add_perturbation_edition(request):
                 if connected_user and mail_att_name in connected_user:
                     connected_user_mail = connected_user[mail_att_name]
 
-                    if not connected_user_mail in contacts_a_aviser_mails_array:
+                    if connected_user_mail not in contacts_a_aviser_mails_array:
                         contacts_a_aviser_mails_array.append(connected_user_mail)
 
             # If En attente → Envoi à l’approbateur = rôle trafic (and belonging to current entite)
@@ -830,10 +818,8 @@ def add_perturbation_edition(request):
                     models.Entite.id == idEntite).first()
 
                 if query_entite_group_ad:
-                    contacts_a_aviser_mails_array += Utils.get_mails_of_contacts_belonging_to_two_groups(request,
-                                                                                                         settings[
-                                                                                                             'ldap_trafic_group_name'],
-                                                                                                         query_entite_group_ad.nom_groupe_ad)
+                    contacts_a_aviser_mails_array += Utils.get_mails_of_contacts_belonging_to_two_groups(
+                        request, settings['ldap_trafic_group_name'], query_entite_group_ad.nom_groupe_ad)
 
             # Delete duplicates from array
             contacts_a_aviser_mails_array = list(dict.fromkeys(contacts_a_aviser_mails_array))
@@ -844,8 +830,7 @@ def add_perturbation_edition(request):
                                                  settings['fermeture_perturbation_id']) else "OCCUPATION" if int(
                                                  perturbation_model.type) == int(
                                                  settings['occupation_perturbation_id']) else 'Info',
-                                             'email_templates:fermeture_occupation', mail_dict,
-                                             reperages_string)
+                                             'email_templates:fermeture_occupation', mail_dict, reperages_string)
 
             # Envoi d’email en cas de SRB touché
             #   Envoi à la liste des personnes GMAR
@@ -855,12 +840,10 @@ def add_perturbation_edition(request):
                 contacts_pr_touche = Utils.get_mails_contacts_pr_touche(request)
 
                 if contacts_pr_touche and len(contacts_pr_touche) > 0:
-                    PTMailer.send_templated_mail(request, contacts_pr_touche,
-                                                 settings['mail_srb_touche_subject'],
-                                                 'email_templates:srb_touche', mail_dict,
-                                                 reperages_string)
+                    PTMailer.send_templated_mail(request, contacts_pr_touche, settings['mail_srb_touche_subject'],
+                                                 'email_templates:srb_touche', mail_dict, reperages_string)
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -1046,7 +1029,7 @@ def update_perturbation_edition(request):
 
         # Check date_debut, if less than 24h, urgence=true
         urgence = False
-        if dateDebut != None and heureDebut != None:
+        if dateDebut is not None and heureDebut is not None:
             date_time_str = str(dateDebut) + ' ' + str(heureDebut)
             date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
             now = datetime.datetime.now()
@@ -1056,10 +1039,10 @@ def update_perturbation_edition(request):
 
         if 'etat' in request.params:
             etat = request.params['etat']
-            etat = int(etat) if etat != None and etat != '' else int(settings['perturbation_etat_attente_code'])
+            etat = int(etat) if etat is not None and etat != '' else int(settings['perturbation_etat_attente_code'])
 
         # If urgence == true, etat = accepté
-        if urgence == True:
+        if urgence is True:
             etat = settings['perturbation_etat_acceptee_code']
 
         # If urgence == False, Check role Trafic
@@ -1237,7 +1220,7 @@ def update_perturbation_edition(request):
                 models.AvisPerturbation.id_perturbation == idPerturbation).delete(synchronize_session=False)
 
             # Add contacts à aviser
-            if contacts_a_aviser != None:
+            if contacts_a_aviser is not None:
                 json_contacts_a_aviser = json.loads(contacts_a_aviser)
 
                 for onecontactid in json_contacts_a_aviser:
@@ -1302,7 +1285,7 @@ def update_perturbation_edition(request):
 
             # Add new geometries
             reperages_list = []
-            if geometries_reperages != None:
+            if geometries_reperages is not None:
                 json_geometries_reperages = json.loads(geometries_reperages)
 
                 for onegeojson in json_geometries_reperages:
@@ -1321,7 +1304,8 @@ def update_perturbation_edition(request):
                                 request.dbsession.add(perturbation_point_model)
 
                             # Line
-                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' or type_geom == 'GeometryCollection':
+                            elif type_geom == 'LineString' or type_geom == 'MultiLineString' \
+                                    or type_geom == 'GeometryCollection':
                                 perturbation_ligne_model = models.PerturbationLigne(id_perturbation=idPerturbation)
                                 perturbation_ligne_model.set_json_geometry(str(geometry), settings['srid'])
                                 request.dbsession.add(perturbation_ligne_model)
@@ -1352,7 +1336,7 @@ def update_perturbation_edition(request):
             # Geometries_deviations
             request.dbsession.query(models.Deviation).filter(models.Deviation.id_perturbation == idPerturbation).delete(
                 synchronize_session=False)
-            if geometries_deviations != None:
+            if geometries_deviations is not None:
                 json_geometries_deviations = json.loads(geometries_deviations)
 
                 for onegeojson in json_geometries_deviations:
@@ -1364,21 +1348,21 @@ def update_perturbation_edition(request):
             transaction.commit()
 
             # Prepare mail to send
-            mail_dict = Utils.create_perturbation_mail_dict(request, perturbation_record, evenement_record,
-                                                            _deviation)
+            mail_dict = Utils.create_perturbation_mail_dict(request, perturbation_record, evenement_record, _deviation)
 
             # Reperages list
             reperages_string = ''
             for reperage_model in reperages_list:
-                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td></tr>'.format(
-                    reperage_model.proprietaire + ':' + reperage_model.axe + ':' + reperage_model.sens, reperage_model.pr_debut, reperage_model.pr_debut_distance,
-                    reperage_model.pr_fin, reperage_model.pr_fin_distance)
+                reperages_string += '<tr><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td><td><p>{}</p></td> \
+                    <td><p>{}</p></td></tr>'.format(reperage_model.proprietaire + ':' + reperage_model.axe + ':' +
+                                                    reperage_model.sens, reperage_model.pr_debut,
+                                                    reperage_model.pr_debut_distance, reperage_model.pr_fin,
+                                                    reperage_model.pr_fin_distance)
 
             # Envoi email si fermeture d'urgence
-            #	Envoi à la liste des personnes concernées par les fermetures d’urgence
+            # Envoi à la liste des personnes concernées par les fermetures d’urgence
             if urgence_updated and perturbation_record.urgence:
-                mails_contacts_mails_fermeture_urgence = Utils.get_mails_contacts_mails_fermeture_urgence(
-                    request)
+                mails_contacts_mails_fermeture_urgence = Utils.get_mails_contacts_mails_fermeture_urgence(request)
 
                 if mails_contacts_mails_fermeture_urgence and len(mails_contacts_mails_fermeture_urgence) > 0:
                     PTMailer.send_templated_mail(request, mails_contacts_mails_fermeture_urgence,
@@ -1400,7 +1384,7 @@ def update_perturbation_edition(request):
                 if connected_user and mail_att_name in connected_user:
                     connected_user_mail = connected_user[mail_att_name]
 
-                    if not connected_user_mail in contacts_a_aviser_mails_array:
+                    if connected_user_mail not in contacts_a_aviser_mails_array:
                         contacts_a_aviser_mails_array.append(connected_user_mail)
 
             # If En attente → Envoi à l’approbateur = rôle trafic
@@ -1433,7 +1417,7 @@ def update_perturbation_edition(request):
                                                  'email_templates:srb_touche', mail_dict,
                                                  reperages_string)
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except CustomError as e:
@@ -1443,9 +1427,7 @@ def update_perturbation_edition(request):
     except Exception as e:
         transaction.abort()
         request.dbsession.rollback()
-
         log.error(str(e), exc_info=True)
-
         return {'error': 'true', 'code': 500, 'message': CustomError.general_exception}
 
     return {'message': 'Data successfully saved'}
@@ -1468,9 +1450,8 @@ def etat_perturbation_by_id_view(request):
 
     except Exception as e:
         log.error(str(e), exc_info=True)
-        return {'error': 'true', 'code': 500,
-                'message': CustomError.id_not_found_exception if str(
-                    e) == CustomError.id_not_found_exception else CustomError.general_exception}
+        return {'error': 'true', 'code': 500, 'message': CustomError.id_not_found_exception if str(
+                e) == CustomError.id_not_found_exception else CustomError.general_exception}
 
     return result
 
@@ -1524,7 +1505,7 @@ def perturbation_impression_by_id_view(request):
         if not query:
             raise Exception(CustomError.id_not_found_exception)
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -1648,10 +1629,10 @@ def search_perturbations_view(request):
 
         formattedResult = []
         for perturbation in result:
-            if perturbation != None:
+            if perturbation is not None:
                 formattedResult.append(perturbation.format())
 
-    except HTTPForbidden as e:
+    except HTTPForbidden:
         raise HTTPForbidden()
 
     except Exception as e:
@@ -1687,15 +1668,6 @@ def conflits_perturabations_by_id_view(request):
             else:
                 result.append(item)
 
-        """
-        result = None
-
-        if query and len(query) > 0:
-            result = str(query).replace('(', '').replace(',)', '').replace("{'", '{"').replace("':", '":').replace(
-                ": '", ': "').replace(", '", ', "').replace("',", '",').replace("'}", '"}').replace('\\"', '"').replace(
-                "None", '""')
-            result = json.loads(result)
-        """
     except Exception as e:
         log.error(str(e), exc_info=True)
         request.response.status = 500
@@ -1763,7 +1735,7 @@ def conflits_perturabations_view(request):
 
         conflicts_date_buffer = settings['conflicts_date_buffer']
         conflicts_geom_buffer = settings['conflicts_geom_buffer']
-        query_s = 'perturbtrafic.pt_conflits_json({0}, {1}, {2})'.format(idEntite, conflicts_date_buffer, conflicts_geom_buffer)
+        query_s = 'perturbtrafic.pt_conflits_json({}, {}, {})'.format(idEntite, conflicts_date_buffer, conflicts_geom_buffer)
 
         query = request.dbsession.query(query_s).all()
 
@@ -1773,15 +1745,6 @@ def conflits_perturabations_view(request):
             else:
                 result.append(item)
 
-        """
-        result = None
-        
-        if query and len(query) > 0:
-            result = str(query).replace('(', '').replace(',)', '').replace("{'", '{"').replace("':", '":').replace(
-                ": '", ': "').replace(", '", ', "').replace("',", '",').replace("'}", '"}').replace('\\"', '"').replace(
-                "None", '""')
-            #result = json.loads(result)
-        """
     except Exception as e:
         log.error(str(e), exc_info=True)
         request.response.status = 500

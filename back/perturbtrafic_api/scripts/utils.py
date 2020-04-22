@@ -8,6 +8,9 @@ from ..scripts.ldap_query import LDAPQuery
 from geoalchemy2 import Geometry
 import json
 
+import logging # Debug_GL
+
+log = logging.getLogger(__name__) # Debug_GL
 
 class Utils():
 
@@ -81,6 +84,8 @@ class Utils():
             for e in entites_query:
                 entites[e.nom_groupe_ad] = e.id
 
+            log.info('Debug_GL: utils.mise_a_jours_groupes_ad, juste avant bloc with, Nb utilisateurs trouvés dans la BD:{}'.format(contacts_bd_logins.len()))
+
             with transaction.manager as tm:
                 for one_contact_ad_json in contacts_ad_json:
                     if one_contact_ad_json and login_attr in one_contact_ad_json:
@@ -91,6 +96,7 @@ class Utils():
                         if one_contact_ad_login.upper() in contacts_bd_logins:
                             one_contact_ad_dn = one_contact_ad_json['dn']
                             one_contact_bd_id = contacts_bd_logins_ids[one_contact_ad_login.upper()]
+
                             contact_ldap_groups = LDAPQuery.get_user_groups_by_dn(request, one_contact_ad_dn)
 
                             # Delete all AD groups relationships of the contact
@@ -105,6 +111,8 @@ class Utils():
                                     settings['ldap_group_attribute_id']]
                                 one_contact_ldap_group_name = one_contact_ldap_group_item[
                                     settings['ldap_group_attribute_name']]
+
+                                log.info('Debug_GL: utils.mise_a_jours_groupes_ad, traitement utilisateur a ajouter:{}'.format(one_contact_ldap_group_name))
 
                                 # Entite group
                                 if one_contact_ldap_group_id.startswith(settings['ldap_entite_groups_prefix']):
@@ -147,6 +155,8 @@ class Utils():
                 for bd_contact_login in contacts_bd_logins:
                     if bd_contact_login not in contacts_ad_logins:
                         bd_contact_id = contacts_bd_logins_ids[bd_contact_login]
+
+                        log.info('Debug_GL: utils.mise_a_jours_groupes_ad, traitement utilisateur devient contact:{}'.format(one_contact_ldap_group_name))
 
                         # Set login=null for the contact
                         one_contact_record = request.dbsession.query(models.Contact).filter(

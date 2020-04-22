@@ -1,6 +1,5 @@
 from sqlalchemy import (
     Column,
-    Index,
     BigInteger,
     Text,
 )
@@ -10,7 +9,7 @@ from .meta import Base
 
 class Contact(Base):
     __tablename__ = 'contact'
-    id = Column(BigInteger, primary_key=True,autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     login = Column(Text)
     nom = Column(Text)
     prenom = Column(Text)
@@ -30,5 +29,3 @@ class Contact(Base):
             'courriel': self.courriel,
             'id_organisme': self.id_organisme
         }
-
-#Index('my_index', Contact.nom, unique=True, mysql_length=255)

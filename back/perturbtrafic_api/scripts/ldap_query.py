@@ -1,14 +1,15 @@
 from pyramid_ldap3 import (
     get_ldap_connector,
-    groupfinder,
+    # groupfinder,
 )
 
 from pyramid.security import remember, forget
 from pyramid.response import Response
 import json
 
-import logging  # log.info('Debug_GL: ')
-log = logging.getLogger(__name__)  # log.info('Debug_GL: ')
+import logging  # log .info('Debug_GL: ')
+log = logging.getLogger(__name__)  # log .info('Debug_GL: ')
+
 
 class LDAPQuery():
 
@@ -21,18 +22,20 @@ class LDAPQuery():
             # Check if user exists in LDAP
             connector = get_ldap_connector(request)
 
-            log.debug('Debug_GL: méthode do_login, juste avant la requête LDAP: authenticate(login, password), param login:{}'.format(login))
+            log.debug('Debug_GL: méthode do_login, juste avant la requête LDAP: authenticate(login, password), \
+                param login:{}'.format(login))
 
             result = connector.authenticate(login, password)
 
-            log.debug('Debug_GL: méthode do_login, juste après la requête LDAP: authenticate(login, password), variable result:{}'.format(result))
+            log.debug('Debug_GL: méthode do_login, juste après la requête LDAP: authenticate(login, password), \
+                variable result:{}'.format(result))
 
             if result is not None:
                 dn = result[0]
 
                 headers = remember(request, dn)
 
-                if contact :
+                if contact:
                     contact_json = contact.format()
                     contact_json['entites'] = entites
 
@@ -77,11 +80,13 @@ class LDAPQuery():
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
 
-                log.debug('Debug_GL: méthode get_connected_user, juste avant la requête LDAP: get_response(ret), param ret:{}'.format(ret))
+                log.debug('Debug_GL: méthode get_connected_user, juste avant la requête LDAP: get_response(ret), \
+                    param ret:{}'.format(ret))
 
                 result, ret = conn.get_response(ret)
 
-                log.debug('Debug_GL: méthode get_connected_user, juste après la requête LDAP: get_response(ret), variable result:{}'.format(result))
+                log.debug('Debug_GL: méthode get_connected_user, juste après la requête LDAP: get_response(ret), \
+                    variable result:{}'.format(result))
 
             if result is None:
                 result = []
@@ -105,11 +110,13 @@ class LDAPQuery():
         try:
             connector = get_ldap_connector(request)
 
-            log.debug('Debug_GL: méthode get_user_groups, juste avant la requête LDAP: user_groups(dn), param dn={}'.format(dn))
+            log.debug('Debug_GL: méthode get_user_groups, juste avant la requête LDAP: user_groups(dn), \
+                param dn={}'.format(dn))
 
             result = connector.user_groups(dn)
 
-            log.debug('Debug_GL: méthode get_user_groups, juste après la requête LDAP: user_groups(dn), variable result:{}'.format(result))
+            log.debug('Debug_GL: méthode get_user_groups, juste après la requête LDAP: user_groups(dn), \
+                variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
@@ -117,6 +124,7 @@ class LDAPQuery():
                         groups.append(cls.format_json_attributes(json.loads(json.dumps(dict(r[1])))))
 
         except Exception as error:
+            pass
             raise error
 
         return groups
@@ -127,11 +135,13 @@ class LDAPQuery():
         try:
             connector = get_ldap_connector(request)
 
-            log.debug('Debug_GL: méthode get_user_groups_by_dn, juste avant la requête LDAP: user_groups(dn), param dn={}'.format(dn))
+            log.debug('Debug_GL: méthode get_user_groups_by_dn, juste avant la requête LDAP: \
+                user_groups(dn), param dn={}'.format(dn))
 
             result = connector.user_groups(dn)
 
-            log.debug('Debug_GL: méthode get_user_groups_by_dn, juste après la requête LDAP: user_groups(dn), variable result:{}'.format(result))
+            log.debug('Debug_GL: méthode get_user_groups_by_dn, juste après la requête LDAP: \
+                user_groups(dn), variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
@@ -151,11 +161,13 @@ class LDAPQuery():
         try:
             connector = get_ldap_connector(request)
 
-            log.debug('Debug_GL: méthode get_user_groups_entite, juste avant la requête LDAP: user_groups(dn), param dn={}'.format(dn))
+            log.debug('Debug_GL: méthode get_user_groups_entite, juste avant la requête LDAP: \
+                user_groups(dn), param dn={}'.format(dn))
 
             result = connector.user_groups(dn)
 
-            log.debug('Debug_GL: méthode get_user_groups_entite, juste après la requête LDAP: user_groups(dn), variable result:{}'.format(result))
+            log.debug('Debug_GL: méthode get_user_groups_entite, juste après la requête LDAP: \
+                user_groups(dn), variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
@@ -179,11 +191,13 @@ class LDAPQuery():
         try:
             connector = get_ldap_connector(request)
 
-            log.debug('Debug_GL: méthode get_user_groups_entite_by_dn, juste avant la requête LDAP: user_groups(dn), param dn={}'.format(dn))
+            log.debug('Debug_GL: méthode get_user_groups_entite_by_dn, juste avant la requête LDAP: \
+                user_groups(dn), param dn={}'.format(dn))
 
             result = connector.user_groups(dn)
 
-            log.debug('Debug_GL: méthode get_user_groups_entite_by_dn, juste après la requête LDAP: user_groups(dn), variable result:{}'.format(result))
+            log.debug('Debug_GL: méthode get_user_groups_entite_by_dn, juste après la requête LDAP: \
+                user_groups(dn), variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
@@ -215,17 +229,19 @@ class LDAPQuery():
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
 
-                log.debug('Debug_GL: méthode get_users, juste avant la requête LDAP: get_response(ret), param ret:{}'.format(ret))
+                log.debug('Debug_GL: méthode get_users, juste avant la requête LDAP: get_response(ret), \
+                    param ret:{}'.format(ret))
 
                 result, ret = conn.get_response(ret)
 
-                log.debug('Debug_GL: méthode get_users, juste après la requête LDAP: get_response(ret), variable result:{}'.format(result))
+                log.debug('Debug_GL: méthode get_users, juste après la requête LDAP: get_response(ret), \
+                    variable result:{}'.format(result))
 
             if result is not None:
-                 for r in result:
-                     if 'dn' in r:
-                         user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
-                         users.append(user_json)
+                for r in result:
+                    if 'dn' in r:
+                        user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
+                        users.append(user_json)
 
         except Exception as error:
             raise error
@@ -247,16 +263,18 @@ class LDAPQuery():
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
 
-                log.debug('Debug_GL: méthode get_users_belonging_to_group_entites, juste avant la requête LDAP: get_response(ret), param ret:{}'.format(ret))
+                log.debug('Debug_GL: méthode get_users_belonging_to_group_entites, juste avant la requête LDAP: \
+                    get_response(ret), param ret:{}'.format(ret))
 
                 result, ret = conn.get_response(ret)
 
-                log.debug('Debug_GL: méthode get_users_belonging_to_group_entites, juste après la requête LDAP: get_response(ret), variable result:{}'.format(result))
+                log.debug('Debug_GL: méthode get_users_belonging_to_group_entites, juste après la requête LDAP: \
+                    get_response(ret), variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
 
-                     if 'dn' in r and len(cls.get_user_groups_entite_by_dn(request, r['dn'])) > 0:
+                    if 'dn' in r and len(cls.get_user_groups_entite_by_dn(request, r['dn'])) > 0:
                         user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
                         user_json['dn'] = r['dn']
                         users.append(user_json)
@@ -282,11 +300,13 @@ class LDAPQuery():
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
 
-                log.debug('Debug_GL: méthode get_users_belonging_to_a_group, juste avant la requête LDAP: get_response(ret), param ret:{}'.format(ret))
+                log.debug('Debug_GL: méthode get_users_belonging_to_a_group, juste avant la requête LDAP: \
+                    get_response(ret), param ret:{}'.format(ret))
 
                 result, ret = conn.get_response(ret)
 
-                log.debug('Debug_GL: méthode get_users_belonging_to_a_group, juste après la requête LDAP: get_response(ret), variable result:{}'.format(result))
+                log.debug('Debug_GL: méthode get_users_belonging_to_a_group, juste après la requête LDAP: \
+                    get_response(ret), variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
@@ -322,23 +342,28 @@ class LDAPQuery():
                     search_filter=request.registry.settings['ldap_search_user_filter']
                 )
 
-                log.debug('Debug_GL: méthode get_users_belonging_to_two_groups, juste avant la requête LDAP: get_response(ret), param ret:{}'.format(ret))
+                log.debug('Debug_GL: méthode get_users_belonging_to_two_groups, juste avant la requête LDAP: \
+                    get_response(ret), param ret:{}'.format(ret))
 
                 result, ret = conn.get_response(ret)
 
-                log.debug('Debug_GL: méthode get_users_belonging_to_two_groups, juste après la requête LDAP: get_response(ret), variable result:{}'.format(result))
+                log.debug('Debug_GL: méthode get_users_belonging_to_two_groups, juste après la requête LDAP: \
+                    get_response(ret), variable result:{}'.format(result))
 
             if result is not None:
                 for r in result:
                     if 'dn' in r:
                         user_groups = cls.get_user_groups_by_dn(request, r['dn'])
 
-                        if len(user_groups) > 0:
-                            belongs_to_group1 = [x for x in user_groups if gr_name_attr in x and x[gr_name_attr] == group_name1]
+                        if len(user_groups) > 1:
+                            belongs_to_group1 = [x for x in user_groups
+                                                 if gr_name_attr in x and x[gr_name_attr] == group_name1]
 
-                            belongs_to_group2 = [x for x in user_groups if gr_name_attr in x and x[gr_name_attr] == group_name2]
+                            belongs_to_group2 = [x for x in user_groups
+                                                 if gr_name_attr in x and x[gr_name_attr] == group_name2]
 
-                            if belongs_to_group1 and len(belongs_to_group1) > 0 and belongs_to_group2 and len(belongs_to_group2) > 0:
+                            if belongs_to_group1 and len(belongs_to_group1) > 0 and belongs_to_group2 \
+                                    and len(belongs_to_group2) > 0:
                                 user_json = cls.format_json_attributes(json.loads(json.dumps(dict(r['attributes']))))
                                 user_json['dn'] = r['dn']
                                 user_json['group'] = user_groups
