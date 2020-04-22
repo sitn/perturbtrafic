@@ -13,7 +13,7 @@
 1. Cloner le dépôt
 
 ```powershell
-git clone https://tfs.ne.ch/tfs/SIEN/SPCH/_git/perturbtrafic
+git clone <REPO_LINK>
 cd perturbtrafic
 ```
 
@@ -69,10 +69,12 @@ npm run start
 
 ### Back-end
 
-1. Clone this repository
+1. Clone this repository. Replace `<REPO_LINK>` with your origin remote and `<TAG_NAME>` with a specific tagged version.
 
 ```powershell
-git clone https://github.com/sitn/perturbtrafic.git
+git clone <REPO_LINK>
+git fetch --all --tags --prune
+git checkout tags/<TAG_NAME> -b <TAG_NAME>
 cd perturbtrafic
 cd apache
 cp app.wsgi.sample app.wsgi
